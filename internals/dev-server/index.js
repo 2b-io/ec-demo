@@ -8,7 +8,7 @@ import webpackHotMiddleware from 'webpack-hot-middleware'
 import webpackConfig from '../webpack.config.babel'
 
 const app = express()
-const port = 3008
+const port = 3010
 
 const devServer = process.env.ASSET_ENDPOINT
 const state = {
@@ -56,7 +56,7 @@ compiler.hooks.emit.tap('done', () => {
     return
   }
 
-  app.listen(3008, () => {
+  app.listen(3010, () => {
     state.isStarted = true
     console.log(`dev-server started at ${ port }`)
   })
