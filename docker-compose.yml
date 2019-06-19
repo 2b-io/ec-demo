@@ -1,0 +1,19 @@
+version: '3'
+services:
+  mongo:
+    image: mongo:3.6
+    volumes:
+      - ./data/mongo:/data/db
+    ports:
+      - "27019:27017"
+
+  ec-demo:
+    build: .
+    container_name: media.ec-demo
+    command: bash -c "tail -f /dev/null"
+    volumes:
+      - .:/usr/ec-demo
+      - /usr/ec-demo/node_modules
+    ports:
+      - "3007:3007"
+      - "3008:3008"
