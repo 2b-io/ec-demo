@@ -23,6 +23,10 @@ export default {
     img: glob.sync(
       path.join(resourceDir, 'img/**/*'),
       { nodir: true }
+    ),
+    app: glob.sync(
+      path.join(resourceDir, 'app/index.js'),
+      { nodir: true }
     )
   },
   output: {
@@ -56,13 +60,14 @@ export default {
   },
   module: {
     rules: [ {
-      test: /\.m?js$/,
+      test: /\.m?(js|jsx)$/,
       exclude: /(node_modules|bower_components)/,
       use: {
         loader: 'babel-loader',
         options: {
           presets: [
-            '@babel/preset-env'
+            '@babel/preset-env',
+            '@babel/preset-react'
           ],
           plugins: [
             '@babel/plugin-proposal-object-rest-spread',

@@ -4,7 +4,8 @@
       "targets": {
         "node": "8.10"
       }
-    } ]
+    } ],
+    "@babel/preset-react"
   ],
   "plugins": [
     [ "module-resolver", {

@@ -12,6 +12,7 @@
 
     <% content 'head-end' %>
     <script src='https://www.google.com/recaptcha/api.js?render=<%= @googleRecaptchaSiteKey %>'></script>
+    <script src="<%= @__asset('app.js') %>" defer></script>
     <script>
       var RECAPTCHA_KEY = '<%= @googleRecaptchaSiteKey %>';
     </script>
