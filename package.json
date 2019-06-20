@@ -74,7 +74,7 @@
     "uuid": "3.3.2"
   },
   "scripts": {
-    "start": "concurrently --raw \"npm run dev-server\" \"wait-on http://localhost:3008/alive && npm run server\"",
+    "start": "concurrently --raw \"npm run dev-server\" \"wait-on http://localhost:3010/alive && npm run server\"",
     "dev-server": "run.env nodemon internals/dev-server --exec babel-node --watch ./internals",
     "server": "run.env nodemon ./src/server --exec babel-node --watch ./src/server --watch ./data/dist/manifest.json",
     "build": "rm -rf build && babel ./src/server -d ./build/server && cp -r ./src/server/views ./build/server",
