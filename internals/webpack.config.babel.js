@@ -52,7 +52,7 @@ export default {
     new OptimizeCssAssetsPlugin()
   ],
   resolve: {
-    extensions: [ '.css', '.js', '.styl' ],
+    extensions: [ '.css', '.js', '.styl', '.jsx' ],
     modules: [
       'node_modules',
       'src/resources'

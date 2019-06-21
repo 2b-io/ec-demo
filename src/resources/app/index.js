@@ -1,10 +1,8 @@
-import React from "react"
-import ReactDOM from "react-dom"
+import React from 'react'
+import { render } from 'react-dom'
 
-const App = () => {
-  return (
-    <div>This home page</div>
-  )
-}
+import App from 'app/views'
 
-ReactDOM.render(<App />, document.getElementById('root'))
+const root = document.getElementById('root')
+
+render(<App />, root)
