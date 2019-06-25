@@ -1,38 +1,34 @@
 import React from 'react'
 import plupload from 'plupload'
 
+import arryToMap from 'services/array-to-map'
+
 const FILE_MIME = {
   zip: { title: 'Zip files', extensions: 'zip' },
   images: { title : 'Image files', extensions : 'jpg,gif,png' }
 }
 
 class UploadForm extends React.Component {
-
   constructor(props) {
     super(props)
+
     this.state = {
       files: [],
       template: [],
-      mimeType: 'zip',
-      mimeTypesFilter: {
-        title : 'Zip files',
-        extensions : 'zip'
-      }
+      mimeType:'zip'
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
   }
 
   uploadTemplate() {
-    return new plupload.Uploader({
+    const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
       url: 'http://localhost:3009',
       init: {
         FilesAdded: (up, files) => {
           this.setState({ template: files })
-        },
-        UploadProgress: (up, file) => {
-
+          this.state.plupTemplate.start()
         }
       },
       filters : {
@@ -42,14 +38,26 @@ class UploadForm extends React.Component {
       },
       multi_selection: false
     })
+
+    plupTemplate.init()
+
+    this.setState({
+      plupTemplate
+    })
   }
 
   uploadItems(mimeTypes) {
-    const plup = new plupload.Uploader({
+    const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
       url: 'http://localhost:3009',
       init: {
         FilesAdded: (up, files) => {
+          this.setState({ files: arryToMap(files, 'id') })
+          this.state.plupItems.start()
+        },
+        UploadProgress: (up, file) => {
+          const { files } = this.state
+          files[ file.id ].percent = file.percent
           this.setState({ files })
         }
       },
@@ -60,20 +68,20 @@ class UploadForm extends React.Component {
       }
     })
 
-    plup.init()
+    plupItems.init(FILE_MIME[ 'zip' ])
 
     this.setState({
-      plup
+      plupItems
     })
   }
 
   resetPlupload(mimeType) {
-    this.state.plup.destroy()
+    this.state.plupItems.destroy()
     this.uploadItems(FILE_MIME[ mimeType ])
   }
 
   componentDidMount() {
-    this.uploadTemplate().init()
+    this.uploadTemplate()
     this.uploadItems(FILE_MIME[ 'zip' ])
   }
 
@@ -100,20 +108,22 @@ class UploadForm extends React.Component {
       return (
         <div key = { index } >
           <p>
-            { file.name } { plupload.formatSize(file.size) }
+            { file.name } { plupload.formatSize(file.size) } => uploaded { file.percent }%
           </p>
         </div>
       )
     })
-    const filesUpload = this.state.files.map((file, index) => {
+
+    const filesUpload =  Object.values(this.state.files).map((file, index) => {
       return (
         <div key = { index } >
           <p>
-            { file.name } { plupload.formatSize(file.size) }
+            { file.name } { plupload.formatSize(file.size) } => uploaded { file.percent }%
           </p>
         </div>
       )
     })
+
     return (
       <div id="container">
         <div>
