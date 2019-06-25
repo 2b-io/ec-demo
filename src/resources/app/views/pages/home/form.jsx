@@ -1,6 +1,11 @@
 import React from 'react'
 import plupload from 'plupload'
 
+const FILE_MIME = {
+  zip: { title: 'Zip files', extensions: 'zip' },
+  images: { title : 'Image files', extensions : 'jpg,gif,png' }
+}
+
 class UploadForm extends React.Component {
 
   constructor(props) {
@@ -36,8 +41,8 @@ class UploadForm extends React.Component {
     })
   }
 
-  uploadItems() {
-    return new plupload.Uploader({
+  uploadItems(mimeTypes) {
+    const plup = new plupload.Uploader({
       browse_button: 'browseFiles',
       url: 'http://localhost:3009',
       init: {
@@ -45,29 +50,41 @@ class UploadForm extends React.Component {
           this.setState({ files })
         }
       },
-      filters : {
+      filters: {
         mime_types: [
-          {
-            title : 'Zip files',
-            extensions : 'zip'
-          }
+          mimeTypes
         ]
       }
+    })
+
+    plup.init()
+
+    this.setState({
+      plup
     })
   }
 
   componentDidMount() {
     this.uploadTemplate().init()
-    this.uploadItems().init()
+    this.uploadItems(FILE_MIME[ 'zip' ])
   }
 
   changeMimeType(event) {
     const mimeType = event.target.value
+
     if (mimeType === 'zip') {
-      this.setState({ mimeType })
+      this.setState({
+        mimeType
+      })
     } else {
-      this.setState({ mimeType })
+      this.state.plup.destroy()
+      this.uploadItems(FILE_MIME[ mimeType ])
+
+      this.setState({
+        mimeType
+      })
     }
+
   }
 
   render() {
