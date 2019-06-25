@@ -30,6 +30,9 @@ class UploadForm extends React.Component {
       init: {
         FilesAdded: (up, files) => {
           this.setState({ template: files })
+        },
+        UploadProgress: (up, file) => {
+
         }
       },
       filters : {
@@ -64,6 +67,11 @@ class UploadForm extends React.Component {
     })
   }
 
+  resetPlupload(mimeType) {
+    this.state.plup.destroy()
+    this.uploadItems(FILE_MIME[ mimeType ])
+  }
+
   componentDidMount() {
     this.uploadTemplate().init()
     this.uploadItems(FILE_MIME[ 'zip' ])
@@ -73,18 +81,18 @@ class UploadForm extends React.Component {
     const mimeType = event.target.value
 
     if (mimeType === 'zip') {
+      this.resetPlupload(mimeType)
+
       this.setState({
         mimeType
       })
     } else {
-      this.state.plup.destroy()
-      this.uploadItems(FILE_MIME[ mimeType ])
+      this.resetPlupload(mimeType)
 
       this.setState({
         mimeType
       })
     }
-
   }
 
   render() {
@@ -92,7 +100,7 @@ class UploadForm extends React.Component {
       return (
         <div key = { index } >
           <p>
-            { file.name }
+            { file.name } { plupload.formatSize(file.size) }
           </p>
         </div>
       )
@@ -101,7 +109,7 @@ class UploadForm extends React.Component {
       return (
         <div key = { index } >
           <p>
-            { file.name }
+            { file.name } { plupload.formatSize(file.size) }
           </p>
         </div>
       )
@@ -130,7 +138,7 @@ class UploadForm extends React.Component {
             name='images'
             value='images'
             onChange={ this.changeMimeType }
-            checked={ this.state.mimeType === 'images' ? true : false  }/>Images
+            checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
           <br/>
           <button id="browseFiles">Browse Files...</button>
         </div>
