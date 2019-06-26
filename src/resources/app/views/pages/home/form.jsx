@@ -14,7 +14,7 @@ class UploadForm extends React.Component {
 
     this.state = {
       files: [],
-      template: [],
+      templateFile: [],
       mimeType:'zip'
     }
 
@@ -27,7 +27,7 @@ class UploadForm extends React.Component {
       url: 'http://localhost:3009',
       init: {
         FilesAdded: (up, files) => {
-          this.setState({ template: files })
+          this.setState({ templateFile: files })
           this.state.plupTemplate.start()
         }
       },
@@ -104,7 +104,9 @@ class UploadForm extends React.Component {
   }
 
   render() {
-    const templateUpload = this.state.template.map((file, index) => {
+    const { templateFile, files } = this.state
+
+    const templateUpload = templateFile.map((file, index) => {
       return (
         <div key = { index } >
           <p>
@@ -114,7 +116,7 @@ class UploadForm extends React.Component {
       )
     })
 
-    const filesUpload =  Object.values(this.state.files).map((file, index) => {
+    const filesUpload =  Object.values(files).map((file, index) => {
       return (
         <div key = { index } >
           <p>
