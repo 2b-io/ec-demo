@@ -29,6 +29,8 @@ export default (app) => {
   // view helpers
   app.get('/', controllers.home.get)
 
+  app.post('/image/upload', controllers.image.post)
+
   app.use((req, res, next) => {
     if (config.devMode) {
       return res.sendStatus(NOT_FOUND)

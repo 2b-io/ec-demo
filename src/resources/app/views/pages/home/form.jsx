@@ -24,11 +24,16 @@ class UploadForm extends React.Component {
   uploadTemplate() {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
-      url: 'http://localhost:3009',
+      url: 'http://localhost:3009/image/upload',
       init: {
         FilesAdded: (up, files) => {
-          this.setState({ templateFile: files })
+          this.setState({ templateFile: arryToMap(files, 'id') })
           this.state.plupTemplate.start()
+        },
+        UploadProgress: (up, file) => {
+          const { templateFile } = this.state
+          templateFile[ file.id ].percent = file.percent
+          this.setState({ templateFile })
         }
       },
       filters : {
@@ -49,7 +54,7 @@ class UploadForm extends React.Component {
   uploadItems(mimeTypes) {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
-      url: 'http://localhost:3009',
+      url: 'http://localhost:3009/image/upload',
       init: {
         FilesAdded: (up, files) => {
           this.setState({ files: arryToMap(files, 'id') })
@@ -106,7 +111,7 @@ class UploadForm extends React.Component {
   render() {
     const { templateFile, files } = this.state
 
-    const templateUpload = templateFile.map((file, index) => {
+    const templateUpload = Object.values(templateFile).map((file, index) => {
       return (
         <div key = { index } >
           <p>
@@ -129,7 +134,7 @@ class UploadForm extends React.Component {
     return (
       <div id="container">
         <div>
-          <label> Upload Template</label>
+          <label>Upload Template</label>
           <br/>
           <button id="browseTemplate">Browse Template...</button>
         </div>
