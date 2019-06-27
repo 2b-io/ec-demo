@@ -29,7 +29,8 @@ export default (app) => {
   // view helpers
   app.get('/', controllers.home.get)
 
-  app.post('/image/upload', controllers.image.post)
+  app.post('/image', controllers.image.post)
+  app.post('/watermark', controllers.watermark.post)
 
   app.use((req, res, next) => {
     if (config.devMode) {

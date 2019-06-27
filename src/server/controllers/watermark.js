@@ -16,7 +16,7 @@ export default {
         if (err) return next(err)
 
         const basename = fields.name.toLowerCase()
-        const storePath = path.resolve(config.uploadimageDir, basename)
+        const storePath = path.resolve(config.uploadWatermarkDir, basename)
         const tempPath = files.file.path
 
         const chunk = parseInt(fields.chunk, 10)

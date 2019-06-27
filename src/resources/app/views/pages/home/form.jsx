@@ -24,7 +24,7 @@ class UploadForm extends React.Component {
   uploadTemplate() {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
-      url: 'http://localhost:3009/image/upload',
+      url: 'http://localhost:3009/watermark',
       init: {
         FilesAdded: (up, files) => {
           this.setState({ templateFile: arryToMap(files, 'id') })
@@ -54,7 +54,7 @@ class UploadForm extends React.Component {
   uploadItems(mimeTypes) {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
-      url: 'http://localhost:3009/image/upload',
+      url: 'http://localhost:3009/image',
       init: {
         FilesAdded: (up, files) => {
           this.setState({ files: arryToMap(files, 'id') })

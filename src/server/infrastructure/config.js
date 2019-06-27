@@ -6,7 +6,8 @@ export default {
   // dir
   _root: rootDir,
 
-  uploadDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp'),
+  uploadimageDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/images'),
+  uploadWatermarkDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/watermark'),
 
   imgDir: path.join(rootDir, '../../assets/img'),
   // env
