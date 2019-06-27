@@ -7,6 +7,19 @@ services:
     ports:
       - "27019:27017"
 
+  redis:
+    image: redis:alpine
+    volumes:
+      - ./data/redis:/data/db
+    ports:
+      - "6379:6379"
+    expose:
+    - "6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    restart: always
+
   ec-demo:
     build: .
     container_name: media.ec-demo
@@ -17,3 +30,4 @@ services:
     ports:
       - "3009:3009"
       - "3010:3010"
+    

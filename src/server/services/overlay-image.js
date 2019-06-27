@@ -5,10 +5,12 @@ const imageMagick = gm.subClass({ imageMagick: true })
 
 promise.promisifyAll(gm.prototype)
 
-const overlay = async (inputImage, onputImage, logoImage) => {
+const overlay = async (inputImage, resizeImage, logoImage, logoPosition,logoSize) => {
+  const onputImage = await localpath(inputImage.ext)
+
   await gm(inputImage)
     .autoOrient()
-    .resize(600, 800)
+    .resize(resizeImage)
     .draw(`"image Over ${ logoPosition } ${ logoSize } '${ logoImage }'"`)
     .writeAsync(onputImage)
 
