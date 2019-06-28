@@ -4,9 +4,7 @@ import Content from './content'
 
 const Home = () => {
   return (
-    <div>
-      <Content />
-    </div>
+    <Content />
   )
 }
 

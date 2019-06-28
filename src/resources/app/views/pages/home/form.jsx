@@ -1,9 +1,21 @@
 import React from 'react'
 import plupload from 'plupload'
+import styled, { css } from 'styled-components'
+
+import {
+  PrimaryButton,
+  Container
+} from 'app/ui/elements'
 
 import arryToMap from 'services/array-to-map'
 
-const FILE_MIME = {
+const Wrapper = styled.div`
+  display: block;
+  margin: auto;
+  text-align: center;
+`
+
+const MIME_FILE = {
   zip: { title: 'Zip files', extensions: 'zip' },
   images: { title : 'Image files', extensions : 'jpg,gif,png' }
 }
@@ -24,7 +36,10 @@ class UploadForm extends React.Component {
   uploadTemplate() {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
-      url: 'http://localhost:3009/watermark',
+      url: 'http://localhost:3009/image',
+      headers: {
+        imageType: 'watermark'
+      },
       init: {
         FilesAdded: (up, files) => {
           this.setState({ templateFile: arryToMap(files, 'id') })
@@ -55,6 +70,9 @@ class UploadForm extends React.Component {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
       url: 'http://localhost:3009/image',
+      headers: {
+        imageType: 'item'
+      },
       init: {
         FilesAdded: (up, files) => {
           this.setState({ files: arryToMap(files, 'id') })
@@ -73,7 +91,7 @@ class UploadForm extends React.Component {
       }
     })
 
-    plupItems.init(FILE_MIME[ 'zip' ])
+    plupItems.init(MIME_FILE[ 'zip' ])
 
     this.setState({
       plupItems
@@ -82,12 +100,12 @@ class UploadForm extends React.Component {
 
   resetPlupload(mimeType) {
     this.state.plupItems.destroy()
-    this.uploadItems(FILE_MIME[ mimeType ])
+    this.uploadItems(MIME_FILE[ mimeType ])
   }
 
   componentDidMount() {
     this.uploadTemplate()
-    this.uploadItems(FILE_MIME[ 'zip' ])
+    this.uploadItems(MIME_FILE[ 'zip' ])
   }
 
   changeMimeType(event) {
@@ -132,17 +150,24 @@ class UploadForm extends React.Component {
     })
 
     return (
-      <div id="container">
+      <Container>
         <div>
           <label>Upload Template</label>
           <br/>
-          <button id="browseTemplate">Browse Template...</button>
+          <Wrapper>
+            <PrimaryButton
+              id="browseTemplate"
+              free={ true }
+            >
+              Browse Template...
+            </PrimaryButton>
+          </Wrapper>
         </div>
         <div>
           { templateUpload }
         </div>
         <br/>
-        <div>
+        <Wrapper>
           <label> Upload Images</label>
           <input
             type='radio'
@@ -157,12 +182,12 @@ class UploadForm extends React.Component {
             onChange={ this.changeMimeType }
             checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
           <br/>
-          <button id="browseFiles">Browse Files...</button>
-        </div>
+          <PrimaryButton id="browseFiles">Browse Files...</PrimaryButton>
+        </Wrapper>
         <div>
           { filesUpload }
         </div>
-      </div>
+      </Container>
     )
   }
 }
