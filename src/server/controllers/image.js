@@ -7,16 +7,23 @@ import path from 'path'
 import config from 'infrastructure/config'
 import overlayImage from 'services/overlay-image'
 
+const TEMP_PATH = {
+  item: config.uploadimageDir,
+  watermark: config.uploadWatermarkDir
+}
+
 export default {
   post: [
     (req, res, next) => {
+      const { id, filetype } = req.headers
+
       const form = new formidable.IncomingForm()
 
       form.parse(req, (err, fields, files) => {
         if (err) return next(err)
 
         const basename = fields.name.toLowerCase()
-        const storePath = path.resolve(config.uploadimageDir, basename)
+        const storePath = path.resolve(TEMP_PATH[ filetype ], basename)
         const tempPath = files.file.path
 
         const chunk = parseInt(fields.chunk, 10)

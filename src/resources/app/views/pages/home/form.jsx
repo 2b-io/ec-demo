@@ -10,6 +10,8 @@ import {
 
 import arryToMap from 'services/array-to-map'
 
+const ID = 'fakeid2001998932785798'
+
 const WrapperItem = styled.div`
   display: block
   margin: auto
@@ -40,7 +42,8 @@ class UploadForm extends React.Component {
       browse_button: 'browseTemplate',
       url: 'http://localhost:3009/image',
       headers: {
-        imageType: 'watermark'
+        filetype: 'watermark',
+        id: ID
       },
       init: {
         FilesAdded: (up, files) => {
@@ -73,7 +76,8 @@ class UploadForm extends React.Component {
       browse_button: 'browseFiles',
       url: 'http://localhost:3009/image',
       headers: {
-        imageType: 'item'
+        filetype: 'item',
+        id: ID
       },
       init: {
         FilesAdded: (up, files) => {
@@ -132,7 +136,6 @@ class UploadForm extends React.Component {
     const { templateFile, files } = this.state
 
     const templateUpload = Object.values(templateFile).map((file, index) => {
-      console.log('file', file)
       return (
         <div key = { index } >
           <p>
