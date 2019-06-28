@@ -3,16 +3,18 @@ import plupload from 'plupload'
 import styled, { css } from 'styled-components'
 
 import {
-  PrimaryButton,
-  Container
+  Container,
+  Break,
+  PrimaryButton
 } from 'app/ui/elements'
 
 import arryToMap from 'services/array-to-map'
 
-const Wrapper = styled.div`
-  display: block;
-  margin: auto;
-  text-align: center;
+const WrapperItem = styled.div`
+  display: block
+  margin: auto
+  text-align: center
+  padding: 16px
 `
 
 const MIME_FILE = {
@@ -130,6 +132,7 @@ class UploadForm extends React.Component {
     const { templateFile, files } = this.state
 
     const templateUpload = Object.values(templateFile).map((file, index) => {
+      console.log('file', file)
       return (
         <div key = { index } >
           <p>
@@ -151,23 +154,22 @@ class UploadForm extends React.Component {
 
     return (
       <Container>
-        <div>
-          <label>Upload Template</label>
-          <br/>
-          <Wrapper>
-            <PrimaryButton
-              id="browseTemplate"
-              free={ true }
-            >
-              Browse Template...
-            </PrimaryButton>
-          </Wrapper>
-        </div>
-        <div>
-          { templateUpload }
-        </div>
-        <br/>
-        <Wrapper>
+        <WrapperItem>
+          <div>
+            <label>Upload Template</label>
+            <Break/>
+              <PrimaryButton
+                id="browseTemplate"
+                free={ true }
+              >
+                Browse Template...
+              </PrimaryButton>
+          </div>
+          <div>
+            { templateUpload }
+          </div>
+          <Break/>
+          <Break/>
           <label> Upload Images</label>
           <input
             type='radio'
@@ -181,12 +183,12 @@ class UploadForm extends React.Component {
             value='images'
             onChange={ this.changeMimeType }
             checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
-          <br/>
+          <Break/>
           <PrimaryButton id="browseFiles">Browse Files...</PrimaryButton>
-        </Wrapper>
-        <div>
-          { filesUpload }
-        </div>
+          <div>
+            { filesUpload }
+          </div>
+        </WrapperItem>
       </Container>
     )
   }
