@@ -173,21 +173,23 @@ class UploadForm extends React.Component {
           </div>
           <Break/>
           <Break/>
-          <label> Upload Images</label>
-          <input
-            type='radio'
-            name='zip'
-            value='zip'
-            onChange={ this.changeMimeType }
-            checked={ this.state.mimeType === 'zip' ? true : false  }/>Zip
-          <input
-            type='radio'
-            name='images'
-            value='images'
-            onChange={ this.changeMimeType }
-            checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
-          <Break/>
-          <PrimaryButton id="browseFiles">Browse Files...</PrimaryButton>
+          <div>
+            <label> Upload Images</label>
+            <input
+              type='radio'
+              name='zip'
+              value='zip'
+              onChange={ this.changeMimeType }
+              checked={ this.state.mimeType === 'zip' ? true : false  }/>Zip
+            <input
+              type='radio'
+              name='images'
+              value='images'
+              onChange={ this.changeMimeType }
+              checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
+            <Break/>
+            <PrimaryButton id="browseFiles">Browse Files...</PrimaryButton>
+          </div>
           <div>
             { filesUpload }
           </div>
