@@ -1,6 +1,7 @@
 import React from 'react'
 import plupload from 'plupload'
 import styled, { css } from 'styled-components'
+import uuid from 'uuid'
 
 import {
   Container,
@@ -10,7 +11,7 @@ import {
 
 import arryToMap from 'services/array-to-map'
 
-const ID = 'fakeid2001998932785798'
+const ID = uuid.v4()
 
 const WrapperItem = styled.div`
   display: block
@@ -58,7 +59,7 @@ class UploadForm extends React.Component {
       },
       filters : {
         mime_types: [
-          { title : 'Image files', extensions : 'jpg,gif,png' },
+          { title : 'Image files', extensions : 'png' },
         ]
       },
       multi_selection: false

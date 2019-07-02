@@ -29,18 +29,35 @@ export default {
         const basename = fields.name.toLowerCase()
         const ext = path.extname(basename)
 
-        const storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ uuid.v4(basename) }${ext}`)
+        let storePath ;
 
+        if (filetype === 'item') {
+          storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ uuid.v4(basename) }${ ext }`)
+        } else {
+          storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ id }${ ext }`)
+        }
 
         const tempPath = files.file.path
 
         const rs = fs.createReadStream(tempPath)
         const ws = fs.createWriteStream(storePath, { flags: 'a' })
 
-        ws.on('close', err => {
+        ws.on('close', async (err) => {
           if (err) return next(err)
 
           fs.unlinkSync(tempPath)
+          if (filetype === 'item') {
+
+            await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`)).forEach(async (file) => {
+              const filePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, file)
+
+              const watermarkFile = fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ id }`))[0]
+
+              const watermarkPath = path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ id }`, watermarkFile)
+
+              await overlayImage(id, filePath, watermarkPath, file)
+            })
+          }
           return res.sendStatus(200)
         })
 
@@ -48,15 +65,6 @@ export default {
 
         rs.pipe(ws)
       })
-      if (filetype === 'item') {
-
-        await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`)).forEach(file => {
-          console.log(file)
-        })
-        // const inputImage = path.resolve(`${ TEMP_PATH[ 'item' ] }/ ${ id }`, )
-        // const logoImage = path.resolve(`${ TEMP_PATH[ 'watermark' ] }/ ${ id }`, basename)
-        // await overlayImage(inputImage, logoImage)
-      }
     },
     (error, req, res, next) => {
       console.log('error', error);
