@@ -5,6 +5,7 @@ import fsNode from 'fs'
 import ms from 'ms'
 import path from 'path'
 import uuid from 'uuid'
+import zipFolder from 'zip-folder'
 
 import config from 'infrastructure/config'
 import overlayImage from 'services/overlay-image'
@@ -44,9 +45,12 @@ export default {
 
         ws.on('close', async (err) => {
           if (err) return next(err)
+          const folderResult = await path.resolve(`${ config.imageResultDir }/${ id }`)
 
           fs.unlinkSync(tempPath)
+
           if (filetype === 'item') {
+            await fs.ensureDir(`${ config.imageResultDir }/${ id }`)
 
             await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`)).forEach(async (file) => {
               const filePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, file)
@@ -55,9 +59,20 @@ export default {
 
               const watermarkPath = path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ id }`, watermarkFile)
 
-              await overlayImage(id, filePath, watermarkPath, file)
+              const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ id }/${ file }`)
+
+              await overlayImage(filePath, watermarkPath, onputFilePath)
+            })
+
+            zipFolder(folderResult, `${ folderResult }/${ id }.zip`, (err) => {
+              if(err) {
+                  console.log('Zip error', err)
+              } else {
+                  console.log('Zip done')
+              }
             })
           }
+
           return res.sendStatus(200)
         })
 

@@ -85,7 +85,8 @@
     "superagent": "5.0.2",
     "treeify": "1.1.0",
     "typeface-maven-pro": "0.0.54",
-    "uuid": "3.3.2"
+    "uuid": "3.3.2",
+    "zip-folder": "1.0.0"
   },
   "scripts": {
     "start": "concurrently --raw \"npm run dev-server\" \"wait-on http://localhost:3010/alive && npm run server\"",

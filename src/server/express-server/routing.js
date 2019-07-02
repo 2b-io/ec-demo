@@ -30,6 +30,7 @@ export default (app) => {
   app.get('/', controllers.home.get)
 
   app.post('/image', controllers.image.post)
+  app.get('/result/:identifier', controllers.result.get)
 
   app.use((req, res, next) => {
     if (config.devMode) {

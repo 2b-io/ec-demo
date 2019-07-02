@@ -9,7 +9,7 @@ export default (app) => {
 
   app.locals.__asset = (file) => manifest[file]
 
-  app.use('/img', express.static(config.imgDir))
+  app.use('/imgzip', express.static(config.imageResultDir))
 
   return app
 }

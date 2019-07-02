@@ -20,6 +20,10 @@ export default {
       path.join(resourceDir, 'pages/home/index.*'),
       { nodir: true }
     ),
+    result: glob.sync(
+      path.join(resourceDir, 'pages/result/index.*'),
+      { nodir: true }
+    ),
     img: glob.sync(
       path.join(resourceDir, 'img/**/*'),
       { nodir: true }

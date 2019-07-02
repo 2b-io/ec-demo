@@ -1,25 +1,17 @@
-import fs from 'fs-extra'
 import gm from 'gm'
-import path from 'path'
 import promise from 'bluebird'
-import uuid from 'uuid'
-
-import config from 'infrastructure/config'
 
 const imageMagick = gm.subClass({ imageMagick: true })
 
 promise.promisifyAll(gm.prototype)
 
-const overlay = async (id, inputImage, watermark, onputFileName) => {
-  await fs.ensureDir(`${ config.imageResultDir }/${ id }`)
+const overlay = async (filePath, watermarkPath, onputFilePath) => {
 
-  const onputImage = await path.resolve(`${ config.imageResultDir }/${ id }/${ onputFileName }`)
-
-  await imageMagick(inputImage)
+  await imageMagick(filePath)
     .autoOrient()
-    .resize(600, 800)
-    .draw("image Over 50,30 200, 200 "+`'${ watermark }'`)
-    .writeAsync(onputImage)
+    // .resize(600, 800)
+    .draw("image Over 50,30 200, 200 "+`'${ watermarkPath }'`)
+    .writeAsync(onputFilePath)
 
   // await gm('./input.png')
   //   .autoOrient()

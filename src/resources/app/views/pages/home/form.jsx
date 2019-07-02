@@ -13,6 +13,8 @@ import arryToMap from 'services/array-to-map'
 
 const ID = uuid.v4()
 
+const downloadLink = `/imgzip/${ ID }/${ ID }.zip`
+
 const WrapperItem = styled.div`
   display: block
   margin: auto
@@ -193,6 +195,7 @@ class UploadForm extends React.Component {
           </div>
           <div>
             { filesUpload }
+            { filesUpload.length ? <a href={ downloadLink } >downloadLink</a>:'' }
           </div>
         </WrapperItem>
       </Container>
