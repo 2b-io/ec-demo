@@ -10,10 +10,9 @@ import {
 } from 'app/ui/elements'
 
 import arryToMap from 'services/array-to-map'
+import TemplateConfig from './template-config'
 
 const ID = uuid.v4()
-
-const downloadLink = `/imgzip/${ ID }/${ ID }.zip`
 
 const WrapperItem = styled.div`
   display: block
@@ -40,6 +39,11 @@ class UploadForm extends React.Component {
     this.changeMimeType = this.changeMimeType.bind(this)
   }
 
+  uploadAllFiles() {
+    this.state.plupTemplate.start()
+    this.state.plupItems.start()
+  }
+
   uploadTemplate() {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
@@ -51,7 +55,6 @@ class UploadForm extends React.Component {
       init: {
         FilesAdded: (up, files) => {
           this.setState({ templateFile: arryToMap(files, 'id') })
-          this.state.plupTemplate.start()
         },
         UploadProgress: (up, file) => {
           const { templateFile } = this.state
@@ -85,7 +88,6 @@ class UploadForm extends React.Component {
       init: {
         FilesAdded: (up, files) => {
           this.setState({ files: arryToMap(files, 'id') })
-          this.state.plupItems.start()
         },
         UploadProgress: (up, file) => {
           const { files } = this.state
@@ -195,8 +197,13 @@ class UploadForm extends React.Component {
           </div>
           <div>
             { filesUpload }
-            { filesUpload.length ? <a href={ downloadLink } >downloadLink</a>:'' }
           </div>
+          <Break/>
+          <p>Config position </p>
+          <TemplateConfig />
+          <Break/>
+          <PrimaryButton onClick={ this.uploadAllFiles.bind(this) } >Upload</PrimaryButton>
+          <Break/>
         </WrapperItem>
       </Container>
     )
