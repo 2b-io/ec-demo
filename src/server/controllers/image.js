@@ -1,4 +1,5 @@
 import bodyParser from 'body-parser'
+import promise from 'bluebird'
 import formidable from 'formidable'
 import fs from 'fs-extra'
 import fsNode from 'fs'
@@ -45,15 +46,19 @@ export default {
 
         ws.on('close', async (err) => {
           if (err) return next(err)
-          const folderResult = await path.resolve(`${ config.imageResultDir }/${ id }`)
+          await fs.ensureDir(`${ config.zipResultDir }/${ id }`)
+
+          const folderZipResult = await path.resolve(`${ config.zipResultDir }/${ id }`)
 
           fs.unlinkSync(tempPath)
 
           if (filetype === 'item') {
             await fs.ensureDir(`${ config.imageResultDir }/${ id }`)
 
+            let imageResult
+
             await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`)).forEach(async (file) => {
-              const filePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, file)
+              const filePath = path.resolve(`${ TEMP_PATH[ 'item' ] }/${ id }`, file)
 
               const watermarkFile = fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ id }`))[0]
 
@@ -61,10 +66,12 @@ export default {
 
               const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ id }/${ file }`)
 
-              await overlayImage(filePath, watermarkPath, onputFilePath)
+              imageResult = await overlayImage(filePath, watermarkPath, onputFilePath)
             })
 
-            zipFolder(folderResult, `${ folderResult }/${ id }.zip`, (err) => {
+            const folderImangeResult = path.resolve(`${ config.imageResultDir }/${ id }`)
+
+            zipFolder(folderImangeResult, `${ folderZipResult }/${ id }.zip`, (err) => {
               if(err) {
                   console.log('Zip error', err)
               } else {

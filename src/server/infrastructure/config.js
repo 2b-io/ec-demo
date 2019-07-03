@@ -9,7 +9,8 @@ export default {
   uploadimageDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/images'),
   uploadWatermarkDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/watermark'),
   imageResultDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/imageResult'),
-
+  zipResultDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/zipResult'),
+  
   imgDir: path.join(rootDir, '../../assets/img'),
   // env
   devMode: process.env.NODE_ENV !== 'production',
