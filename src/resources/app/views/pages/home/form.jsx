@@ -6,7 +6,8 @@ import uuid from 'uuid'
 import {
   Container,
   Break,
-  PrimaryButton
+  PrimaryButton,
+  ProgressBar
 } from 'app/ui/elements'
 
 import arryToMap from 'services/array-to-map'
@@ -141,11 +142,13 @@ class UploadForm extends React.Component {
     const { templateFile, files } = this.state
 
     const templateUpload = Object.values(templateFile).map((file, index) => {
+      const processBarEl = file.percent > 0 ? <ProgressBar percent={ `${ file.percent }%` }/> : ''
       return (
         <div key = { index } >
           <p>
-            { file.name } { plupload.formatSize(file.size) } => uploaded { file.percent }%
+            { file.name } { plupload.formatSize(file.size) }
           </p>
+          { processBarEl }
         </div>
       )
     })
@@ -202,7 +205,7 @@ class UploadForm extends React.Component {
           <p>Config position </p>
           <TemplateConfig />
           <Break/>
-          <PrimaryButton onClick={ this.uploadAllFiles.bind(this) } >Upload</PrimaryButton>
+          <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
           <Break/>
         </WrapperItem>
       </Container>
