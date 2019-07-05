@@ -19,7 +19,7 @@ const TEMP_PATH = {
 export default {
   post: [
     async (req, res, next) => {
-      const { id, filetype } = req.headers
+      const { id, filetype, gravity } = req.headers
 
       const form = new formidable.IncomingForm()
 
@@ -66,7 +66,7 @@ export default {
 
               const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ id }/${ file }`)
 
-              imageResult = await overlayImage(filePath, watermarkPath, onputFilePath)
+              imageResult = await overlayImage(filePath, watermarkPath, onputFilePath, gravity)
             })
 
             const folderImangeResult = path.resolve(`${ config.imageResultDir }/${ id }`)

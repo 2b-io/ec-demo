@@ -29,14 +29,27 @@ const Progress = styled.div`
       `
   }
 `
+const WrapperItem = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+`
 
-const ProgressBarComponent = ({ percent='0%' }) => {
+const PercentItem = styled.div`
+  margin: auto auto auto 0;
+`
+
+const ProgressBarComponent = ({ percent }) => {
   return (
-    <Progressbar>
-      <Bar>
-        <Progress percent={ percent }/>
-      </Bar>
-    </Progressbar>
+    <WrapperItem>
+      <Progressbar>
+        <Bar>
+          <Progress percent={ `${percent}%` }/>
+        </Bar>
+      </Progressbar>
+      <PercentItem>
+        <span>{ percent }%</span>
+      </PercentItem>
+    </WrapperItem>
   )
 }
 

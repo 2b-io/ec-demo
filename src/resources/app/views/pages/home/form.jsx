@@ -46,6 +46,17 @@ class UploadForm extends React.Component {
   }
 
   uploadAllFiles() {
+    this.state.plupTemplate.setOption('headers', {
+      filetype: 'watermark',
+      id: ID
+    })
+
+    this.state.plupItems.setOption('headers', {
+      filetype: 'item',
+      id: ID,
+      gravity: this.state.gravity
+    })
+
     this.state.plupTemplate.start()
     this.state.plupItems.start()
   }
@@ -54,10 +65,6 @@ class UploadForm extends React.Component {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
       url: 'http://localhost:3009/image',
-      headers: {
-        filetype: 'watermark',
-        id: ID
-      },
       init: {
         FilesAdded: (up, files) => {
           this.setState({ templateFile: arryToMap(files, 'id') })
@@ -87,10 +94,6 @@ class UploadForm extends React.Component {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
       url: 'http://localhost:3009/image',
-      headers: {
-        filetype: 'item',
-        id: ID
-      },
       init: {
         FilesAdded: (up, files) => {
           this.setState({ files: arryToMap(files, 'id') })
@@ -143,6 +146,12 @@ class UploadForm extends React.Component {
     }
   }
 
+  handleGravity(gravity) {
+    this.setState({
+      gravity
+    })
+  }
+
   render() {
     const { templateFile, files } = this.state
 
@@ -152,20 +161,21 @@ class UploadForm extends React.Component {
           <p>
             { file.name } { plupload.formatSize(file.size) }
           </p>
-          <div>
-            <ProgressBar percent={ `${ file.percent }%` }/>
-          </div>
+          <ProgressBar percent={ file.percent }/>
         </ItemUpload>
       )
     })
 
     const filesUpload =  Object.values(files).map((file, index) => {
       return (
-        <div key = { index } >
-          <p>
-            { file.name } { plupload.formatSize(file.size) } => uploaded { file.percent }%
-          </p>
-        </div>
+        <ItemUpload key = { index } >
+          <div>
+            <p>
+              { file.name } { plupload.formatSize(file.size) }
+            </p>
+          </div>
+          <ProgressBar percent={ file.percent }/>
+        </ItemUpload>
       )
     })
 
@@ -209,7 +219,7 @@ class UploadForm extends React.Component {
           </div>
           <Break/>
           <p>Config position </p>
-          <TemplateConfig />
+          <TemplateConfig handleGravity={ this.handleGravity.bind(this) }/>
           <Break/>
           <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
           <Break/>

@@ -65,6 +65,7 @@ class TemplateConfig extends React.Component {
     this.setState({
       gravity
     })
+    this.props.handleGravity(gravity)
   }
 
   render() {
