@@ -21,6 +21,11 @@ const WrapperItem = styled.div`
   text-align: center
   padding: 16px
 `
+const ItemUpload = styled.div`
+  display: grid
+  grid-gap: 4px;
+  grid-template-columns: 1fr 1fr;
+`
 
 const MIME_FILE = {
   zip: { title: 'Zip files', extensions: 'zip' },
@@ -142,14 +147,15 @@ class UploadForm extends React.Component {
     const { templateFile, files } = this.state
 
     const templateUpload = Object.values(templateFile).map((file, index) => {
-      const processBarEl = file.percent > 0 ? <ProgressBar percent={ `${ file.percent }%` }/> : ''
       return (
-        <div key = { index } >
+        <ItemUpload key = { index } >
           <p>
             { file.name } { plupload.formatSize(file.size) }
           </p>
-          { processBarEl }
-        </div>
+          <div>
+            <ProgressBar percent={ `${ file.percent }%` }/>
+          </div>
+        </ItemUpload>
       )
     })
 

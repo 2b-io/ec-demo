@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components'
 const Progressbar = styled.div`
   overflow: hidden;
   border-radius: 16px;
+  margin: auto 0 auto 0;
 `
 
 const Bar = styled.div`
