@@ -10,7 +10,7 @@ export default {
   uploadWatermarkDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/watermark'),
   imageResultDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/imageResult'),
   zipResultDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/zipResult'),
-  
+
   imgDir: path.join(rootDir, '../../assets/img'),
   // env
   devMode: process.env.NODE_ENV !== 'production',
@@ -26,8 +26,14 @@ export default {
   googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID,
 
   // uploadDir: path.resolve(__dirname, 'content/upload')
-  redis: {
-   port: 6379,
-   host: '127.0.0.1'
- }
+
+  aws: {
+    s3: {
+      bucket: process.env.AWS_S3_BUCKET,
+      region: process.env.AWS_S3_REGION,
+      accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
+      version: process.env.AWS_S3_VERSION
+    }
+  }
 }

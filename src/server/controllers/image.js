@@ -9,6 +9,7 @@ import uuid from 'uuid'
 import zipFolder from 'zip-folder'
 
 import config from 'infrastructure/config'
+import cache from 'services/cache'
 import overlayImage from 'services/overlay-image'
 
 const TEMP_PATH = {
@@ -25,7 +26,7 @@ export default {
 
       await fs.ensureDir(`${ TEMP_PATH[ filetype ] }/${ id }`)
 
-      form.parse(req, (err, fields, files) => {
+      form.parse(req, async (err, fields, files) => {
         if (err) return next(err)
 
         const basename = fields.name.toLowerCase()
@@ -43,6 +44,10 @@ export default {
 
         const rs = fs.createReadStream(tempPath)
         const ws = fs.createWriteStream(storePath, { flags: 'a' })
+
+        const s3File = await cache.put(uuid.v4(), tempPath)
+
+        console.log('s3File', s3File)
 
         ws.on('close', async (err) => {
           if (err) return next(err)
