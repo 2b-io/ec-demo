@@ -34,20 +34,20 @@ export default {
 
         let storePath ;
 
+        const tempPath = files.file.path
+
         if (filetype === 'item') {
           storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ uuid.v4(basename) }${ ext }`)
+          // upload images to s3
+          await cache.put(`${ id }/images/${ uuid.v4() }`, tempPath)
         } else {
           storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ id }${ ext }`)
+          // upload  watermark to s3
+          await cache.put(`${ id }/watermark/${ uuid.v4() }`, tempPath)
         }
-
-        const tempPath = files.file.path
 
         const rs = fs.createReadStream(tempPath)
         const ws = fs.createWriteStream(storePath, { flags: 'a' })
-
-        const s3File = await cache.put(uuid.v4(), tempPath)
-
-        console.log('s3File', s3File)
 
         ws.on('close', async (err) => {
           if (err) return next(err)
