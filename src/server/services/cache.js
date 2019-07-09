@@ -7,13 +7,13 @@ const { version = '0.0.1' } = config.aws.s3
 
 export const cloudPath = (key) => `${ version }/${ key }`
 
-const put = async (key, file, options = {}) => {
+const put = async (key, file, contentType, options = {}) => {
   const { expires, meta, ttl } = options
-  console.log('fs.createReadStream(file)', fs.createReadStream(file))
+
   return await s3.upload({
     Bucket: s3.config.bucket,
     Key: cloudPath(key),
-    ContentType: 'application/octet-stream',
+    ContentType: contentType || 'application/octet-stream',
     Body: fs.createReadStream(file),
     Expires: expires ?
       new Date(expires) : (

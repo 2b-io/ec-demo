@@ -7,7 +7,7 @@ import ms from 'ms'
 import path from 'path'
 import uuid from 'uuid'
 import zipFolder from 'zip-folder'
-
+import mime from 'mime-types'
 import config from 'infrastructure/config'
 import cache from 'services/cache'
 import overlayImage from 'services/overlay-image'
@@ -32,18 +32,25 @@ export default {
         const basename = fields.name.toLowerCase()
         const ext = path.extname(basename)
 
-        let storePath ;
+        let storePath
+
+        let contentType
 
         const tempPath = files.file.path
 
         if (filetype === 'item') {
           storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ uuid.v4(basename) }${ ext }`)
+
           // upload images to s3
-          await cache.put(`${ id }/images/${ uuid.v4() }`, tempPath)
+          contentType = mime.lookup(String(storePath))
+
+          await cache.put(`${ id }/images/${ uuid.v4() }`, tempPath, contentType)
         } else {
           storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ id }${ ext }`)
           // upload  watermark to s3
-          await cache.put(`${ id }/watermark/${ uuid.v4() }`, tempPath)
+          contentType = mime.lookup(String(storePath))
+
+          await cache.put(`${ id }/watermark/${ uuid.v4() }`, tempPath, contentType)
         }
 
         const rs = fs.createReadStream(tempPath)
