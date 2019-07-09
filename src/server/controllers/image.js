@@ -22,6 +22,8 @@ const TEMP_PATH = {
 export default {
   post: [
     async (req, res, next) => {
+      let s3OriginImages = []
+
       const { id, filetype, gravity } = req.headers
 
       const form = new formidable.IncomingForm()
@@ -46,7 +48,8 @@ export default {
           // upload images to s3
           contentType = mime.lookup(String(storePath))
 
-          await cache.put(`${ id }/images/${ uuid.v4() }`, tempPath, contentType)
+          const s3OriginImage = await cache.put(`${ id }/images/${ uuid.v4() }`, tempPath, contentType)
+
         } else {
           storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ id }${ ext }`)
           // upload  watermark to s3
@@ -55,11 +58,10 @@ export default {
           const s3Watermark = await cache.put(`${ id }/watermark/${ uuid.v4() }`, tempPath, contentType)
 
           if (s3Watermark) {
-            console.log('s3Watermark', s3Watermark);
-            console.log('gravity', gravity);
             const { Key, Bucket } = s3Watermark
 
-            await configImage.create(Key, Bucket, { gravity })
+            const configId = await configImage.create(Bucket, Key, { gravity })
+
           }
         }
 

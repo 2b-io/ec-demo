@@ -25,6 +25,14 @@ const put = async (key, file, contentType, options = {}) => {
   }).promise()
 }
 
+const stream = async (key) => {
+  return s3.getObject({
+    Bucket: s3.config.bucket,
+    Key: cloudPath(key)
+  }).createReadStream()
+}
+
 export default {
-  put
+  put,
+  stream
 }
