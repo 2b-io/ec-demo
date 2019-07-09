@@ -48,13 +48,13 @@ class UploadForm extends React.Component {
   uploadAllFiles() {
     this.state.plupTemplate.setOption('headers', {
       filetype: 'watermark',
-      id: ID
+      id: ID,
+      gravity: this.state.gravity
     })
 
     this.state.plupItems.setOption('headers', {
       filetype: 'item',
       id: ID,
-      gravity: this.state.gravity
     })
 
     this.state.plupTemplate.start()

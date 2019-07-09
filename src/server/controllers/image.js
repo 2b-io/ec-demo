@@ -8,8 +8,10 @@ import path from 'path'
 import uuid from 'uuid'
 import zipFolder from 'zip-folder'
 import mime from 'mime-types'
+
 import config from 'infrastructure/config'
 import cache from 'services/cache'
+import configImage from 'services/config-image'
 import overlayImage from 'services/overlay-image'
 
 const TEMP_PATH = {
@@ -50,7 +52,15 @@ export default {
           // upload  watermark to s3
           contentType = mime.lookup(String(storePath))
 
-          await cache.put(`${ id }/watermark/${ uuid.v4() }`, tempPath, contentType)
+          const s3Watermark = await cache.put(`${ id }/watermark/${ uuid.v4() }`, tempPath, contentType)
+
+          if (s3Watermark) {
+            console.log('s3Watermark', s3Watermark);
+            console.log('gravity', gravity);
+            const { Key, Bucket } = s3Watermark
+
+            await configImage.create(Key, Bucket, { gravity })
+          }
         }
 
         const rs = fs.createReadStream(tempPath)
