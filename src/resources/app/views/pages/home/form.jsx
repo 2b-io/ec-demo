@@ -65,6 +65,8 @@ class UploadForm extends React.Component {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
       url: 'http://localhost:3009/image',
+      chunk_size: '500kb',
+      max_retries: 3,
       init: {
         FilesAdded: (up, files) => {
           this.setState({ templateFile: arryToMap(files, 'id') })
@@ -73,6 +75,9 @@ class UploadForm extends React.Component {
           const { templateFile } = this.state
           templateFile[ file.id ].percent = file.percent
           this.setState({ templateFile })
+        },
+        UploadComplete: (up, files) => {
+          console.log('files', files)
         }
       },
       filters : {
@@ -94,6 +99,8 @@ class UploadForm extends React.Component {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
       url: 'http://localhost:3009/image',
+      chunk_size: '500kb',
+      max_retries: 3,
       init: {
         FilesAdded: (up, files) => {
           this.setState({ files: arryToMap(files, 'id') })
@@ -102,6 +109,9 @@ class UploadForm extends React.Component {
           const { files } = this.state
           files[ file.id ].percent = file.percent
           this.setState({ files })
+        },
+        UploadComplete: (up, files) => {
+          console.log('files', files)
         }
       },
       filters: {
@@ -166,7 +176,7 @@ class UploadForm extends React.Component {
       )
     })
 
-    const filesUpload =  Object.values(files).map((file, index) => {
+    const filesUpload = Object.values(files).map((file, index) => {
       return (
         <ItemUpload key = { index } >
           <div>

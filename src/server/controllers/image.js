@@ -32,7 +32,6 @@ export default {
 
       form.parse(req, async (err, fields, files) => {
         if (err) return next(err)
-
         const basename = fields.name.toLowerCase()
         const ext = path.extname(basename)
 
@@ -41,6 +40,9 @@ export default {
         let contentType
 
         const tempPath = files.file.path
+
+        const chunk = parseInt(fields.chunk, 10)
+        const chunks = parseInt(fields.chunks, 10)
 
         if (filetype === 'item') {
           storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ uuid.v4(basename) }${ ext }`)
@@ -74,37 +76,38 @@ export default {
 
           const folderZipResult = await path.resolve(`${ config.zipResultDir }/${ id }`)
 
-          fs.unlinkSync(tempPath)
-
           if (filetype === 'item') {
             await fs.ensureDir(`${ config.imageResultDir }/${ id }`)
 
-            let imageResult
-
             await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`)).forEach(async (file) => {
               const filePath = path.resolve(`${ TEMP_PATH[ 'item' ] }/${ id }`, file)
+
+              const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ id }/${ file }`)
 
               const watermarkFile = fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ id }`))[0]
 
               const watermarkPath = path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ id }`, watermarkFile)
 
-              const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ id }/${ file }`)
-
-              imageResult = await overlayImage(filePath, watermarkPath, onputFilePath, gravity)
+              await overlayImage(filePath, watermarkPath, onputFilePath, gravity)
             })
 
             const folderImangeResult = path.resolve(`${ config.imageResultDir }/${ id }`)
 
-            zipFolder(folderImangeResult, `${ folderZipResult }/${ id }.zip`, (err) => {
-              if(err) {
-                  console.log('Zip error', err)
-              } else {
-                  console.log('Zip done')
-              }
-            })
+            // zipFolder(folderImangeResult, `${ folderZipResult }/${ id }.zip`, (err) => {
+            //   if(err) {
+            //       console.log('Zip error', err)
+            //   } else {
+            //       console.log('Zip done')
+            //   }
+            // })
           }
 
-          return res.sendStatus(200)
+          fs.unlinkSync(tempPath)
+
+          if (chunk < chunks - 1) {
+            return res.sendStatus(200)
+          }
+
         })
 
         ws.on('error', err => next(err))
@@ -113,7 +116,7 @@ export default {
       })
     },
     (error, req, res, next) => {
-      console.log('error', error);
+      console.log(error, error)
       res.sendStatus(500)
     }
   ]
