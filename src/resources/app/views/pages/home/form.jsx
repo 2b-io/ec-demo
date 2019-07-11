@@ -1,7 +1,13 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import plupload from 'plupload'
 import styled, { css } from 'styled-components'
 import uuid from 'uuid'
+
+import { mapDispatch } from 'app/services/redux-helpers'
+import { actions, selectors } from 'app/state/interface'
+
+// import upload from 'app/services/upload'
 
 import {
   Container,
@@ -45,6 +51,10 @@ class UploadForm extends React.Component {
     this.changeMimeType = this.changeMimeType.bind(this)
   }
 
+  getRequestId() {
+    this.props.getUploadIdentifier()
+  }
+
   uploadAllFiles() {
     this.state.plupTemplate.setOption('headers', {
       filetype: 'watermark',
@@ -56,9 +66,10 @@ class UploadForm extends React.Component {
       filetype: 'item',
       id: ID,
     })
+    this.getRequestId()
 
-    this.state.plupTemplate.start()
-    this.state.plupItems.start()
+    // this.state.plupTemplate.start()
+    // this.state.plupItems.start()
   }
 
   uploadTemplate() {
@@ -239,4 +250,9 @@ class UploadForm extends React.Component {
   }
 }
 
-export default UploadForm
+export default connect(
+  null,
+  mapDispatch({
+    getUploadIdentifier: actions.getUploadIdentifier
+  })
+)(UploadForm)

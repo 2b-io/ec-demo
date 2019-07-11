@@ -104,9 +104,7 @@ export default {
 
           fs.unlinkSync(tempPath)
 
-          if (chunk < chunks - 1) {
-            return res.sendStatus(200)
-          }
+          return res.sendStatus(200)
 
         })
 
