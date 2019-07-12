@@ -66,10 +66,10 @@ class UploadForm extends React.Component {
       filetype: 'item',
       id: ID,
     })
-    this.getRequestId()
+    // this.getRequestId()
 
-    // this.state.plupTemplate.start()
-    // this.state.plupItems.start()
+    this.state.plupTemplate.start()
+    this.state.plupItems.start()
   }
 
   uploadTemplate() {

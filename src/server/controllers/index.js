@@ -1,4 +1,5 @@
 export { default as home } from './home'
-export { default as image } from './image'
+export { default as handler } from './upload/handler'
+export { default as image } from './upload/image'
 export { default as result } from './result'
-export { default as requestId } from './request-id'
+export { default as identifier } from './upload/identifier'

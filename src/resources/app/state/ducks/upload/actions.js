@@ -1,5 +1,5 @@
 import * as types from './types'
 
-export const getUploadIdentifier = () => { console.log('aaaaa'); return ({
+export const getUploadIdentifier = () => ({
   type: types.GET_UPLOAD_IDENTIFIER
-})}
+})
