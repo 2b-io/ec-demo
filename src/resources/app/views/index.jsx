@@ -7,9 +7,9 @@ import defaultTheme from 'app/views/themes/default'
 const App = () => {
   return (
     <div>
-    <ThemeProvider theme={ defaultTheme }>
-      <Home />
-    </ThemeProvider>
+      <ThemeProvider theme={ defaultTheme }>
+        <Home />
+      </ThemeProvider>
     </div>
   )
 }
