@@ -6,10 +6,7 @@ export default (state = {}, action) => {
 
   switch (action.type) {
     case types.GET_UPLOAD_IDENTIFIER_COMPLETED:
-      return {
-        ...state,
-        [ action.payload.requestId ]: action.payload.requestId
-      }
+      return action.payload.requestId
     case types.GET_UPLOAD_IDENTIFIER_FAILED:
       return false
   }

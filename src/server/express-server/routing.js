@@ -29,11 +29,11 @@ export default (app) => {
   // view helpers
   app.get('/', controllers.home.get)
 
-  app.get('/upload/identifier', controllers.identifier.get)
-  app.post('/upload/identifier/image', controllers.image.post)
-  app.post('/upload/identifier/image/process', controllers.handler.post)
+  app.get('/upload/:requestid', controllers.identifier.get)
+  app.post('/upload/:requestid/image', controllers.image.post)
+  app.post('/upload/:requestid/image/process', controllers.handler.post)
 
-  app.get('/result/:identifier', controllers.result.get)
+  app.get('/result/:requestid', controllers.result.get)
 
   app.use((req, res, next) => {
     if (config.devMode) {

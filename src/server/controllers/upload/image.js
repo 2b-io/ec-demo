@@ -24,7 +24,9 @@ export default {
     async (req, res, next) => {
       let s3OriginImages = []
 
-      const { requestId, filetype, gravity } = req.headers
+      const { filetype, gravity } = req.headers
+
+      const { requestid: requestId } = req.params
 
       const form = new formidable.IncomingForm()
 

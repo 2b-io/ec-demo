@@ -58,7 +58,6 @@ class UploadForm extends React.Component {
   uploadTemplate() {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
-      url: `http://localhost:3009/upload/${this.props.requestId}/image`,
       chunk_size: '500kb',
       max_retries: 3,
       init: {
@@ -92,7 +91,6 @@ class UploadForm extends React.Component {
   uploadItems(mimeTypes) {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
-      url: `http://localhost:3009/upload/${this.props.requestId}/image`,
       chunk_size: '500kb',
       max_retries: 3,
       init: {

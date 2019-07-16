@@ -5,10 +5,10 @@ export const getUploadIdentifier = (plupTemplate, plupItems, gravity) => ({
   payload: { plupTemplate, plupItems, gravity }
 })
 
-export const getUploadIdentifierCompleted = (requestId) => {console.log('requestId', requestId); return({
+export const getUploadIdentifierCompleted = (requestId) => ({
   type: types.GET_UPLOAD_IDENTIFIER_COMPLETED,
   payload: { requestId }
-})}
+})
 
 export const getUploadIdentifierFailed = (reason) => ({
   type: types.GET_UPLOAD_IDENTIFIER_FAILED,
