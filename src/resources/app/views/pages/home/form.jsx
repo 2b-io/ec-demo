@@ -51,31 +51,14 @@ class UploadForm extends React.Component {
     this.changeMimeType = this.changeMimeType.bind(this)
   }
 
-  getRequestId() {
-    this.props.getUploadIdentifier()
-  }
-
   uploadAllFiles() {
-    this.state.plupTemplate.setOption('headers', {
-      filetype: 'watermark',
-      id: ID,
-      gravity: this.state.gravity
-    })
-
-    this.state.plupItems.setOption('headers', {
-      filetype: 'item',
-      id: ID,
-    })
-    // this.getRequestId()
-
-    this.state.plupTemplate.start()
-    this.state.plupItems.start()
+    this.props.getUploadIdentifier(this.state.plupTemplate, this.state.plupItems, this.state.gravity)
   }
 
   uploadTemplate() {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
-      url: 'http://localhost:3009/image',
+      url: `http://localhost:3009/upload/${this.props.requestId}/image`,
       chunk_size: '500kb',
       max_retries: 3,
       init: {
@@ -109,7 +92,7 @@ class UploadForm extends React.Component {
   uploadItems(mimeTypes) {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
-      url: 'http://localhost:3009/image',
+      url: `http://localhost:3009/upload/${this.props.requestId}/image`,
       chunk_size: '500kb',
       max_retries: 3,
       init: {
@@ -172,6 +155,7 @@ class UploadForm extends React.Component {
       gravity
     })
   }
+
 
   render() {
     const { templateFile, files } = this.state
@@ -251,7 +235,13 @@ class UploadForm extends React.Component {
 }
 
 export default connect(
-  null,
+  (state) => {
+    const requestId = selectors.uploadIdentifier(state)
+
+    return {
+      requestId
+    }
+  },
   mapDispatch({
     getUploadIdentifier: actions.getUploadIdentifier
   })

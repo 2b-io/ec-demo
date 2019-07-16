@@ -1,9 +1,9 @@
-import request from 'superagent'
+import apiService from 'app/services/api'
 
 import config from 'infrastructure/config'
 
 const getRequestId = async () => {
-  return await request.get(`${ config.assetEndpoint }/requestid`)
+  return apiService.callApi('get', `/upload/identifier`)
 }
 
 export default {

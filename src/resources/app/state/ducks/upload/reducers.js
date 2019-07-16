@@ -2,9 +2,17 @@ import createReducer from 'app/state/helpers/create-reducer'
 
 import * as types from './types'
 
-export default createReducer({})({
-  [ types.GET_UPLOAD_IDENTIFIER_COMPLETED ]: (state, action) => ({
-    ...state,
-    [ action.payload.upload.identifier ]: action.payload.upload
-  })
-})
+export default (state = {}, action) => {
+
+  switch (action.type) {
+    case types.GET_UPLOAD_IDENTIFIER_COMPLETED:
+      return {
+        ...state,
+        [ action.payload.requestId ]: action.payload.requestId
+      }
+    case types.GET_UPLOAD_IDENTIFIER_FAILED:
+      return false
+  }
+
+  return state
+}

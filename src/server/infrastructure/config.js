@@ -17,7 +17,6 @@ export default {
   port: process.env.PORT,
   mongodb: process.env.MONGODB,
   assetEndpoint: process.env.ASSET_ENDPOINT,
-  cdn: process.env.CDN,
   // google recaptcha
   googleRecaptchaSecretKey: process.env.GOOGLE_RECAPTCHA_SECRET_KEY,
   googleRecaptchaSiteKey: process.env.GOOGLE_RECAPTCHA_SITE_KEY,
@@ -26,7 +25,7 @@ export default {
   googleAnalyticsId: process.env.GOOGLE_ANALYTICS_ID,
 
   // uploadDir: path.resolve(__dirname, 'content/upload')
-
+  apiUrl: process.env.SERVER_EC_DEMO,
   aws: {
     s3: {
       bucket: process.env.AWS_S3_BUCKET,

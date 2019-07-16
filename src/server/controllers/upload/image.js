@@ -24,11 +24,11 @@ export default {
     async (req, res, next) => {
       let s3OriginImages = []
 
-      const { id, filetype, gravity } = req.headers
+      const { requestId, filetype, gravity } = req.headers
 
       const form = new formidable.IncomingForm()
 
-      await fs.ensureDir(`${ TEMP_PATH[ filetype ] }/${ id }`)
+      await fs.ensureDir(`${ TEMP_PATH[ filetype ] }/${ requestId }`)
 
       form.parse(req, async (err, fields, files) => {
         if (err) return next(err)
@@ -45,19 +45,19 @@ export default {
         const chunks = parseInt(fields.chunks, 10)
 
         if (filetype === 'item') {
-          storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ uuid.v4(basename) }${ ext }`)
+          storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ uuid.v4(basename) }${ ext }`)
 
           // upload images to s3
           contentType = mime.lookup(String(storePath))
 
-          const s3OriginImage = await cache.put(`${ id }/images/${ uuid.v4() }`, tempPath, contentType)
+          const s3OriginImage = await cache.put(`${ requestId }/images/${ uuid.v4() }`, tempPath, contentType)
 
         } else {
-          storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`, `${ id }${ ext }`)
+          storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ requestId }${ ext }`)
           // upload  watermark to s3
           contentType = mime.lookup(String(storePath))
 
-          const s3Watermark = await cache.put(`${ id }/watermark/${ uuid.v4() }`, tempPath, contentType)
+          const s3Watermark = await cache.put(`${ requestId }/watermark/${ uuid.v4() }`, tempPath, contentType)
 
           if (s3Watermark) {
             const { Key, Bucket } = s3Watermark
@@ -72,28 +72,28 @@ export default {
 
         ws.on('close', async (err) => {
           if (err) return next(err)
-          await fs.ensureDir(`${ config.zipResultDir }/${ id }`)
+          await fs.ensureDir(`${ config.zipResultDir }/${ requestId }`)
 
-          const folderZipResult = await path.resolve(`${ config.zipResultDir }/${ id }`)
+          const folderZipResult = await path.resolve(`${ config.zipResultDir }/${ requestId }`)
 
           if (filetype === 'item') {
-            await fs.ensureDir(`${ config.imageResultDir }/${ id }`)
+            await fs.ensureDir(`${ config.imageResultDir }/${ requestId }`)
 
-            await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ filetype ] }/${ id }`)).forEach(async (file) => {
-              const filePath = path.resolve(`${ TEMP_PATH[ 'item' ] }/${ id }`, file)
+            await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`)).forEach(async (file) => {
+              const filePath = path.resolve(`${ TEMP_PATH[ 'item' ] }/${ requestId }`, file)
 
-              const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ id }/${ file }`)
+              const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ requestId }/${ file }`)
 
-              const watermarkFile = fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ id }`))[0]
+              const watermarkFile = fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ requestId }`))[0]
 
-              const watermarkPath = path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ id }`, watermarkFile)
+              const watermarkPath = path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ requestId }`, watermarkFile)
 
               await overlayImage(filePath, watermarkPath, onputFilePath, gravity)
             })
 
-            const folderImangeResult = path.resolve(`${ config.imageResultDir }/${ id }`)
+            const folderImangeResult = path.resolve(`${ config.imageResultDir }/${ requestId }`)
 
-            // zipFolder(folderImangeResult, `${ folderZipResult }/${ id }.zip`, (err) => {
+            // zipFolder(folderImangeResult, `${ folderZipResult }/${ requestId }.zip`, (err) => {
             //   if(err) {
             //       console.log('Zip error', err)
             //   } else {
