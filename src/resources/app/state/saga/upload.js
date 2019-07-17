@@ -5,6 +5,9 @@ import upload from 'app/services/upload'
 
 import { actions, selectors, types } from 'app/state/interface'
 
+
+const STATUS_TYPE_FILE = ['UPLOAD_TEMPLATE_COMPLETED', 'UPLOAD_ITEMS_COMPLETED']
+
 const getUploadIdentifierLoop = function*() {
   while (true) {
     try {
@@ -57,7 +60,20 @@ const uploadLoop = function*() {
   while (true) {
     yield take(types.upload.UPLOAD_FILES_COMPLETED)
 
-    const a = yield select(selectors.uploadIdentifier)
+    const { uploadFileType, requestId } = yield select(selectors.uploadIdentifier)
+
+    let statusCheck = 0
+    uploadFileType.map((element) => {
+      if (STATUS_TYPE_FILE.indexOf(element) !== -1 ) {
+        ++statusCheck
+      }
+    })
+
+    console.log('statusCheck', statusCheck)
+    if (statusCheck === 2) {
+      yield upload.processImage(requestId)
+    }
+
   }
 }
 

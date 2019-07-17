@@ -6,6 +6,11 @@ const getRequestId = async () => {
   return apiService.callApi('get', `/upload/identifier`)
 }
 
+const processImage = async (requestId) => {
+  return apiService.callApi('post', `/upload/${ requestId }/image/process`)
+}
+
 export default {
-  getRequestId
+  getRequestId,
+  processImage
 }
