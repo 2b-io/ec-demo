@@ -14,13 +14,17 @@ const getUploadIdentifierLoop = function*() {
           plupItems,
           gravity
         }
-      } = yield take(types.upload.GET_UPLOAD_IDENTIFIER)
+      } = yield take(types.upload.UPLOAD_FILES)
 
       const { requestId } = yield upload.getRequestId()
 
       if (!requestId) {
         throw 'Upload failed'
       }
+
+      yield put(
+        actions.getRequestIdCompleted(requestId)
+      )
 
       plupTemplate.setOption('headers', {
         filetype: 'watermark',
@@ -40,21 +44,27 @@ const getUploadIdentifierLoop = function*() {
       plupTemplate.start()
       plupItems.start()
 
-      yield put(
-        actions.getUploadIdentifierCompleted(requestId)
-      )
     } catch (e) {
       console.log('e', e);
       yield put(
-        actions.getUploadIdentifierFailed(serializeError(e))
+        actions.uploadFilesFailed(serializeError(e))
       )
     }
+  }
+}
+
+const uploadLoop = function*() {
+  while (true) {
+    yield take(types.upload.UPLOAD_FILES_COMPLETED)
+
+    const a = yield select(selectors.uploadIdentifier)
   }
 }
 
 export default function*() {
   yield all([
     take('@@INITIALIZED'),
-    fork(getUploadIdentifierLoop)
+    fork(getUploadIdentifierLoop),
+    fork(uploadLoop)
   ])
 }

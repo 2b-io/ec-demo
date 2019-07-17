@@ -52,13 +52,13 @@ class UploadForm extends React.Component {
   }
 
   uploadAllFiles() {
-    this.props.getUploadIdentifier(this.state.plupTemplate, this.state.plupItems, this.state.gravity)
+    this.props.uploadFiles(this.state.plupTemplate, this.state.plupItems, this.state.gravity)
   }
 
   uploadTemplate() {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
-      chunk_size: '500kb',
+      chunk_size: '100kb',
       max_retries: 3,
       init: {
         FilesAdded: (up, files) => {
@@ -70,7 +70,9 @@ class UploadForm extends React.Component {
           this.setState({ templateFile })
         },
         UploadComplete: (up, files) => {
-          console.log('files', files)
+          if (files.length) {
+            this.props.uploadFilesCompleted('UPLOAD_TEMPLATE_COMPLETED')
+          }
         }
       },
       filters : {
@@ -91,7 +93,7 @@ class UploadForm extends React.Component {
   uploadItems(mimeTypes) {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
-      chunk_size: '500kb',
+      chunk_size: '100kb',
       max_retries: 3,
       init: {
         FilesAdded: (up, files) => {
@@ -103,7 +105,9 @@ class UploadForm extends React.Component {
           this.setState({ files })
         },
         UploadComplete: (up, files) => {
-          console.log('files', files)
+          if (files.length) {
+            this.props.uploadFilesCompleted('UPLOAD_ITEMS_COMPLETED')
+          }
         }
       },
       filters: {
@@ -241,6 +245,7 @@ export default connect(
     }
   },
   mapDispatch({
-    getUploadIdentifier: actions.getUploadIdentifier
+    uploadFiles: actions.uploadFiles,
+    uploadFilesCompleted: actions.uploadFilesCompleted
   })
 )(UploadForm)
