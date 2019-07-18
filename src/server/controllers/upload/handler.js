@@ -24,7 +24,10 @@ export default {
 
       const gravity = 'Center'
 
-      await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'item' ] }/${ requestId }`)).forEach(async (file) => {
+      const files = await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'item' ] }/${ requestId }`))
+
+      await files.reduce(async (all, file) => {
+
         const filePath = path.resolve(`${ TEMP_PATH[ 'item' ] }/${ requestId }`, file)
 
         const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ requestId }/${ file }`)
@@ -34,7 +37,7 @@ export default {
         const watermarkPath = path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ requestId }`, watermarkFile)
 
         await overlayImage(filePath, watermarkPath, onputFilePath, gravity)
-      })
+      },{})
 
       const folderImangeResult = path.resolve(`${ config.imageResultDir }/${ requestId }`)
 
