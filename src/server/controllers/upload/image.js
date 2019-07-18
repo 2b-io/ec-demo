@@ -63,8 +63,7 @@ export default {
           if (s3Watermark) {
             const { Key, Bucket } = s3Watermark
 
-            const configId = await configImage.create(Bucket, Key, { gravity })
-
+            await configImage.create(requestId, Bucket, Key, { gravity })
           }
         }
 

@@ -4,6 +4,7 @@ import path from 'path'
 import zipFolder from 'zip-folder'
 
 import config from 'infrastructure/config'
+import configImage from 'services/config-image'
 import overlayImage from 'services/overlay-image'
 
 const TEMP_PATH = {
@@ -22,7 +23,7 @@ export default {
 
       await fs.ensureDir(`${ config.imageResultDir }/${ requestId }`)
 
-      const gravity = 'Center'
+      const { bucket, s3Key, config: { gravity } } = await configImage.get(requestId)
 
       const files = await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'item' ] }/${ requestId }`))
 

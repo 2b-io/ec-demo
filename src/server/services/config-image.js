@@ -1,17 +1,22 @@
 import ConfigImageModel from 'models/config-image'
 
-const create = async (bucket, s3Key, config = {}) => {
+const create = async (requestId, bucket, s3Key, config = {}) => {
 
-  const configImage = await new ConfigImageModel({
+  return await new ConfigImageModel({
+    requestId,
     bucket,
     s3Key,
-    config,
+    config
   }).save()
-
-  const { _id: configId } = configImage
-
-  return configId
 }
+
+const get = async (requestId) => {
+  return await ConfigImageModel.findOne({
+    requestId
+  })
+}
+
 export default {
-  create
+  create,
+  get
 }
