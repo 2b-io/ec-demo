@@ -1,7 +1,12 @@
 import fs from 'fs-extra'
-import s3 from 'infrastructure/s3'
+import path from 'path'
+import mime from 'mime-types'
+import shorthash from 'shorthash'
 
+import s3 from 'infrastructure/s3'
 import config from 'infrastructure/config'
+import localpath from 'services/localpath'
+import uuid from 'uuid'
 
 const { version = '0.0.1' } = config.aws.s3
 
@@ -32,7 +37,29 @@ const stream = async (key) => {
   }).createReadStream()
 }
 
+const get = async(key, fileType, requestId) => {
+  await fs.ensureDir(`${ config.s3DownloadDir }/${ requestId }`)
+
+  const downloadPath = await path.resolve(`${ config.s3DownloadDir }/${ requestId }/${ fileType }/${ shorthash.unique(key) }`)
+
+  const {
+    Body: body,
+    ContentType: contentType
+  } = await s3.getObject({
+    Bucket: s3.config.bucket,
+    Key: key
+  }).promise()
+
+  const ext = mime.extension(contentType)
+  const _path = `${ downloadPath }.${ ext }`
+
+  await fs.outputFile(_path, body)
+
+  return _path
+}
+
 export default {
+  get,
   put,
   stream
 }

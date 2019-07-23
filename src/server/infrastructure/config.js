@@ -10,6 +10,7 @@ export default {
   uploadWatermarkDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/watermark'),
   imageResultDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/imageResult'),
   zipResultDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/zipResult'),
+  s3DownloadDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/s3Download'),
 
   imgDir: path.join(rootDir, '../../assets/img'),
   // env
