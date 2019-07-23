@@ -69,11 +69,9 @@ const uploadLoop = function*() {
       }
     })
 
-    console.log('statusCheck', statusCheck)
     if (statusCheck === 2) {
       yield upload.processImage(requestId)
     }
-
   }
 }
 

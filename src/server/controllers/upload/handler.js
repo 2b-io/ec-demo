@@ -7,6 +7,8 @@ import config from 'infrastructure/config'
 import configImage from 'services/config-image'
 import overlayImage from 'services/overlay-image'
 
+import cacheRequest from 'services/cache-request'
+
 const TEMP_PATH = {
   item: config.uploadimageDir,
   watermark: config.uploadWatermarkDir
@@ -26,6 +28,8 @@ export default {
       const { bucket, s3Key, config: { gravity } } = await configImage.get(requestId)
 
       const files = await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'item' ] }/${ requestId }`))
+
+      // const _files = cache.stream
 
       await files.reduce(async (all, file) => {
 

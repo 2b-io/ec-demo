@@ -11,7 +11,10 @@ import mime from 'mime-types'
 
 import config from 'infrastructure/config'
 import cache from 'services/cache'
+import cacheRequest from 'services/cache-request'
 import configImage from 'services/config-image'
+
+const STORE_PATH_S3 = {}
 
 const TEMP_PATH = {
   item: config.uploadimageDir,
@@ -26,6 +29,8 @@ export default {
       const { filetype, gravity } = req.headers
 
       const { requestid: requestId } = req.params
+
+      cacheRequest.create(requestId)
 
       const form = new formidable.IncomingForm()
 
@@ -53,12 +58,23 @@ export default {
 
           const s3OriginImage = await cache.put(`${ requestId }/images/${ uuid.v4() }`, tempPath, contentType)
 
+          const { key: originImageKey } = s3OriginImage
+
+          const s3Items = cacheRequest.get(requestId).items || []
+          s3Items.push(originImageKey)
+
+          cacheRequest.update(requestId, 'items', s3Items)
+
         } else {
           storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ requestId }${ ext }`)
           // upload  watermark to s3
           contentType = mime.lookup(String(storePath))
 
           const s3Watermark = await cache.put(`${ requestId }/watermark/${ uuid.v4() }`, tempPath, contentType)
+
+          const { key: watermarkKey } = s3Watermark
+
+          cacheRequest.update(requestId, 'watermark', watermarkKey)
 
           if (s3Watermark) {
             const { Key, Bucket } = s3Watermark
