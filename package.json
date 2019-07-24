@@ -87,6 +87,7 @@
     "superagent": "5.0.2",
     "treeify": "1.1.0",
     "typeface-maven-pro": "0.0.54",
+    "unzipper": "0.10.1",
     "uuid": "3.3.2",
     "zip-folder": "1.0.0"
   },

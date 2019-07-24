@@ -14,8 +14,6 @@ import cache from 'services/cache'
 import cacheRequest from 'services/cache-request'
 import configImage from 'services/config-image'
 
-const STORE_PATH_S3 = {}
-
 const TEMP_PATH = {
   item: config.uploadimageDir,
   watermark: config.uploadWatermarkDir
@@ -38,50 +36,28 @@ export default {
 
       form.parse(req, async (err, fields, files) => {
         if (err) return next(err)
+
         const basename = fields.name.toLowerCase()
+
         const ext = path.extname(basename)
 
         let storePath
 
-        let contentType
-
-        const tempPath = files.file.path
-
-        const chunk = parseInt(fields.chunk, 10)
-        const chunks = parseInt(fields.chunks, 10)
-
-        if (filetype === 'item') {
-          storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ uuid.v4(basename) }${ ext }`)
-
-          // upload images to s3
-          contentType = mime.lookup(String(storePath))
-
-          const s3OriginImage = await cache.put(`${ requestId }/images/${ uuid.v4() }`, tempPath, contentType)
-
-          const { key: originImageKey } = s3OriginImage
-
-          const s3Items = cacheRequest.get(requestId).items || []
-          s3Items.push(originImageKey)
-
-          cacheRequest.update(requestId, 'items', s3Items)
-
-        } else {
+        if (filetype === 'item' && ext === '.zip') {
           storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ requestId }${ ext }`)
-          // upload  watermark to s3
-          contentType = mime.lookup(String(storePath))
+        }
 
-          const s3Watermark = await cache.put(`${ requestId }/watermark/${ uuid.v4() }`, tempPath, contentType)
-
-          const { key: watermarkKey } = s3Watermark
-
-          cacheRequest.update(requestId, 'watermark', watermarkKey)
-
-          if (s3Watermark) {
-            const { Key, Bucket } = s3Watermark
-
-            await configImage.create(requestId, Bucket, Key, { gravity })
+        if (ext !== '.zip') {
+          if (filetype === 'item') {
+            storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ uuid.v4(basename) }${ ext }`)
+          } else {
+            storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ requestId }${ ext }`)
           }
         }
+
+        const tempPath = files.file.path
+        const chunk = parseInt(fields.chunk, 10)
+        const chunks = parseInt(fields.chunks, 10)
 
         const rs = fs.createReadStream(tempPath)
         const ws = fs.createWriteStream(storePath, { flags: 'a' })
@@ -90,8 +66,9 @@ export default {
           if (err) return next(err)
 
           fs.unlinkSync(tempPath)
-
-          return res.sendStatus(200)
+          if (chunk <= chunks - 1) {
+            return res.sendStatus(200)
+          }
         })
 
         ws.on('error', err => next(err))
