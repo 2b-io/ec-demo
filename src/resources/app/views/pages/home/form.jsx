@@ -58,7 +58,6 @@ class UploadForm extends React.Component {
   uploadTemplate() {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
-      chunk_size: '300kb',
       max_retries: 3,
       init: {
         FilesAdded: (up, files) => {
@@ -93,7 +92,6 @@ class UploadForm extends React.Component {
   uploadItems(mimeTypes) {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
-      chunk_size: '300kb',
       max_retries: 3,
       init: {
         FilesAdded: (up, files) => {

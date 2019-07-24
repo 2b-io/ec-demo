@@ -1,5 +1,6 @@
 import fsNode from 'fs'
 import fs from 'fs-extra'
+import mime from 'mime-types'
 import path from 'path'
 import uuid from 'uuid'
 import zipFolder from 'zip-folder'
@@ -36,35 +37,15 @@ export default {
 
       const s3Watermark = cacheRequest.get(requestId).watermark
 
-      await s3Cache.get(s3Watermark, 'watermark', requestId)
+      const watermarkPath = await s3Cache.get(s3Watermark, 'watermark', requestId)
 
-      const watermarkFile = fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ requestId }`))[0]
-
-      const watermarkPath = path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ requestId }`, watermarkFile)
-
-      s3KeyOriginImage.reduce(async (all, key) => {
+      await Promise.all(s3KeyOriginImage.map(async (key) => {
         const file = await s3Cache.get(key, 'items',requestId)
-
-        const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ requestId }/${ uuid.v4() }`)
+        const ext = mime.extension(mime.lookup(file))
+        const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ requestId }/${ uuid.v4() }.${ ext }`)
 
         await overlayImage(file, watermarkPath, onputFilePath, gravity)
-      },{})
-      // const files = await fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'item' ] }/${ requestId }`))
-
-      // const _files = cache.stream
-
-      // await files.reduce(async (all, file) => {
-      //
-      //   const filePath = path.resolve(`${ TEMP_PATH[ 'item' ] }/${ requestId }`, file)
-      //
-      //   const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ requestId }/${ file }`)
-      //
-      //   const watermarkFile = fsNode.readdirSync(path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ requestId }`))[0]
-      //
-      //   const watermarkPath = path.resolve(`${ TEMP_PATH[ 'watermark' ] }/${ requestId }`, watermarkFile)
-      //
-      //   await overlayImage(filePath, watermarkPath, onputFilePath, gravity)
-      // },{})
+      }))
 
       const folderImangeResult = path.resolve(`${ config.imageResultDir }/${ requestId }`)
 
