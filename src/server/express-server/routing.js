@@ -33,8 +33,6 @@ export default (app) => {
   app.post('/upload/:requestid/image', controllers.image.post)
   app.post('/upload/:requestid/image/process', controllers.handler.post)
 
-  app.get('/result/:requestid', controllers.result.get)
-
   app.use((req, res, next) => {
     if (config.devMode) {
       return res.sendStatus(NOT_FOUND)

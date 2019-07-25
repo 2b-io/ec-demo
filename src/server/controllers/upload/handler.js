@@ -23,17 +23,18 @@ export default {
 
       if (fsNode.existsSync(zipFile)) {
         const unzipPath = path.resolve(`${ config.uploadimageDir }/${ requestId }`)
-        const zipPathFile = path.resolve(`${ config.uploadimageDir }/${ requestId }`, `${ requestId }.zip`)
-        fs.createReadStream(zipPathFile).pipe(unzipper.Extract({ path: unzipPath }))
-        fs.removeSync(zipPathFile)
+        const zipPathFile = path.resolve(`${ config.uploadimageDir }/${ requestId }/${ requestId }.zip`)
+        await fs.createReadStream(zipPathFile).pipe(unzipper.Extract({ path: unzipPath })).promise()
+        await fs.removeSync(zipPathFile)
       }
 
       // upload images to s3
       const files = await fsNode.readdirSync(path.resolve(`${ config.uploadimageDir }/${ requestId }`))
 
-      await Promise.all(files.map(async (file) => {
+      await Promise.all(files.map(async (file, index) => {
         const filePath = path.resolve(`${ config.uploadimageDir }/${ requestId }`, file)
         const contentTypeFile = mime.lookup(filePath)
+
         const s3OriginImage = await s3Cache.put(`${ requestId }/images/${ uuid.v4() }`, filePath, contentTypeFile)
 
         const { key: originImageKey } = s3OriginImage
@@ -45,7 +46,6 @@ export default {
       }))
 
       // upload  watermark to s3
-
       const watermarkPath = path.resolve(`${ config.uploadWatermarkDir }/${ requestId }/${ requestId }.png`)
 
       const contentTypeWatermark = mime.lookup(watermarkPath)
@@ -57,9 +57,7 @@ export default {
       cacheRequest.update(requestId, 'watermark', watermarkKey)
 
       // create zip folder path
-      await fs.ensureDir(`${ config.zipResultDir }/${ requestId }`)
-
-      const folderZipResult = await path.resolve(`${ config.zipResultDir }/${ requestId }`)
+      await fs.ensureDir(`${ config.zipResultDir }`)
 
       await fs.ensureDir(`${ config.imageResultDir }/${ requestId }`)
 
@@ -81,6 +79,8 @@ export default {
 
       const folderImangeResult = path.resolve(`${ config.imageResultDir }/${ requestId }`)
 
+      const folderZipResult = await path.resolve(`${ config.zipResultDir }`)
+
       zipFolder(folderImangeResult, `${ folderZipResult }/${ requestId }.zip`, (err) => {
         if(err) {
             console.log('Zip error', err)
@@ -89,7 +89,7 @@ export default {
         }
       })
 
-      const linkDownload = 'localhost'
+      const linkDownload = `http://localhost:3009/download/${ requestId }.zip`
 
       return res.send({ linkDownload })
     }

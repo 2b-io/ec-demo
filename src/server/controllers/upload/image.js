@@ -47,7 +47,7 @@ export default {
 
         if (ext !== '.zip') {
           if (filetype === 'item') {
-            storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ uuid.v4(basename) }${ ext }`)
+            storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ basename }`)
           } else {
             storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ requestId }${ ext }`)
           }
