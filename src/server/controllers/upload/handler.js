@@ -29,33 +29,32 @@ export default {
       }
 
       // upload images to s3
-      const imagePath = 'a'
-      const contentTypeImage = 'iem'
-      const s3OriginImage = await s3Cache.put(`${ requestId }/images/${ uuid.v4() }`, imagePath, contentTypeImage)
+      const files = await fsNode.readdirSync(path.resolve(`${ config.uploadimageDir }/${ requestId }`))
 
-      const { key: originImageKey } = s3OriginImage
+      await Promise.all(files.map(async (file) => {
+        const filePath = path.resolve(`${ config.uploadimageDir }/${ requestId }`, file)
+        const contentTypeFile = mime.lookup(filePath)
+        const s3OriginImage = await s3Cache.put(`${ requestId }/images/${ uuid.v4() }`, filePath, contentTypeFile)
 
-      const s3Items = cacheRequest.get(requestId).items || []
-      s3Items.push(originImageKey)
+        const { key: originImageKey } = s3OriginImage
 
-      cacheRequest.update(requestId, 'items', s3Items)
+        const s3Items = cacheRequest.get(requestId).items || []
+        s3Items.push(originImageKey)
+
+        cacheRequest.update(requestId, 'items', s3Items)
+      }))
 
       // upload  watermark to s3
-      const contentTypeWatermark = mime.lookup(path.resolve(`${ config.uploadWatermarkDir }/${ requestId }/${ requestId }`))
 
-      const watermarkPath = path.resolve(`${ config.uploadWatermarkDir }/${ requestId }/${ requestId }`)
+      const watermarkPath = path.resolve(`${ config.uploadWatermarkDir }/${ requestId }/${ requestId }.png`)
+
+      const contentTypeWatermark = mime.lookup(watermarkPath)
 
       const watermarkS3 = await s3Cache.put(`${ requestId }/watermark/${ uuid.v4() }`, watermarkPath, contentTypeWatermark)
 
       const { key: watermarkKey } = watermarkS3
 
       cacheRequest.update(requestId, 'watermark', watermarkKey)
-
-      if (watermarkS3) {
-        const { Key, Bucket } = watermarkS3
-
-        await configImage.create(requestId, Bucket, Key, { gravity })
-      }
 
       // create zip folder path
       await fs.ensureDir(`${ config.zipResultDir }/${ requestId }`)

@@ -7,8 +7,6 @@ import ms from 'ms'
 import path from 'path'
 import uuid from 'uuid'
 
-import mime from 'mime-types'
-
 import config from 'infrastructure/config'
 import cache from 'services/cache'
 import cacheRequest from 'services/cache-request'
@@ -54,6 +52,8 @@ export default {
             storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ requestId }${ ext }`)
           }
         }
+
+        await configImage.create(requestId, '', '', { gravity })
 
         const tempPath = files.file.path
         const chunk = parseInt(fields.chunk, 10)
