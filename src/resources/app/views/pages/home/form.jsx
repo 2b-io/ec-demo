@@ -59,6 +59,7 @@ class UploadForm extends React.Component {
     const plupTemplate = new plupload.Uploader({
       browse_button: 'browseTemplate',
       max_retries: 3,
+      chunk_size: '200kb',
       init: {
         FilesAdded: (up, files) => {
           this.setState({ templateFile: arryToMap(files, 'id') })
@@ -93,6 +94,7 @@ class UploadForm extends React.Component {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
       max_retries: 3,
+      chunk_size: '200kb',
       init: {
         FilesAdded: (up, files) => {
           this.setState({ files: arryToMap(files, 'id') })
@@ -106,6 +108,9 @@ class UploadForm extends React.Component {
           if (files.length) {
             this.props.uploadFilesCompleted('UPLOAD_ITEMS_COMPLETED')
           }
+        },
+        ChunkUploaded: (up, file, info) => {
+          console.log('[ChunkUploaded] File:', file, "Info:", info);
         }
       },
       filters: {
