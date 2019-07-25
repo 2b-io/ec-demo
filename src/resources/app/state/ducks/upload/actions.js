@@ -19,3 +19,8 @@ export const getRequestIdCompleted = (requestId) => ({
   type: types.GET_UPLOAD_ID_COMPLETED,
   payload: { requestId }
 })
+
+export const processImageCompleted = (linkDownload) => ({
+  type: types.PROGRESS_IMAGE_COMPLETED,
+  payload: { linkDownload }
+})

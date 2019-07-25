@@ -9,6 +9,11 @@ export default (state = {}, action) => {
         ...state,
         requestId: action.payload.requestId
       }
+    case types.PROGRESS_IMAGE_COMPLETED:
+      return {
+        ...state,
+        linkDownload: action.payload.linkDownload
+      }
     case types.UPLOAD_FILES_FAILED:
       return false
     case types.UPLOAD_FILES_COMPLETED:

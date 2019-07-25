@@ -70,7 +70,13 @@ const uploadLoop = function*() {
     })
 
     if (statusCheck === 2) {
-      yield upload.processImage(requestId)
+      const { linkDownload } = yield upload.processImage(requestId)
+
+      if (linkDownload) {
+        yield put(
+          actions.processImageCompleted(linkDownload)
+        )
+      }
     }
   }
 }

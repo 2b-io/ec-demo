@@ -109,9 +109,6 @@ class UploadForm extends React.Component {
             this.props.uploadFilesCompleted('UPLOAD_ITEMS_COMPLETED')
           }
         },
-        ChunkUploaded: (up, file, info) => {
-          console.log('[ChunkUploaded] File:', file, "Info:", info);
-        }
       },
       filters: {
         mime_types: [
@@ -233,6 +230,12 @@ class UploadForm extends React.Component {
           <Break/>
           <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
           <Break/>
+          {
+            this.props.linkDownload && <PrimaryButton>
+                <a href={ this.props.linkDownload }>Download</a>
+              </PrimaryButton>
+          }
+          <Break/>
         </WrapperItem>
       </Container>
     )
@@ -241,10 +244,10 @@ class UploadForm extends React.Component {
 
 export default connect(
   (state) => {
-    const requestId = selectors.uploadIdentifier(state)
+    const { linkDownload } = selectors.uploadIdentifier(state)
 
     return {
-      requestId
+      linkDownload
     }
   },
   mapDispatch({
