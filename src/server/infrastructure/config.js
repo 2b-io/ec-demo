@@ -18,6 +18,7 @@ export default {
   port: process.env.PORT,
   mongodb: process.env.MONGODB,
   assetEndpoint: process.env.ASSET_ENDPOINT,
+  endpoint: process.env.ENDPOINT,
   // google recaptcha
   googleRecaptchaSecretKey: process.env.GOOGLE_RECAPTCHA_SECRET_KEY,
   googleRecaptchaSiteKey: process.env.GOOGLE_RECAPTCHA_SITE_KEY,

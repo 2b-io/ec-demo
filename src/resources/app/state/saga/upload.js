@@ -36,13 +36,13 @@ const getUploadIdentifierLoop = function*() {
       })
 
       plupItems.setOption('headers', {
-        filetype: 'item',
+        filetype: 'image',
         requestId,
       })
 
-      plupItems.setOption('url',`http://localhost:3009/upload/${ requestId }/image`)
+      plupItems.setOption('url',`/upload/${ requestId }/image`)
 
-      plupTemplate.setOption('url', `http://localhost:3009/upload/${ requestId }/image`)
+      plupTemplate.setOption('url', `/upload/${ requestId }/image`)
 
       plupTemplate.start()
       plupItems.start()

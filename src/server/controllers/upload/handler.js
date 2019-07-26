@@ -14,38 +14,56 @@ import overlayImage from 'services/overlay-image'
 import s3Cache from 'services/cache'
 import cacheRequest from 'services/cache-request'
 
+const zip = (pathSource, pathResult) => {
+  return new Promise(resolve => zipFolder(pathSource, pathResult, resolve))
+}
+
 export default {
   post: [
     async (req, res, next) => {
       const { requestid: requestId } = req.params
 
+      // check exist file zip and unzip
       const zipFile = path.resolve(`${ config.uploadimageDir }/${ requestId }/${ requestId }.zip`)
 
       if (fsNode.existsSync(zipFile)) {
+        console.log('START_UNZIP_FILE...')
+
         const unzipPath = path.resolve(`${ config.uploadimageDir }/${ requestId }`)
         const zipPathFile = path.resolve(`${ config.uploadimageDir }/${ requestId }/${ requestId }.zip`)
+
         await fs.createReadStream(zipPathFile).pipe(unzipper.Extract({ path: unzipPath })).promise()
         await fs.removeSync(zipPathFile)
+
+        console.log('UNZIP_FILE_DONE...')
       }
 
       // upload images to s3
-      const files = await fsNode.readdirSync(path.resolve(`${ config.uploadimageDir }/${ requestId }`))
+      console.log('START_UPLOAD_IMAGE_TO_S3...')
 
-      await Promise.all(files.map(async (file, index) => {
-        const filePath = path.resolve(`${ config.uploadimageDir }/${ requestId }`, file)
-        const contentTypeFile = mime.lookup(filePath)
+      const images = await fsNode.readdirSync(path.resolve(`${ config.uploadimageDir }/${ requestId }`))
 
-        const s3OriginImage = await s3Cache.put(`${ requestId }/images/${ uuid.v4() }`, filePath, contentTypeFile)
+      await Promise.all(images.map(async (file, index) => {
+        const imagePath = path.resolve(`${ config.uploadimageDir }/${ requestId }`, file)
+        const contentTypeImage = mime.lookup(imagePath)
 
-        const { key: originImageKey } = s3OriginImage
+        const s3Image = await s3Cache.put(`${ requestId }/images/${ uuid.v4() }`, imagePath, contentTypeImage)
 
-        const s3Items = cacheRequest.get(requestId).items || []
-        s3Items.push(originImageKey)
+        const { key: s3ImageKey } = s3Image
 
-        cacheRequest.update(requestId, 'items', s3Items)
+        const s3Images = cacheRequest.get(requestId).images || []
+        s3Images.push(s3ImageKey)
+
+        cacheRequest.update(requestId, 'images', s3Images)
       }))
 
+      console.log('UPLOAD_IMAGE_TO_S3_DONE...')
+      // remove folder images
+      await fs.removeSync( path.resolve(`${ config.uploadimageDir }/${ requestId }`))
+
       // upload  watermark to s3
+      console.log('START_WATERMARK_TO_S3...')
+
       const watermarkPath = path.resolve(`${ config.uploadWatermarkDir }/${ requestId }/${ requestId }.png`)
 
       const contentTypeWatermark = mime.lookup(watermarkPath)
@@ -56,40 +74,45 @@ export default {
 
       cacheRequest.update(requestId, 'watermark', watermarkKey)
 
-      // create zip folder path
-      await fs.ensureDir(`${ config.zipResultDir }`)
+      console.log('WATERMARK_TO_S3_DONE...')
+      // remove folder watermark
+      await fs.removeSync( path.resolve(`${ config.uploadWatermarkDir }/${ requestId }`))
 
       await fs.ensureDir(`${ config.imageResultDir }/${ requestId }`)
 
       const { bucket, s3Key, config: { gravity } } = await configImage.get(requestId)
 
-      const s3KeyOriginImage = cacheRequest.get(requestId).items
+      const s3KeyOriginImage = cacheRequest.get(requestId).images
 
       const s3Watermark = cacheRequest.get(requestId).watermark
 
       const watermarkPathS3 = await s3Cache.get(s3Watermark, 'watermark', requestId)
 
       await Promise.all(s3KeyOriginImage.map(async (key) => {
-        const file = await s3Cache.get(key, 'items',requestId)
+        const file = await s3Cache.get(key, 'images',requestId)
         const ext = mime.extension(mime.lookup(file))
         const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ requestId }/${ uuid.v4() }.${ ext }`)
 
         await overlayImage(file, watermarkPathS3, onputFilePath, gravity)
       }))
 
+      // zip folder image result
+
+      console.log('START_ZIP_FILE_RESULT...')
+
+      await fs.ensureDir(`${ config.zipResultDir }`)
+
       const folderImangeResult = path.resolve(`${ config.imageResultDir }/${ requestId }`)
 
       const folderZipResult = await path.resolve(`${ config.zipResultDir }`)
 
-      zipFolder(folderImangeResult, `${ folderZipResult }/${ requestId }.zip`, (err) => {
-        if(err) {
-            console.log('Zip error', err)
-        } else {
-            console.log('Zip done')
-        }
-      })
+      await zip(folderImangeResult, `${ folderZipResult }/${ requestId }.zip`)
 
-      const linkDownload = `http://localhost:3009/download/${ requestId }.zip`
+      console.log('ZIP_FILE_DONE...')
+
+      await fs.removeSync(folderImangeResult)
+
+      const linkDownload = `${ config.endpoint }/download/${ requestId }.zip`
 
       return res.send({ linkDownload })
     }

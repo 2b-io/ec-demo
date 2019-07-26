@@ -13,7 +13,7 @@ import cacheRequest from 'services/cache-request'
 import configImage from 'services/config-image'
 
 const TEMP_PATH = {
-  item: config.uploadimageDir,
+  image: config.uploadimageDir,
   watermark: config.uploadWatermarkDir
 }
 
@@ -41,12 +41,12 @@ export default {
 
         let storePath
 
-        if (filetype === 'item' && ext === '.zip') {
+        if (filetype === 'image' && ext === '.zip') {
           storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ requestId }${ ext }`)
         }
 
         if (ext !== '.zip') {
-          if (filetype === 'item') {
+          if (filetype === 'image') {
             storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ basename }`)
           } else {
             storePath = path.resolve(`${ TEMP_PATH[ filetype ] }/${ requestId }`, `${ requestId }${ ext }`)
@@ -77,7 +77,7 @@ export default {
       })
     },
     (error, req, res, next) => {
-      console.log(error, error)
+      console.log('error', error)
       res.sendStatus(500)
     }
   ]
