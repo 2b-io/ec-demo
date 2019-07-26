@@ -16,7 +16,7 @@ import {
   ProgressBar
 } from 'app/ui/elements'
 
-import arryToMap from 'services/array-to-map'
+import arrToMap from 'services/array-to-map'
 import TemplateConfig from './template-config'
 
 const ID = uuid.v4()
@@ -62,11 +62,10 @@ class UploadForm extends React.Component {
       chunk_size: '200kb',
       init: {
         FilesAdded: (up, files) => {
-          this.setState({ templateFile: arryToMap(files, 'id') })
+          this.setState({ templateFile: arrToMap(files, 'id') })
         },
         UploadProgress: (up, file) => {
           const { templateFile } = this.state
-          templateFile[ file.id ].percent = file.percent
           this.setState({ templateFile })
         },
         UploadComplete: (up, files) => {
@@ -97,11 +96,13 @@ class UploadForm extends React.Component {
       chunk_size: '200kb',
       init: {
         FilesAdded: (up, files) => {
-          this.setState({ files: arryToMap(files, 'id') })
+          console.log('files', files);
+          this.setState({ files: arrToMap(files, 'id') })
         },
         UploadProgress: (up, file) => {
+          console.log('this.state', this.state)
+          console.log('file.percent', file.percent)
           const { files } = this.state
-          files[ file.id ].percent = file.percent
           this.setState({ files })
         },
         UploadComplete: (up, files) => {
@@ -157,7 +158,6 @@ class UploadForm extends React.Component {
       gravity
     })
   }
-
 
   render() {
     const { templateFile, files } = this.state
