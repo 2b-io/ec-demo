@@ -96,12 +96,9 @@ class UploadForm extends React.Component {
       chunk_size: '200kb',
       init: {
         FilesAdded: (up, files) => {
-          console.log('files', files);
           this.setState({ files: arrToMap(files, 'id') })
         },
         UploadProgress: (up, file) => {
-          console.log('this.state', this.state)
-          console.log('file.percent', file.percent)
           const { files } = this.state
           this.setState({ files })
         },

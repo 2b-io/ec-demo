@@ -86,7 +86,11 @@ export default {
 
       const s3Watermark = cacheRequest.get(requestId).watermark
 
+      console.log('GET_WATERMARK_FROM_S3...')
+
       const watermarkPathS3 = await s3Cache.get(s3Watermark, 'watermark', requestId)
+
+      console.log('GET_IMAGE_FROM_S3...')
 
       await Promise.all(s3KeyOriginImage.map(async (key) => {
         const file = await s3Cache.get(key, 'images',requestId)
@@ -110,7 +114,10 @@ export default {
 
       console.log('ZIP_FILE_DONE...')
 
+      // remove folder temp imange result and s3 download
       await fs.removeSync(folderImangeResult)
+      await fs.removeSync(path.resolve(`${ config.s3DownloadDir }/${ requestId }`))
+      //
 
       const linkDownload = `${ config.endpoint }/download/${ requestId }.zip`
 
