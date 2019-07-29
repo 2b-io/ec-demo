@@ -1,10 +1,14 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 
 import Content from './content'
+import Header from './element/header'
 
 const Home = () => {
   return (
-    <Content />
+    <Fragment>
+      <Header />
+      <Content />
+    </Fragment>
   )
 }
 
