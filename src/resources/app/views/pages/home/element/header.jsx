@@ -45,9 +45,9 @@ const HeaderComponent = () => {
         </ItemLogo>
       </Logo>
       <Menu>
-        <MenuItem></MenuItem>
         <MenuItem>Home</MenuItem>
         <MenuItem>About</MenuItem>
+        <MenuItem>Contact Us</MenuItem>
         <MenuItem>Document</MenuItem>
       </Menu>
     </Wrapper>
