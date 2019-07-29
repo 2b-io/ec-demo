@@ -4,12 +4,12 @@ import styled, { css } from 'styled-components'
 const Wrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: #fff;
+  background: #1268B3;
   border-bottom: #ddd 2px solid;
 `
 
 const Logo = styled.div`
-  max-width: 250px;
+  max-width: 164px;
   height: 64px;
   text-align: center;
 `
@@ -20,28 +20,35 @@ const Menu = styled.div`
   text-align: center;
 `
 
-const Item = styled.div`
+const ItemLogo = styled.div`
   margin: auto;
+  padding-left: 32px;
+  padding-top: 8px;
+`
+const MenuItem = styled.div`
+  margin: auto;
+  color: white;
   padding-left: 32px;
   padding-right: 32px;
   text-transform: uppercase;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
 `
 const HeaderComponent = () => {
   return (
     <Wrapper>
       <Logo>
-        <Item>
+        <ItemLogo>
           <a href="/">
             <img src='img/logo.svg' />
           </a>
-        </Item>
+        </ItemLogo>
       </Logo>
       <Menu>
-        <Item>Home</Item>
-        <Item>About</Item>
-        <Item>Document</Item>
+        <MenuItem></MenuItem>
+        <MenuItem>Home</MenuItem>
+        <MenuItem>About</MenuItem>
+        <MenuItem>Document</MenuItem>
       </Menu>
     </Wrapper>
   )

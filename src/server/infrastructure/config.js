@@ -12,7 +12,7 @@ export default {
   zipResultDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/zipResult'),
   s3DownloadDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/s3Download'),
 
-  imgDir: path.join(rootDir, '../../assets/img'),
+  imgDir: path.join(rootDir, '../resources/img'),
   // env
   devMode: process.env.NODE_ENV !== 'production',
   port: process.env.PORT,
