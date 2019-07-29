@@ -9,7 +9,7 @@ const Wrapper = styled.div`
 `
 
 const Logo = styled.div`
-  max-width: 164px;
+  max-width: 180px;
   height: 64px;
   text-align: center;
 `
@@ -22,8 +22,8 @@ const Menu = styled.div`
 
 const ItemLogo = styled.div`
   margin: auto;
-  padding-left: 32px;
-  padding-top: 8px;
+  padding-left: 60px;
+  padding-top: 16px;
 `
 const MenuItem = styled.div`
   margin: auto;
