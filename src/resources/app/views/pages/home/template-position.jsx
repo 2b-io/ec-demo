@@ -1,7 +1,6 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 
-
 const WrapperItem = styled.div`
   border: solid 1px #007FFF;
   grid-gap: 8px;

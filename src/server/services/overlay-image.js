@@ -5,12 +5,13 @@ const imageMagick = gm.subClass({ imageMagick: true })
 
 promise.promisifyAll(gm.prototype)
 
-const overlay = async (filePath, watermarkPath, onputFilePath, gravity) => {
+const overlay = async (filePath, watermarkPath, onputFilePath, gravity, padding) => {
+  console.log('draw', "image Over "+`${padding} 100,274 ${ watermarkPath }`);
   await imageMagick(filePath)
     .autoOrient()
     // .resize(600, 800)
     .gravity(gravity)
-    .draw("image Over 10,10 200,200 "+`'${ watermarkPath }'`)
+    .draw("image Over "+`${padding} 100,274 '${ watermarkPath }'`)
     .writeAsync(onputFilePath)
 
   // await gm('./input.png')

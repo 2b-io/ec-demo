@@ -2,24 +2,20 @@ import React from 'react'
 import { connect } from 'react-redux'
 import plupload from 'plupload'
 import styled, { css } from 'styled-components'
-import uuid from 'uuid'
 
 import { mapDispatch } from 'app/services/redux-helpers'
 import { actions, selectors } from 'app/state/interface'
-
-// import upload from 'app/services/upload'
 
 import {
   Container,
   Break,
   PrimaryButton,
-  ProgressBar
+  ProgressBar,
 } from 'app/ui/elements'
 
 import arrToMap from 'services/array-to-map'
-import TemplateConfig from './template-config'
-
-const ID = uuid.v4()
+import TemplatePosition from './template-position'
+import TemplatePadding from './template-padding'
 
 const WrapperItem = styled.div`
   display: block
@@ -52,7 +48,25 @@ class UploadForm extends React.Component {
   }
 
   uploadAllFiles() {
-    this.props.uploadFiles(this.state.plupTemplate, this.state.plupItems, this.state.gravity)
+    const {
+      plupTemplate,
+      plupItems,
+      gravity,
+      paddingX,
+      paddingY
+    } = this.state
+
+    const padding = `${paddingX},${paddingY}`
+
+    this.props.uploadFiles(plupTemplate, plupItems, gravity, padding)
+  }
+
+  onChangePaddingX(e) {
+    this.setState({ paddingX: e.target.value })
+  }
+
+  onChangePaddingY(e) {
+    this.setState({ paddingY: e.target.value })
   }
 
   uploadTemplate() {
@@ -225,7 +239,12 @@ class UploadForm extends React.Component {
           </div>
           <Break/>
           <p>Config position </p>
-          <TemplateConfig handleGravity={ this.handleGravity.bind(this) }/>
+          <TemplatePosition handleGravity={ this.handleGravity.bind(this) }/>
+
+          <Break/>
+          <p>Config padding </p>
+          <Break/>
+            <TemplatePadding />
           <Break/>
           <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
           <Break/>

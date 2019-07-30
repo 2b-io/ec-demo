@@ -1,8 +1,8 @@
 import * as types from './types'
 
-export const uploadFiles = (plupTemplate, plupItems, gravity) => ({
+export const uploadFiles = (plupTemplate, plupItems, gravity, padding) => ({
   type: types.UPLOAD_FILES,
-  payload: { plupTemplate, plupItems, gravity }
+  payload: { plupTemplate, plupItems, gravity, padding }
 })
 
 export const uploadFilesCompleted = (typeFile) => ({
