@@ -13,7 +13,7 @@ const ImageIntro = styled.div`
   margin: auto;
   padding-left: 32px;
   padding-top: 8px;
-  max-width: 600px;
+  max-width: 1200px;
 `
 const Description = styled.div`
   margin: auto;

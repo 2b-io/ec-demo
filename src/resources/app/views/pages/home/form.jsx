@@ -155,7 +155,9 @@ class UploadForm extends React.Component {
       gravity
     })
   }
-
+  downloadFile(){
+    window.location.href = this.props.linkDownload
+  }
   render() {
     const { templateFile, files } = this.state
 
@@ -228,8 +230,8 @@ class UploadForm extends React.Component {
           <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
           <Break/>
           {
-            this.props.linkDownload && <PrimaryButton>
-                <a href={ this.props.linkDownload }>Download</a>
+            this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
+                Download
               </PrimaryButton>
           }
           <Break/>
