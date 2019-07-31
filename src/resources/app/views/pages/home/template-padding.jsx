@@ -17,13 +17,13 @@ class TemplateConfig extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = {
-      gravity: ''
-    }
+  }
+
+  onChangePadding(e) {
+    this.props.handlePadding({ [ e.target.name ]: e.target.value })
   }
 
   render() {
-
     return (
       <WrapperItem>
         <div>
@@ -31,7 +31,7 @@ class TemplateConfig extends React.Component {
           <input
             name='paddingTop'
             type='number'
-            // onChange={ this.onChangePaddingX.bind(this) }
+            onChange={ this.onChangePadding.bind(this) }
           />
         </div>
         <div>
@@ -39,7 +39,7 @@ class TemplateConfig extends React.Component {
           <input
             name='paddingLeft'
             type='number'
-            // onChange={ this.onChangePaddingY.bind(this) }
+            onChange={ this.onChangePadding.bind(this) }
           />
         </div>
         <div>
@@ -47,7 +47,7 @@ class TemplateConfig extends React.Component {
           <input
             name='paddingRight'
             type='number'
-            // onChange={ this.onChangePaddingY.bind(this) }
+            onChange={ this.onChangePadding.bind(this) }
           />
         </div>
         <div>
@@ -55,7 +55,7 @@ class TemplateConfig extends React.Component {
           <input
             name='paddingBottom'
             type='number'
-            // onChange={ this.onChangePaddingY.bind(this) }
+            onChange={ this.onChangePadding.bind(this) }
           />
         </div>
       </WrapperItem>

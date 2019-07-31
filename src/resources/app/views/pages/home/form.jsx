@@ -61,12 +61,9 @@ class UploadForm extends React.Component {
     this.props.uploadFiles(plupTemplate, plupItems, gravity, padding)
   }
 
-  onChangePaddingX(e) {
-    this.setState({ paddingX: e.target.value })
-  }
 
-  onChangePaddingY(e) {
-    this.setState({ paddingY: e.target.value })
+  handlePadding(padding) {
+    this.setState({ ...padding })
   }
 
   uploadTemplate() {
@@ -174,7 +171,6 @@ class UploadForm extends React.Component {
   }
   render() {
     const { templateFile, files } = this.state
-
     const templateUpload = Object.values(templateFile).map((file, index) => {
       return (
         <ItemUpload key = { index } >
@@ -239,12 +235,15 @@ class UploadForm extends React.Component {
           </div>
           <Break/>
           <p>Config position </p>
-          <TemplatePosition handleGravity={ this.handleGravity.bind(this) }/>
-
+          <TemplatePosition
+            handleGravity={ this.handleGravity.bind(this) }
+          />
           <Break/>
           <p>Config padding </p>
           <Break/>
-            <TemplatePadding />
+            <TemplatePadding
+              handlePadding={ this.handlePadding.bind(this) }
+            />
           <Break/>
           <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
           <Break/>
