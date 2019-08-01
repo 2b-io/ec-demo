@@ -11,6 +11,7 @@ export default {
   imageResultDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/imageResult'),
   zipResultDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/zipResult'),
   s3DownloadDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/s3Download'),
+  watermarkPaddingDir: process.env.TMP_DIR || path.resolve(rootDir, '../tmp/watermarkPadding'),
 
   imgDir: path.join(rootDir, '../resources/img'),
   // env
