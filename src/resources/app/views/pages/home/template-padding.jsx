@@ -2,7 +2,6 @@ import React from 'react'
 import styled, { css } from 'styled-components'
 
 const WrapperItem = styled.div`
-  /* border: solid 1px #007FFF; */
   grid-gap: 8px;
   display: grid;
   width: 500px;
@@ -16,14 +15,47 @@ const WrapperItem = styled.div`
 class TemplateConfig extends React.Component {
   constructor(props) {
     super(props)
-
   }
 
   onChangePadding(e) {
     this.props.handlePadding({ [ e.target.name ]: e.target.value })
   }
-
   render() {
+    let stateInputTop = true
+    let stateInputLeft = true
+    let stateInputRight = true
+    let stateInputBottom = true
+
+    switch (this.props.gravity) {
+      case 'NorthWest':
+        stateInputLeft = false
+        stateInputTop = false
+        break;
+      case 'North':
+        stateInputTop = false
+        break;
+      case 'NorthEast':
+        stateInputTop = false
+        stateInputRight = false
+        break;
+      case 'West':
+        stateInputLeft = false
+        break;
+      case 'East':
+        stateInputRight = false
+        break;
+      case 'SouthWest':
+        stateInputLeft = false
+        stateInputBottom = false
+        break;
+      case 'South':
+        stateInputBottom = false
+        break;
+      case 'SouthEast':
+        stateInputBottom = false
+        stateInputRight = false
+        break;
+    }
     return (
       <WrapperItem>
         <div>
@@ -32,6 +64,8 @@ class TemplateConfig extends React.Component {
             name='paddingTop'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
+            defaultValue={ 0 }
+            disabled={ stateInputTop }
           />
         </div>
         <div>
@@ -40,6 +74,8 @@ class TemplateConfig extends React.Component {
             name='paddingLeft'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
+            defaultValue={ 0 }
+            disabled={ stateInputLeft }
           />
         </div>
         <div>
@@ -48,6 +84,8 @@ class TemplateConfig extends React.Component {
             name='paddingRight'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
+            defaultValue={ 0 }
+            disabled={ stateInputRight }
           />
         </div>
         <div>
@@ -56,6 +94,8 @@ class TemplateConfig extends React.Component {
             name='paddingBottom'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
+            defaultValue={ 0 }
+            disabled={ stateInputBottom }
           />
         </div>
       </WrapperItem>

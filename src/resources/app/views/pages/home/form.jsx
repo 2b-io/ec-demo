@@ -41,7 +41,11 @@ class UploadForm extends React.Component {
     this.state = {
       files: [],
       templateFile: [],
-      mimeType:'zip'
+      mimeType:'zip',
+      paddingTop: 0,
+      paddingLeft: 0,
+      paddingRight: 0,
+      paddingBottom: 0
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -64,7 +68,7 @@ class UploadForm extends React.Component {
       paddingRight,
       paddingBottom
     }
-
+    console.log('padding', padding);
     this.props.uploadFiles(plupTemplate, plupItems, gravity, padding)
   }
 
@@ -250,6 +254,7 @@ class UploadForm extends React.Component {
           <Break/>
             <TemplatePadding
               handlePadding={ this.handlePadding.bind(this) }
+              gravity={ this.state.gravity }
             />
           <Break/>
           <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
