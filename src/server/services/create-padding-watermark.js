@@ -31,13 +31,10 @@ const createPaddingImage = async (requestId, {
     await imageMagick(width,height,"Transparent")
     .writeAsync(transparentImagePath)
 
-    console.log("image Over "+`${ paddingTop },${ paddingLeft } ${ width },${ height } '${ watermarkPath }'`)
-
     await imageMagick(transparentImagePath)
       .autoOrient()
-      .draw("image Over "+`${ paddingTop },${ paddingLeft } ${ width },${ height } '${ watermarkPath }'`)
+      .draw("image Over "+`${ paddingTop },${ paddingLeft } ${ widthOriginWatermark },${ heightOriginWatermark } '${ watermarkPath }'`)
       .writeAsync(watermarkPath)
-
 }
 
 export default createPaddingImage

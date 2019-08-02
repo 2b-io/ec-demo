@@ -115,7 +115,7 @@ export default {
 
       // remove folder temp imange result and s3 download
       await fs.removeSync(folderImangeResult)
-      await fs.removeSync(path.resolve(`${ config.s3DownloadDir }/${ requestId }`))
+      // await fs.removeSync(path.resolve(`${ config.s3DownloadDir }/${ requestId }`))
       //
 
       const linkDownload = `${ config.endpoint }/download/${ requestId }.zip`
