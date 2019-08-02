@@ -45,7 +45,8 @@ class UploadForm extends React.Component {
       paddingTop: 0,
       paddingLeft: 0,
       paddingRight: 0,
-      paddingBottom: 0
+      paddingBottom: 0,
+      opacity: 100
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -177,6 +178,9 @@ class UploadForm extends React.Component {
       gravity
     })
   }
+  changeOpacity(e){
+    this.setState({ opacity: e.target.value })
+  }
   downloadFile(){
     window.location.href = this.props.linkDownload
   }
@@ -256,6 +260,14 @@ class UploadForm extends React.Component {
               handlePadding={ this.handlePadding.bind(this) }
               gravity={ this.state.gravity }
             />
+            <label>Opacity </label>
+            <span> { this.state.opacity }</span>
+            <Break/>
+            <input
+              type="range"
+              defaultValue={ 100 }
+              onChange={ this.changeOpacity.bind(this) }
+              />
           <Break/>
           <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
           <Break/>
