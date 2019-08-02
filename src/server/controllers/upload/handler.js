@@ -96,7 +96,7 @@ export default {
         const ext = mime.extension(mime.lookup(file))
         const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ requestId }/${ uuid.v4() }.${ ext }`)
 
-        await overlayImage(file, watermarkPathS3, onputFilePath, gravity, padding)
+        await overlayImage(file, watermarkPathS3, onputFilePath, gravity, requestId, padding)
       }))
 
       // zip folder image result

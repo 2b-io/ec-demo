@@ -52,11 +52,18 @@ class UploadForm extends React.Component {
       plupTemplate,
       plupItems,
       gravity,
-      paddingX,
-      paddingY
+      paddingTop,
+      paddingLeft,
+      paddingRight,
+      paddingBottom
     } = this.state
 
-    const padding = `${paddingX},${paddingY}`
+    const padding = {
+      paddingTop,
+      paddingLeft,
+      paddingRight,
+      paddingBottom
+    }
 
     this.props.uploadFiles(plupTemplate, plupItems, gravity, padding)
   }

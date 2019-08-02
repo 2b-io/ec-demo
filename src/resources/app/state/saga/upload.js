@@ -34,7 +34,7 @@ const getUploadIdentifierLoop = function*() {
         filetype: 'watermark',
         requestId,
         gravity,
-        padding,
+        ...padding
       })
 
       plupItems.setOption('headers', {

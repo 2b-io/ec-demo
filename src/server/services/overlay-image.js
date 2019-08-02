@@ -1,17 +1,38 @@
 import gm from 'gm'
 import promise from 'bluebird'
 
+import paddingWatermark from './create-padding-watermark'
 const imageMagick = gm.subClass({ imageMagick: true })
 
 promise.promisifyAll(gm.prototype)
 
-const overlay = async (filePath, watermarkPath, onputFilePath, gravity, padding) => {
+const overlay = async (
+  filePath,
+  watermarkPath,
+  onputFilePath,
+  gravity,
+  requestId,
+  {
+    paddingTop,
+    paddingLeft,
+    paddingRight,
+    paddingBottom
+  }) => {
+
+  if (paddingTop || paddingLeft || paddingRight || paddingBottom) {
+    await paddingWatermark(requestId, { paddingTop, paddingLeft, paddingRight, paddingBottom }, watermarkPath)
+  }
+
+  const {
+    width: widthWatermark,
+    height: heightWatermark
+  } = await imageMagick(watermarkPath).sizeAsync()
 
   await imageMagick(filePath)
     .autoOrient()
     // .resize(600, 800)
     .gravity(gravity)
-    .draw("image Over "+`${padding} 100,274 '${ watermarkPath }'`)
+    .draw("image Over "+`0,0 ${ widthWatermark },${ heightWatermark } '${ watermarkPath }'`)
     .writeAsync(onputFilePath)
 
   // await gm('./input.png')

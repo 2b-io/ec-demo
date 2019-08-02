@@ -22,7 +22,14 @@ export default {
     async (req, res, next) => {
       let s3OriginImages = []
 
-      const { filetype, gravity, padding } = req.headers
+      const {
+        filetype,
+        gravity,
+        paddingtop: paddingTop,
+        paddingleft: paddingLeft,
+        paddingright: paddingRight,
+        paddingbottom: paddingBottom
+      } = req.headers
 
       const { requestid: requestId } = req.params
 
@@ -53,7 +60,7 @@ export default {
           }
         }
 
-        await configImage.create(requestId, '', '', { gravity, padding })
+        await configImage.create(requestId, '', '', { gravity, padding: { paddingTop, paddingLeft, paddingRight, paddingBottom } })
 
         const tempPath = files.file.path
         const chunk = parseInt(fields.chunk, 10)
