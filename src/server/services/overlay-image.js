@@ -17,7 +17,8 @@ const overlay = async (
     paddingLeft,
     paddingRight,
     paddingBottom
-  }) => {
+  },
+  opacity) => {
 
   if (paddingTop || paddingLeft || paddingRight || paddingBottom) {
     await paddingWatermark(requestId, { paddingTop, paddingLeft, paddingRight, paddingBottom }, watermarkPath)
@@ -29,11 +30,18 @@ const overlay = async (
   } = await imageMagick(watermarkPath).sizeAsync()
 
   await imageMagick(filePath)
-    .autoOrient()
+    .composite(watermarkPath)
     // .resize(600, 800)
     .gravity(gravity)
-    .draw("image Over "+`0,0 ${ widthWatermark },${ heightWatermark } '${ watermarkPath }'`)
+    .dissolve(opacity)
     .writeAsync(onputFilePath)
+
+  // await imageMagick(filePath)
+  //   .autoOrient()
+  //   // .resize(600, 800)
+  //   .gravity(gravity)
+  //   .draw("image Over "+`0,0 ${ widthWatermark },${ heightWatermark } '${ watermarkPath }'`)
+  //   .writeAsync(onputFilePath)
 
   // await gm('./input.png')
   //   .autoOrient()

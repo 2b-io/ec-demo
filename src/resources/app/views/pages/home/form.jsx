@@ -60,7 +60,8 @@ class UploadForm extends React.Component {
       paddingTop,
       paddingLeft,
       paddingRight,
-      paddingBottom
+      paddingBottom,
+      opacity
     } = this.state
 
     const padding = {
@@ -69,8 +70,8 @@ class UploadForm extends React.Component {
       paddingRight,
       paddingBottom
     }
-    console.log('padding', padding);
-    this.props.uploadFiles(plupTemplate, plupItems, gravity, padding)
+
+    this.props.uploadFiles(plupTemplate, plupItems, gravity, padding, opacity)
   }
 
 

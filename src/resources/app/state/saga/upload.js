@@ -16,7 +16,8 @@ const getUploadIdentifierLoop = function*() {
           plupTemplate,
           plupItems,
           gravity,
-          padding
+          padding,
+          opacity
         }
       } = yield take(types.upload.UPLOAD_FILES)
 
@@ -34,7 +35,8 @@ const getUploadIdentifierLoop = function*() {
         filetype: 'watermark',
         requestId,
         gravity,
-        ...padding
+        ...padding,
+        opacity
       })
 
       plupItems.setOption('headers', {

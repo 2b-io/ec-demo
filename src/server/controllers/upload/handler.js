@@ -80,7 +80,7 @@ export default {
 
       await fs.ensureDir(`${ config.imageResultDir }/${ requestId }`)
 
-      const { bucket, s3Key, config: { gravity, padding } } = await configImage.get(requestId)
+      const { bucket, s3Key, config: { gravity, padding, opacity } } = await configImage.get(requestId)
       const s3KeyOriginImage = cacheRequest.get(requestId).images
 
       const s3Watermark = cacheRequest.get(requestId).watermark
@@ -96,7 +96,7 @@ export default {
         const ext = mime.extension(mime.lookup(file))
         const onputFilePath = await path.resolve(`${ config.imageResultDir }/${ requestId }/${ uuid.v4() }.${ ext }`)
 
-        await overlayImage(file, watermarkPathS3, onputFilePath, gravity, requestId, padding)
+        await overlayImage(file, watermarkPathS3, onputFilePath, gravity, requestId, padding, opacity)
       }))
 
       // zip folder image result

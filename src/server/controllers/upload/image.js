@@ -28,7 +28,8 @@ export default {
         paddingtop: paddingTop,
         paddingleft: paddingLeft,
         paddingright: paddingRight,
-        paddingbottom: paddingBottom
+        paddingbottom: paddingBottom,
+        opacity
       } = req.headers
 
       const { requestid: requestId } = req.params
@@ -60,7 +61,7 @@ export default {
           }
         }
 
-        await configImage.create(requestId, '', '', { gravity, padding: { paddingTop, paddingLeft, paddingRight, paddingBottom } })
+        await configImage.create(requestId, '', '', { gravity, padding: { paddingTop, paddingLeft, paddingRight, paddingBottom }, opacity })
 
         const tempPath = files.file.path
         const chunk = parseInt(fields.chunk, 10)
