@@ -4,15 +4,13 @@ import promise from 'bluebird'
 
 import config from 'infrastructure/config'
 
-const imageMagick = gm.subClass({ imageMagick: true })
-
 promise.promisifyAll(gm.prototype)
 
 const createPaddingImage = async (requestId, {
-    paddingTop,
-    paddingLeft,
-    paddingRight,
-    paddingBottom
+    paddingTop = 0,
+    paddingLeft = 0,
+    paddingRight = 0,
+    paddingBottom = 0
   },
   watermarkPath) => {
 
@@ -22,16 +20,16 @@ const createPaddingImage = async (requestId, {
     const {
       width: widthOriginWatermark,
       height: heightOriginWatermark
-    } = await imageMagick(watermarkPath).sizeAsync()
+    } = await gm(watermarkPath).sizeAsync()
 
     const width = Number(paddingLeft) + Number(paddingRight) + Number(widthOriginWatermark)
     const height = Number(paddingTop) + Number(paddingBottom) + Number(heightOriginWatermark)
     //  Create image transparent
 
-    await imageMagick(width,height,"Transparent")
+    await gm(width,height,"Transparent")
     .writeAsync(transparentImagePath)
 
-    await imageMagick(transparentImagePath)
+    await gm(transparentImagePath)
       .autoOrient()
       .draw("image Over "+`${ paddingTop },${ paddingLeft } ${ widthOriginWatermark },${ heightOriginWatermark } '${ watermarkPath }'`)
       .writeAsync(watermarkPath)
