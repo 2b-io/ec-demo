@@ -4,11 +4,12 @@ import styled, { css } from 'styled-components'
 const WrapperItem = styled.div`
   grid-gap: 8px;
   display: grid;
-  width: 500px;
-  grid-template-rows: repeat(2, 128px);
-  grid-template-columns: repeat(2,228px);
-  margin: auto;
-  padding: 8px;
+  max-width: 500px;
+  grid-template-columns: repeat(4,108px);
+`
+
+const PaddingItem = styled.input`
+  max-width: 60px
 `
 
 class TemplateConfig extends React.Component {
@@ -59,7 +60,7 @@ class TemplateConfig extends React.Component {
       <WrapperItem>
         <div>
           <label>Top </label>
-          <input
+          <PaddingItem
             name='paddingTop'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
@@ -69,7 +70,7 @@ class TemplateConfig extends React.Component {
         </div>
         <div>
           <label>Left </label>
-          <input
+          <PaddingItem
             name='paddingLeft'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
@@ -79,7 +80,7 @@ class TemplateConfig extends React.Component {
         </div>
         <div>
           <label>Right </label>
-          <input
+          <PaddingItem
             name='paddingRight'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
@@ -89,7 +90,7 @@ class TemplateConfig extends React.Component {
         </div>
         <div>
           <label>Bottom </label>
-          <input
+          <PaddingItem
             name='paddingBottom'
             type='number'
             onChange={ this.onChangePadding.bind(this) }

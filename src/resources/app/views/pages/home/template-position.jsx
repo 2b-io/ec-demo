@@ -53,7 +53,7 @@ class TemplateConfig extends React.Component {
     super(props)
 
     this.state = {
-      gravity: ''
+      gravity: 'NorthWest'
     }
 
     this.changeGravity = this.changeGravity.bind(this)
@@ -73,9 +73,7 @@ class TemplateConfig extends React.Component {
           key={ index }
           active={ this.state.gravity === gravity ? true : false }
           onClick= { this.changeGravity.bind(this, gravity) }
-          >
-          { gravity }
-        </Item>
+        />
       )
     })
     return (

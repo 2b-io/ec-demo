@@ -19,8 +19,10 @@ import TemplatePadding from './template-padding'
 
 const WrapperItem = styled.div`
   display: block;
-  padding-top: 32px
+  padding-top: 32px;
 `
+const UploadButton = styled.div``
+
 const LabelItem = styled.span`
   padding-right: 64px;
   font-size: 18px;
@@ -282,28 +284,30 @@ class UploadForm extends React.Component {
           </ListUpload>
         </ImageUpload>
         <Break/>
+        <LabelItem>Config position</LabelItem>
         <Break/>
-        <p>Config position </p>
         <TemplatePosition
           handleGravity={ this.handleGravity.bind(this) }
         />
         <Break/>
-        <p>Config padding </p>
+        <LabelItem>Config padding</LabelItem>
         <Break/>
           <TemplatePadding
             handlePadding={ this.handlePadding.bind(this) }
             gravity={ this.state.gravity }
           />
-          <label>Opacity </label>
-          <span> { this.state.opacity }</span>
           <Break/>
+          <LabelItem>Opacity</LabelItem>
           <input
             type="range"
             defaultValue={ 100 }
             onChange={ this.changeOpacity.bind(this) }
-            />
+          />
+          <LabelItem> { this.state.opacity }</LabelItem>
         <Break/>
-        <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
+        <UploadButton>
+          <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
+        </UploadButton>
         <Break/>
         {
           this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
