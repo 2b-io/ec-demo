@@ -11,7 +11,7 @@ const overlay = async (
   onputFilePath,
   gravity,
   requestId,
-  padding,
+  padding = {},
   opacity) => {
 
   const paddingTop = Number(padding.paddingTop) || 0
