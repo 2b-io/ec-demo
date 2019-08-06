@@ -118,7 +118,7 @@ export default {
       // await fs.removeSync(path.resolve(`${ config.s3DownloadDir }/${ requestId }`))
       //
 
-      const linkDownload = `${ config.endpoint }/download/${ requestId }.zip`
+      const linkDownload = `/download/${ requestId }.zip`
 
       return res.send({ linkDownload })
     }

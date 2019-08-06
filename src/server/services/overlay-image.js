@@ -11,13 +11,13 @@ const overlay = async (
   onputFilePath,
   gravity,
   requestId,
-  {
-    paddingTop,
-    paddingLeft,
-    paddingRight,
-    paddingBottom
-  },
+  padding,
   opacity) => {
+
+  const paddingTop = Number(padding.paddingTop) || 0
+  const paddingLeft = Number(padding.paddingLeft) || 0
+  const paddingRight = Number(padding.paddingRight) || 0
+  const paddingBottom = Number(padding.paddingBottom) || 0
 
   if (paddingTop || paddingLeft || paddingRight || paddingBottom) {
     await paddingWatermark(requestId, { paddingTop, paddingLeft, paddingRight, paddingBottom }, watermarkPath)

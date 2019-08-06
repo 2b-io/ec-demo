@@ -1,6 +1,8 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 
+import logoImage from 'img/logo.svg'
+
 const Wrapper = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -40,7 +42,7 @@ const HeaderComponent = () => {
       <Logo>
         <ItemLogo>
           <a href="/">
-            <img src='img/logo.svg' />
+            <img src={ logoImage } />
           </a>
         </ItemLogo>
       </Logo>

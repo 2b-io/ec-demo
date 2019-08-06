@@ -6,14 +6,12 @@ import config from 'infrastructure/config'
 
 promise.promisifyAll(gm.prototype)
 
-const createPaddingImage = async (requestId, {
-    paddingTop = 0,
-    paddingLeft = 0,
-    paddingRight = 0,
-    paddingBottom = 0
-  },
-  watermarkPath) => {
-
+const createPaddingImage = async (requestId, padding = {}, watermarkPath) => {
+    const paddingTop = Number(padding.paddingTop) || 0
+    const paddingLeft = Number(padding.paddingLeft) || 0
+    const paddingRight = Number(padding.paddingRight) || 0
+    const paddingBottom = Number(padding.paddingBottom) || 0
+    
     await fs.ensureDir(`${ config.watermarkPaddingDir }/${ requestId }`)
     const transparentImagePath = `${ config.watermarkPaddingDir }/${ requestId }/transparentImage.png`
 
@@ -22,8 +20,8 @@ const createPaddingImage = async (requestId, {
       height: heightOriginWatermark
     } = await gm(watermarkPath).sizeAsync()
 
-    const width = Number(paddingLeft) + Number(paddingRight) + Number(widthOriginWatermark)
-    const height = Number(paddingTop) + Number(paddingBottom) + Number(heightOriginWatermark)
+    const width = (Number(paddingLeft) || 0) + (Number(paddingRight) || 0) + Number(widthOriginWatermark)
+    const height = (Number(paddingTop) || 0)+ (Number(paddingBottom) || 0) + Number(heightOriginWatermark)
     //  Create image transparent
 
     await gm(width,height,"Transparent")

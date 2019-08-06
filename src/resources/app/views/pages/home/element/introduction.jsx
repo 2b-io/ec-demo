@@ -1,5 +1,6 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
+import introductionImage from 'img/introduction.png'
 
 import { PrimaryButton, Break } from 'app/ui/elements'
 
@@ -42,7 +43,7 @@ const HeaderComponent = () => {
         <PrimaryButton>Lear more</PrimaryButton>
       </Description>
       <ImageIntro>
-        <img src='img/introduction.png' />
+        <img src={ introductionImage } />
       </ImageIntro>
     </Introduction>
   )
