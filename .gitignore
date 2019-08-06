@@ -64,3 +64,4 @@ typings/
 *.turtle
 *.lock
 /data
+tmp/

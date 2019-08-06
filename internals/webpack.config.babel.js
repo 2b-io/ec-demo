@@ -11,7 +11,7 @@ const resourceDir = path.join(rootDir, './src/resources')
 const outDir = path.join(rootDir, 'data/dist/assets')
 
 const devMode = process.env.NODE_ENV !== 'production'
-const cdn = process.env.ASSET_ENDPOINT
+const cdn = process.env.ASSET_ENDPOINT || ''
 
 export default {
   mode: 'production',
@@ -22,6 +22,10 @@ export default {
     ),
     img: glob.sync(
       path.join(resourceDir, 'img/**/*'),
+      { nodir: true }
+    ),
+    app: glob.sync(
+      path.join(resourceDir, 'app/index.js'),
       { nodir: true }
     )
   },
@@ -48,7 +52,7 @@ export default {
     new OptimizeCssAssetsPlugin()
   ],
   resolve: {
-    extensions: [ '.css', '.js', '.styl' ],
+    extensions: [ '.css', '.js', '.styl', '.jsx' ],
     modules: [
       'node_modules',
       'src/resources'
@@ -56,13 +60,14 @@ export default {
   },
   module: {
     rules: [ {
-      test: /\.m?js$/,
+      test: /\.m?(js|jsx)$/,
       exclude: /(node_modules|bower_components)/,
       use: {
         loader: 'babel-loader',
         options: {
           presets: [
-            '@babel/preset-env'
+            '@babel/preset-env',
+            '@babel/preset-react'
           ],
           plugins: [
             '@babel/plugin-proposal-object-rest-spread',

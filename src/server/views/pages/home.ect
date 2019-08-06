@@ -1,6 +1,5 @@
 <% extend './layout' %>
-
-<% block 'body-end' :%>
+<div id="root"></div>
   <% if @__asset('home.js') :%>
     <script src="<%= @__asset('home.js') %>" defer></script>
   <% end %>
@@ -11,7 +10,3 @@
     <link rel="stylesheet" href="<%= @__asset('home.css') %>">
   <% end %>
 <% end %>
-
-<div>
-  <p>Home page</p>
-</div>

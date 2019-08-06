@@ -1,0 +1,44 @@
+title EC Demo
+
+actor User
+boundary Browser
+control EC
+participant CDN-Server
+database S3
+database MongoDB
+
+User->Browser: Click Upload
+Browser->EC: Create Request
+EC->EC: Create UUID
+Browser<--EC: RequestID
+Browser->EC: Upload Watermark
+EC->S3: Store
+EC<--S3: S3 Path
+Browser<--EC: Done
+Browser->EC: Post config form + Watermark S3 Path
+EC->MongoDB: Store config
+EC<--MongoDB: ConfigID
+EC->EC: Store ConfigID with RequestID
+Browser<--EC: Done
+loop
+    Browser->EC: Upload images
+    EC->S3: Store
+    S3<--EC: S3 Path
+    EC->EC: Store S3 Path with RequestID
+    Browser<--EC: Done
+    Browser->Browser: [FileUploaded] Event
+end
+Browser->Browser: [UploadComplete] Event
+
+Browser->EC: Process request [RequestID]
+
+loop
+EC->CDN-Server: Get /s/file_id.jpeg?config=
+CDN-Server->S3: Get origin file
+CDN-Server->MongoDB: Get config
+CDN-Server->CDN-Server: Process images
+EC<--CDN-Server: Target files
+end
+EC->EC: Zip
+EC->EC: Clear memory
+User<--EC: Download Zip
