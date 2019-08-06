@@ -16,10 +16,15 @@ import {
 import arrToMap from 'services/array-to-map'
 import TemplatePosition from './template-position'
 import TemplatePadding from './template-padding'
+import PreviewConfig from './preview-config'
 
 const WrapperItem = styled.div`
   display: block;
   padding-top: 32px;
+`
+const Config = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 `
 const ActionButton = styled.div``
 
@@ -197,7 +202,11 @@ class UploadForm extends React.Component {
 
   handleGravity(gravity) {
     this.setState({
-      gravity
+      gravity,
+      paddingTop: 0,
+      paddingLeft: 0,
+      paddingRight: 0,
+      paddingBottom: 0,
     })
   }
   changeOpacity(e){
@@ -284,17 +293,34 @@ class UploadForm extends React.Component {
           </ListUpload>
         </ImageUpload>
         <Break/>
-        <LabelItem>Config position</LabelItem>
+        <Config>
+          <LabelItem>Config position</LabelItem>
+          <LabelItem>Preview Config</LabelItem>
+        </Config>
         <Break/>
-        <TemplatePosition
-          handleGravity={ this.handleGravity.bind(this) }
-        />
+        <Config>
+          <TemplatePosition
+            handleGravity={ this.handleGravity.bind(this) }
+          />
+          <PreviewConfig
+            gravity={ this.state.gravity }
+            paddingTop={ this.state.paddingTop }
+            paddingLeft={ this.state.paddingLeft }
+            paddingRight={ this.state.paddingRight }
+            paddingBottom={ this.state.paddingBottom }
+            opacity={ this.state.opacity / 100 }
+          />
+        </Config>
         <Break/>
         <LabelItem>Config padding</LabelItem>
         <Break/>
           <TemplatePadding
             handlePadding={ this.handlePadding.bind(this) }
             gravity={ this.state.gravity }
+            paddingTop={ this.state.paddingTop }
+            paddingLeft={ this.state.paddingLeft }
+            paddingRight={ this.state.paddingRight }
+            paddingBottom={ this.state.paddingBottom }
           />
           <Break/>
           <LabelItem>Opacity</LabelItem>

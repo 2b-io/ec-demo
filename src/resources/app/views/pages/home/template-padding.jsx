@@ -78,7 +78,7 @@ class TemplateConfig extends React.Component {
             name='paddingTop'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
-            defaultValue={ 0 }
+            value={ this.props.paddingTop }
             disabled={ stateInputTop }
           />
         </div>
@@ -88,7 +88,7 @@ class TemplateConfig extends React.Component {
             name='paddingLeft'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
-            defaultValue={ 0 }
+            value={ this.props.paddingLeft }
             disabled={ stateInputLeft }
           />
         </div>
@@ -98,7 +98,7 @@ class TemplateConfig extends React.Component {
             name='paddingRight'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
-            defaultValue={ 0 }
+            value={ this.props.paddingRight }
             disabled={ stateInputRight }
           />
         </div>
@@ -108,7 +108,7 @@ class TemplateConfig extends React.Component {
             name='paddingBottom'
             type='number'
             onChange={ this.onChangePadding.bind(this) }
-            defaultValue={ 0 }
+            value={ this.props.paddingBottom }
             disabled={ stateInputBottom }
           />
         </div>
