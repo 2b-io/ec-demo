@@ -8,7 +8,6 @@ const WrapperItem = styled.div`
   grid-template-rows: repeat(2, 128px);
   grid-template-columns: repeat(2,228px);
   margin: auto;
-  text-align: center;
   padding: 8px;
 `
 

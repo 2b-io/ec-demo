@@ -18,15 +18,34 @@ import TemplatePosition from './template-position'
 import TemplatePadding from './template-padding'
 
 const WrapperItem = styled.div`
-  display: block
-  margin: auto
-  text-align: center
-  padding: 16px
+  display: block;
+  padding-top: 32px
 `
-const ItemUpload = styled.div`
-  display: grid
-  grid-gap: 4px;
+const LabelItem = styled.span`
+  padding-right: 64px;
+  font-size: 18px;
+  font-weight: 500;
+`
+
+const TemplateUpload = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+`
+const ImageUpload = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+`
+
+const Upload = styled.div`
+  display: grid;
   grid-template-columns: 1fr 1fr;
+`
+const ListUpload = styled.ol`
+  padding-left: 32px;
+`
+const FileType = styled.div`
+  text-align: right;
+  padding-top: 24px;
 `
 
 const MIME_FILE = {
@@ -41,7 +60,7 @@ class UploadForm extends React.Component {
     this.state = {
       files: [],
       templateFile: [],
-      mimeType:'zip',
+      mimeType:'images',
       paddingTop: 0,
       paddingLeft: 0,
       paddingRight: 0,
@@ -139,7 +158,7 @@ class UploadForm extends React.Component {
       }
     })
 
-    plupItems.init(MIME_FILE[ 'zip' ])
+    plupItems.init(MIME_FILE[ 'images' ])
 
     this.setState({
       plupItems
@@ -153,7 +172,7 @@ class UploadForm extends React.Component {
 
   componentDidMount() {
     this.uploadTemplate()
-    this.uploadItems(MIME_FILE[ 'zip' ])
+    this.uploadItems(MIME_FILE[ 'images' ])
   }
 
   changeMimeType(event) {
@@ -189,97 +208,110 @@ class UploadForm extends React.Component {
     const { templateFile, files } = this.state
     const templateUpload = Object.values(templateFile).map((file, index) => {
       return (
-        <ItemUpload key = { index } >
+        <li key = { index } >
           <p>
             { file.name } { plupload.formatSize(file.size) }
           </p>
-          <ProgressBar percent={ file.percent }/>
-        </ItemUpload>
+          {
+            file.percent !== 0 && <ProgressBar percent={ file.percent }/>
+          }
+        </li>
       )
     })
 
     const filesUpload = Object.values(files).map((file, index) => {
       return (
-        <ItemUpload key = { index } >
+        <li key = { index } >
           <div>
             <p>
               { file.name } { plupload.formatSize(file.size) }
             </p>
           </div>
-          <ProgressBar percent={ file.percent }/>
-        </ItemUpload>
+          {
+            file.percent !== 0 && <ProgressBar percent={ file.percent }/>
+          }
+        </li>
       )
     })
 
     return (
-      <Container>
-        <WrapperItem>
-          <div>
-            <label>Upload Template</label>
-            <Break/>
-              <PrimaryButton
-                id="browseTemplate"
-                free={ true }
-              >
-                Browse Template...
-              </PrimaryButton>
-          </div>
-          <div>
+      <WrapperItem>
+        <TemplateUpload>
+          <Upload>
+            <LabelItem>Template</LabelItem>
+            <PrimaryButton
+              id="browseTemplate"
+              free={ true }
+            >
+              Browse file...
+            </PrimaryButton>
+          </Upload>
+          <ListUpload>
             { templateUpload }
-          </div>
-          <Break/>
-          <Break/>
+          </ListUpload>
+        </TemplateUpload>
+        <Break/>
+        <Break/>
+        <ImageUpload>
           <div>
-            <label> Upload Images</label>
-            <input
-              type='radio'
-              name='zip'
-              value='zip'
-              onChange={ this.changeMimeType }
-              checked={ this.state.mimeType === 'zip' ? true : false  }/>Zip
-            <input
-              type='radio'
-              name='images'
-              value='images'
-              onChange={ this.changeMimeType }
-              checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
-            <Break/>
-            <PrimaryButton id="browseFiles">Browse Files...</PrimaryButton>
-          </div>
-          <div>
-            { filesUpload }
-          </div>
-          <Break/>
-          <p>Config position </p>
-          <TemplatePosition
-            handleGravity={ this.handleGravity.bind(this) }
-          />
-          <Break/>
-          <p>Config padding </p>
-          <Break/>
-            <TemplatePadding
-              handlePadding={ this.handlePadding.bind(this) }
-              gravity={ this.state.gravity }
-            />
-            <label>Opacity </label>
-            <span> { this.state.opacity }</span>
-            <Break/>
-            <input
-              type="range"
-              defaultValue={ 100 }
-              onChange={ this.changeOpacity.bind(this) }
-              />
-          <Break/>
-          <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
-          <Break/>
-          {
-            this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
-                Download
+            <Upload>
+              <LabelItem>Images</LabelItem>
+              <PrimaryButton
+                id="browseFiles"
+                >
+                Browse Files...
               </PrimaryButton>
-          }
+            </Upload>
+            <FileType>
+              <input
+                type='radio'
+                name='images'
+                value='images'
+                onChange={ this.changeMimeType }
+                checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
+              <input
+                type='radio'
+                name='zip'
+                value='zip'
+                onChange={ this.changeMimeType }
+                checked={ this.state.mimeType === 'zip' ? true : false  }/>Zip
+            </FileType>
+          </div>
+          <ListUpload>
+            { filesUpload }
+          </ListUpload>
+        </ImageUpload>
+        <Break/>
+        <Break/>
+        <p>Config position </p>
+        <TemplatePosition
+          handleGravity={ this.handleGravity.bind(this) }
+        />
+        <Break/>
+        <p>Config padding </p>
+        <Break/>
+          <TemplatePadding
+            handlePadding={ this.handlePadding.bind(this) }
+            gravity={ this.state.gravity }
+          />
+          <label>Opacity </label>
+          <span> { this.state.opacity }</span>
           <Break/>
-        </WrapperItem>
-      </Container>
+          <input
+            type="range"
+            defaultValue={ 100 }
+            onChange={ this.changeOpacity.bind(this) }
+            />
+        <Break/>
+        <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
+        <Break/>
+        {
+          this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
+              Download
+            </PrimaryButton>
+        }
+        <Break/>
+      </WrapperItem>
     )
   }
 }
