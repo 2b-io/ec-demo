@@ -21,8 +21,8 @@ class TemplateConfig extends React.Component {
     this.props.handlePadding({ [ e.target.name ]: e.target.value })
   }
   render() {
-    let stateInputTop = true
-    let stateInputLeft = true
+    let stateInputTop = false
+    let stateInputLeft = false
     let stateInputRight = true
     let stateInputBottom = true
 

@@ -21,7 +21,7 @@ const WrapperItem = styled.div`
   display: block;
   padding-top: 32px;
 `
-const UploadButton = styled.div``
+const ActionButton = styled.div``
 
 const LabelItem = styled.span`
   padding-right: 64px;
@@ -305,15 +305,14 @@ class UploadForm extends React.Component {
           />
           <LabelItem> { this.state.opacity }</LabelItem>
         <Break/>
-        <UploadButton>
+        <ActionButton>
           <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
-        </UploadButton>
-        <Break/>
-        {
-          this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
-              Download
-            </PrimaryButton>
-        }
+          {
+            this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
+                Download
+              </PrimaryButton>
+          }
+        </ActionButton>
         <Break/>
       </WrapperItem>
     )
