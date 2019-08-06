@@ -202,7 +202,11 @@ class UploadForm extends React.Component {
 
   handleGravity(gravity) {
     this.setState({
-      gravity
+      gravity,
+      paddingTop: 0,
+      paddingLeft: 0,
+      paddingRight: 0,
+      paddingBottom: 0,
     })
   }
   changeOpacity(e){
@@ -298,7 +302,14 @@ class UploadForm extends React.Component {
           <TemplatePosition
             handleGravity={ this.handleGravity.bind(this) }
           />
-          <PreviewConfig />
+          <PreviewConfig
+            gravity={ this.state.gravity }
+            paddingTop={ this.state.paddingTop }
+            paddingLeft={ this.state.paddingLeft }
+            paddingRight={ this.state.paddingRight }
+            paddingBottom={ this.state.paddingBottom }
+            opacity={ this.state.opacity / 100 }
+          />
         </Config>
         <Break/>
         <LabelItem>Config padding</LabelItem>
@@ -306,6 +317,10 @@ class UploadForm extends React.Component {
           <TemplatePadding
             handlePadding={ this.handlePadding.bind(this) }
             gravity={ this.state.gravity }
+            paddingTop={ this.state.paddingTop }
+            paddingLeft={ this.state.paddingLeft }
+            paddingRight={ this.state.paddingRight }
+            paddingBottom={ this.state.paddingBottom }
           />
           <Break/>
           <LabelItem>Opacity</LabelItem>

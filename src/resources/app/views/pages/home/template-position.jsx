@@ -5,7 +5,8 @@ const WrapperItem = styled.div`
   border: solid 1px #007FFF;
   grid-gap: 8px;
   display: grid;
-  width: 278px;
+  max-width: 274px;
+  max-height: 274px;
   grid-template-rows: repeat(3, 80px);
   grid-template-columns: repeat(3,80px);
   padding: 8px;
