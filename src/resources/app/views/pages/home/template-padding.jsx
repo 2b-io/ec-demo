@@ -33,27 +33,41 @@ class TemplateConfig extends React.Component {
         break;
       case 'North':
         stateInputTop = false
+        stateInputLeft= true
         break;
       case 'NorthEast':
         stateInputTop = false
         stateInputRight = false
+        stateInputLeft = true
         break;
       case 'West':
         stateInputLeft = false
+        stateInputTop = true
+        break;
+      case 'Center':
+        stateInputLeft = true
+        stateInputTop = true
         break;
       case 'East':
         stateInputRight = false
+        stateInputLeft = true
+        stateInputTop = true
         break;
       case 'SouthWest':
         stateInputLeft = false
+        stateInputTop = true
         stateInputBottom = false
         break;
       case 'South':
         stateInputBottom = false
+        stateInputLeft = true
+        stateInputTop = true
         break;
       case 'SouthEast':
         stateInputBottom = false
         stateInputRight = false
+        stateInputLeft = true
+        stateInputTop = true
         break;
     }
     return (

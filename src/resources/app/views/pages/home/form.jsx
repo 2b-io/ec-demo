@@ -307,6 +307,8 @@ class UploadForm extends React.Component {
         <Break/>
         <ActionButton>
           <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
+          &nbsp;
+          &nbsp;
           {
             this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
                 Download
