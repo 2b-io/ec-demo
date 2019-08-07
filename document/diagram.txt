@@ -38,7 +38,16 @@ CDN-Server->S3: Get origin file
 CDN-Server->MongoDB: Get config
 CDN-Server->CDN-Server: Process images
 EC<--CDN-Server: Target files
+
+Browser(1)<<-EC: [Finish One] Event
 end
+
+
 EC->EC: Zip
 EC->EC: Clear memory
-User<--EC: Download Zip
+
+Browser(1)<<-EC: [Finish All] Event
+
+Browser->Browser: Display [Download] view
+
+User->Browser: Click Download
