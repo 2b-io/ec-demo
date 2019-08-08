@@ -11,6 +11,7 @@ import {
   Break,
   PrimaryButton,
   ProgressBar,
+  ProgressCircular
 } from 'app/ui/elements'
 
 import arrToMap from 'services/array-to-map'
@@ -21,26 +22,27 @@ import PreviewConfig from './preview-config'
 const WrapperItem = styled.div`
   display: block;
   padding-top: 32px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
 `
 const Config = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
 `
 const ActionButton = styled.div``
 
 const LabelItem = styled.span`
-  padding-right: 64px;
   font-size: 18px;
   font-weight: 500;
 `
 
 const TemplateUpload = styled.div`
   display: grid;
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 1fr 1fr 1fr;
 `
-const ImageUpload = styled.div`
+const ImageUpload = styled.li`
   display: grid;
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 1fr 1fr 1fr;
 `
 
 const Upload = styled.div`
@@ -218,90 +220,131 @@ class UploadForm extends React.Component {
   render() {
     const { templateFile, files } = this.state
     const templateUpload = Object.values(templateFile).map((file, index) => {
+      console.log('file', file);
       return (
-        <li key = { index } >
+        <ImageUpload key = { index } >
+          {
+            file.percent !== 0 && <ProgressCircular percent={ file.percent }/>
+          }
           <p>
             { file.name } { plupload.formatSize(file.size) }
           </p>
-          {
-            file.percent !== 0 && <ProgressBar percent={ file.percent }/>
-          }
-        </li>
+        </ImageUpload>
       )
     })
 
     const filesUpload = Object.values(files).map((file, index) => {
       return (
-        <li key = { index } >
+        <ImageUpload key = { index } >
           <div>
             <p>
               { file.name } { plupload.formatSize(file.size) }
             </p>
           </div>
+          <div id='preview'>
+          </div>
           {
-            file.percent !== 0 && <ProgressBar percent={ file.percent }/>
+            file.percent !== 0 && <ProgressCircular percent={ file.percent }/>
           }
-        </li>
+        </ImageUpload>
       )
     })
 
     return (
       <WrapperItem>
-        <TemplateUpload>
-          <Upload>
-            <LabelItem>Template</LabelItem>
-            <PrimaryButton
-              id="browseTemplate"
-              free={ true }
-            >
-              Browse file...
-            </PrimaryButton>
-          </Upload>
-          <ListUpload>
-            { templateUpload }
-          </ListUpload>
-        </TemplateUpload>
-        <Break/>
-        <Break/>
-        <ImageUpload>
+        <div>
           <div>
-            <Upload>
-              <LabelItem>Images</LabelItem>
+            <div>
+              <LabelItem>Template</LabelItem>
               <PrimaryButton
-                id="browseFiles"
-                >
-                Browse Files...
+                id="browseTemplate"
+                free={ true }
+              >
+                Browse file...
               </PrimaryButton>
-            </Upload>
-            <FileType>
-              <input
-                type='radio'
-                name='images'
-                value='images'
-                onChange={ this.changeMimeType }
-                checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
-              <input
-                type='radio'
-                name='zip'
-                value='zip'
-                onChange={ this.changeMimeType }
-                checked={ this.state.mimeType === 'zip' ? true : false  }/>Zip
-            </FileType>
+            </div>
+            <ListUpload>
+              { templateUpload }
+            </ListUpload>
           </div>
-          <ListUpload>
-            { filesUpload }
-          </ListUpload>
-        </ImageUpload>
-        <Break/>
-        <Config>
-          <LabelItem>Config position</LabelItem>
+          <Break/>
+          <Break/>
+          <div>
+            <div>
+              <Upload>
+                <LabelItem>Images</LabelItem>
+                <PrimaryButton
+                  id="browseFiles"
+                  >
+                  Browse Files...
+                </PrimaryButton>
+              </Upload>
+              <FileType>
+                <input
+                  type='radio'
+                  name='images'
+                  value='images'
+                  onChange={ this.changeMimeType }
+                  checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
+                <input
+                  type='radio'
+                  name='zip'
+                  value='zip'
+                  onChange={ this.changeMimeType }
+                  checked={ this.state.mimeType === 'zip' ? true : false  }/>Zip
+              </FileType>
+            </div>
+            <ListUpload>
+              { filesUpload }
+            </ListUpload>
+          </div>
+          <Break/>
+        </div>
+        <div>
+          <Config>
+            <LabelItem>Config position</LabelItem>
+          </Config>
+          <Break/>
+          <Config>
+            <TemplatePosition
+              handleGravity={ this.handleGravity.bind(this) }
+            />
+          </Config>
+          <Break/>
+          <LabelItem>Config padding</LabelItem>
+          <Break/>
+            <TemplatePadding
+              handlePadding={ this.handlePadding.bind(this) }
+              gravity={ this.state.gravity }
+              paddingTop={ this.state.paddingTop }
+              paddingLeft={ this.state.paddingLeft }
+              paddingRight={ this.state.paddingRight }
+              paddingBottom={ this.state.paddingBottom }
+            />
+            <Break/>
+            <LabelItem>Opacity</LabelItem>
+            <input
+              type="range"
+              defaultValue={ 100 }
+              onChange={ this.changeOpacity.bind(this) }
+            />
+            <LabelItem> { this.state.opacity }</LabelItem>
+          <Break/>
+          <ActionButton>
+            <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
+            &nbsp;
+            &nbsp;
+            {
+              this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
+                  Download
+                </PrimaryButton>
+            }
+
+            </ActionButton>
+        </div>
+        <div>
           <LabelItem>Preview Config</LabelItem>
-        </Config>
-        <Break/>
-        <Config>
-          <TemplatePosition
-            handleGravity={ this.handleGravity.bind(this) }
-          />
+          <Break/>
           <PreviewConfig
             gravity={ this.state.gravity }
             paddingTop={ this.state.paddingTop }
@@ -310,38 +353,7 @@ class UploadForm extends React.Component {
             paddingBottom={ this.state.paddingBottom }
             opacity={ this.state.opacity / 100 }
           />
-        </Config>
-        <Break/>
-        <LabelItem>Config padding</LabelItem>
-        <Break/>
-          <TemplatePadding
-            handlePadding={ this.handlePadding.bind(this) }
-            gravity={ this.state.gravity }
-            paddingTop={ this.state.paddingTop }
-            paddingLeft={ this.state.paddingLeft }
-            paddingRight={ this.state.paddingRight }
-            paddingBottom={ this.state.paddingBottom }
-          />
-          <Break/>
-          <LabelItem>Opacity</LabelItem>
-          <input
-            type="range"
-            defaultValue={ 100 }
-            onChange={ this.changeOpacity.bind(this) }
-          />
-          <LabelItem> { this.state.opacity }</LabelItem>
-        <Break/>
-        <ActionButton>
-          <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
-          &nbsp;
-          &nbsp;
-          {
-            this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
-                Download
-              </PrimaryButton>
-          }
-        </ActionButton>
-        <Break/>
+        </div>
       </WrapperItem>
     )
   }

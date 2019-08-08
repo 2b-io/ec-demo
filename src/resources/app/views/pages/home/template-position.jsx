@@ -3,7 +3,6 @@ import styled, { css } from 'styled-components'
 
 const WrapperItem = styled.div`
   border: solid 1px #007FFF;
-  grid-gap: 8px;
   display: grid;
   max-width: 274px;
   max-height: 274px;

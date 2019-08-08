@@ -45,8 +45,10 @@ class TemplateConfig extends React.Component {
         stateInputTop = true
         break;
       case 'Center':
-        stateInputLeft = true
-        stateInputTop = true
+        stateInputTop = false
+        stateInputLeft = false
+        stateInputRight = false
+        stateInputBottom = false
         break;
       case 'East':
         stateInputRight = false
