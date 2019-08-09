@@ -1,7 +1,13 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 
-const WrapperItem = styled.div``
+const WrapperItem = styled.div`
+  ${
+    ({ padding }) => css`
+      padding: ${ padding }px
+    `
+  }
+`
 
 const Progress = styled.ul`
   position: relative;
@@ -21,17 +27,17 @@ const Progress = styled.ul`
       content: attr(data-percent);
       position: absolute;
       width: 100%;
-      top: 3px;
+      top: 1px
       left: 0;
       font-weight: 500;
-      font-size: 11px;
+      font-size: 8px;
       text-align: center;
     }
   }
 
   svg {
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
 
     :nth-child(2) {
       position: absolute;
@@ -62,10 +68,10 @@ const Progress = styled.ul`
     }
   }
 `
-const ProgressBarComponent = ({ percent = 0 }) => {
+const ProgressBarComponent = ({ percent = 0, padding }) => {
   const pogressPercent = (percent * 629) / 100
   return (
-    <WrapperItem>
+    <WrapperItem padding = { padding }>
       <Progress>
         <li data-percent={ `${ percent }%` }>
           <svg viewBox="-10 -10 220 220">

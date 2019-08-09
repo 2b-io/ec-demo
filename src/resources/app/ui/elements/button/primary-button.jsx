@@ -53,9 +53,16 @@ const PrimaryButton = styled.button.attrs( props => {
 
   @media (min-width: 600px) {
     width: auto;
-    min-width: 128px;
     text-align: center;
     margin: 0 0 0 auto;
+    ${
+      ({ minWidth }) => minWidth ? css`
+        min-width: ${ minWidth }px
+      `
+      : css`
+        min-width : 128px;
+      `
+    }
   }
 `
 

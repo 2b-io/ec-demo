@@ -11,7 +11,8 @@ import {
   Break,
   PrimaryButton,
   ProgressBar,
-  ProgressCircular
+  ProgressCircular,
+  PlainButton
 } from 'app/ui/elements'
 
 import arrToMap from 'services/array-to-map'
@@ -34,26 +35,32 @@ const ActionButton = styled.div``
 const LabelItem = styled.span`
   font-size: 18px;
   font-weight: 500;
+  padding: 8px;
 `
 
 const TemplateUpload = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 `
-const ImageUpload = styled.li`
+const ImageUpload = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 10fr;
+
+  p {
+    padding: 8px
+  }
+
+  button {
+    margin: 2px
+  }
 `
 
 const Upload = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 128px 128px;
 `
-const ListUpload = styled.ol`
-  padding-left: 32px;
-`
+const ListUpload = styled.div``
 const FileType = styled.div`
-  text-align: right;
   padding-top: 24px;
 `
 
@@ -220,11 +227,11 @@ class UploadForm extends React.Component {
   render() {
     const { templateFile, files } = this.state
     const templateUpload = Object.values(templateFile).map((file, index) => {
-      console.log('file', file);
       return (
         <ImageUpload key = { index } >
+          <p>{ index }</p>
           {
-            file.percent !== 0 && <ProgressCircular percent={ file.percent }/>
+            file.percent !== 0 ? <ProgressCircular percent={ file.percent } padding={ 8 }/> : <PrimaryButton minWidth={ 20 }>X</PrimaryButton>
           }
           <p>
             { file.name } { plupload.formatSize(file.size) }
@@ -236,16 +243,13 @@ class UploadForm extends React.Component {
     const filesUpload = Object.values(files).map((file, index) => {
       return (
         <ImageUpload key = { index } >
-          <div>
-            <p>
-              { file.name } { plupload.formatSize(file.size) }
-            </p>
-          </div>
-          <div id='preview'>
-          </div>
+          <p>{ index }</p>
           {
-            file.percent !== 0 && <ProgressCircular percent={ file.percent }/>
+            file.percent !== 0 ? <ProgressCircular percent={ file.percent } padding={ 8 }/> : <PrimaryButton minWidth={ 20 }>X</PrimaryButton>
           }
+          <p>
+            { file.name } { plupload.formatSize(file.size) }
+          </p>
         </ImageUpload>
       )
     })
@@ -254,7 +258,7 @@ class UploadForm extends React.Component {
       <WrapperItem>
         <div>
           <div>
-            <div>
+            <Upload>
               <LabelItem>Template</LabelItem>
               <PrimaryButton
                 id="browseTemplate"
@@ -262,7 +266,7 @@ class UploadForm extends React.Component {
               >
                 Browse file...
               </PrimaryButton>
-            </div>
+            </Upload>
             <ListUpload>
               { templateUpload }
             </ListUpload>
@@ -270,15 +274,13 @@ class UploadForm extends React.Component {
           <Break/>
           <Break/>
           <div>
-            <div>
-              <Upload>
-                <LabelItem>Images</LabelItem>
-                <PrimaryButton
-                  id="browseFiles"
-                  >
-                  Browse Files...
-                </PrimaryButton>
-              </Upload>
+            <Upload>
+              <LabelItem>Images</LabelItem>
+              <PrimaryButton
+                id="browseFiles"
+                >
+                Browse Files...
+              </PrimaryButton>
               <FileType>
                 <input
                   type='radio'
@@ -286,6 +288,8 @@ class UploadForm extends React.Component {
                   value='images'
                   onChange={ this.changeMimeType }
                   checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
+              </FileType>
+              <FileType>
                 <input
                   type='radio'
                   name='zip'
@@ -293,7 +297,7 @@ class UploadForm extends React.Component {
                   onChange={ this.changeMimeType }
                   checked={ this.state.mimeType === 'zip' ? true : false  }/>Zip
               </FileType>
-            </div>
+            </Upload>
             <ListUpload>
               { filesUpload }
             </ListUpload>

@@ -4,10 +4,10 @@ import styled, { css } from 'styled-components'
 const WrapperItem = styled.div`
   border: solid 1px #007FFF;
   display: grid;
-  max-width: 274px;
-  max-height: 274px;
-  grid-template-rows: repeat(3, 80px);
-  grid-template-columns: repeat(3,80px);
+  max-width: 320px;
+  max-height: 320px;
+  grid-template-rows: repeat(3, 100px);
+  grid-template-columns: repeat(3,100px);
   padding: 8px;
 `
 
