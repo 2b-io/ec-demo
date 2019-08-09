@@ -74,7 +74,7 @@ class UploadForm extends React.Component {
     super(props)
 
     this.state = {
-      files: [],
+      imagesFile: [],
       templateFile: [],
       mimeType:'images',
       paddingTop: 0,
@@ -123,6 +123,13 @@ class UploadForm extends React.Component {
         FilesAdded: (up, files) => {
           this.setState({ templateFile: arrToMap(files, 'id') })
         },
+        FilesRemoved: (up ,files) => {
+          const { templateFile } = this.state
+          const id = files[0].id
+          const { [ id ]: removedFile, ...newTemplateFile } = templateFile
+
+          this.setState({ templateFile: newTemplateFile})
+        },
         UploadProgress: (up, file) => {
           const { templateFile } = this.state
           this.setState({ templateFile })
@@ -154,8 +161,15 @@ class UploadForm extends React.Component {
       max_retries: 3,
       chunk_size: '200kb',
       init: {
-        FilesAdded: (up, files) => {
-          this.setState({ files: arrToMap(files, 'id') })
+        FilesAdded: (up, imagesFile) => {
+          this.setState({ imagesFile: arrToMap(imagesFile, 'id') })
+        },
+        FilesRemoved: (up ,files) => {
+          const { imagesFile } = this.state
+          const id = files[0].id
+          const { [ id ]: removedFile, ...newImagesFile } = imagesFile
+
+          this.setState({ imagesFile: newImagesFile})
         },
         UploadProgress: (up, file) => {
           const { files } = this.state
@@ -218,20 +232,42 @@ class UploadForm extends React.Component {
       paddingBottom: 0,
     })
   }
+
   changeOpacity(e){
     this.setState({ opacity: e.target.value })
   }
+
   downloadFile(){
     window.location.href = this.props.linkDownload
   }
+
+  removeTemplate(file){
+    const { plupTemplate } = this.state
+    plupTemplate.removeFile(file)
+  }
+
+  removeImage(file){
+    const { plupItems } = this.state
+    plupItems.removeFile(file)
+  }
+
   render() {
-    const { templateFile, files } = this.state
+    const { templateFile, imagesFile } = this.state
     const templateUpload = Object.values(templateFile).map((file, index) => {
       return (
         <ImageUpload key = { index } >
           <p>{ index }</p>
           {
-            file.percent !== 0 ? <ProgressCircular percent={ file.percent } padding={ 8 }/> : <PrimaryButton minWidth={ 20 }>X</PrimaryButton>
+            file.percent !== 0 ?
+              <ProgressCircular
+                percent={ file.percent }
+                padding={ 8 }/>
+                :
+              <PrimaryButton
+                onClick={ this.removeTemplate.bind(this, file) }
+                minWidth={ 20 }>
+                  X
+              </PrimaryButton>
           }
           <p>
             { file.name } { plupload.formatSize(file.size) }
@@ -240,12 +276,21 @@ class UploadForm extends React.Component {
       )
     })
 
-    const filesUpload = Object.values(files).map((file, index) => {
+    const filesUpload = Object.values(imagesFile).map((file, index) => {
       return (
         <ImageUpload key = { index } >
           <p>{ index }</p>
           {
-            file.percent !== 0 ? <ProgressCircular percent={ file.percent } padding={ 8 }/> : <PrimaryButton minWidth={ 20 }>X</PrimaryButton>
+            file.percent !== 0 ?
+              <ProgressCircular
+                percent={ file.percent }
+                padding={ 8 }/>
+                :
+                <PrimaryButton
+                onClick={ this.removeImage.bind(this, file) }
+                minWidth={ 20 }>
+                  X
+                </PrimaryButton>
           }
           <p>
             { file.name } { plupload.formatSize(file.size) }
