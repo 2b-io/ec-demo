@@ -24,7 +24,7 @@ export default {
 
       await fs.ensureDir(`${ config.imageResultDir }/${ requestId }`)
 
-      const { bucket, s3Key, config: { gravity, padding, opacity } } = await configImage.get(requestId)
+      const { s3Key, config: { gravity, padding, opacity } } = await configImage.get(requestId)
 
       const s3KeyOriginImage = cacheRequest.get(requestId).images
 

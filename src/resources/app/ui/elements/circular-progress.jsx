@@ -12,8 +12,9 @@ const WrapperItem = styled.div`
 const Progress = styled.ul`
   position: relative;
   display: inline-block;
-  padding: 0;
   text-align: center;
+  width:40px;
+  height: 40px;
 
   >li {
     display: inline-block;
@@ -22,22 +23,24 @@ const Progress = styled.ul`
     color: #007FFF;
     font-family: Lato;
     font-weight: 100;
+    width:40px;
+    height: 40px;
 
     :after {
       content: attr(data-percent);
       position: absolute;
       width: 100%;
-      top: 1px
+      top: 8px
       left: 0;
       font-weight: 500;
-      font-size: 8px;
+      font-size: 12px;
       text-align: center;
     }
   }
 
   svg {
-    width: 25px;
-    height: 25px;
+    width: 40px;
+    height: 40px;
 
     :nth-child(2) {
       position: absolute;
@@ -52,8 +55,8 @@ const Progress = styled.ul`
       stroke-dasharray: 629;
       stroke: #fff;
       opacity: 1;
-      -webkit-animation: load 2s;
-              animation: load 2s;
+      -webkit-animation: load 1s;
+              animation: load 1s;
     }
   }
 

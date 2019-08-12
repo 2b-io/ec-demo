@@ -1,6 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import plupload from 'plupload'
+import mOxie from 'plupload/js/moxie'
+
 import styled, { css } from 'styled-components'
 
 import { mapDispatch } from 'app/services/redux-helpers'
@@ -32,6 +34,15 @@ const Config = styled.div`
 `
 const ActionButton = styled.div``
 
+const Preview = styled.img.attrs( props => {
+  src: props.src
+})`
+  margin-top: 2px;
+  width: 40px;
+  height: 40px;
+  object-fit: cover
+`
+
 const LabelItem = styled.span`
   font-size: 18px;
   font-weight: 500;
@@ -43,8 +54,10 @@ const TemplateUpload = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
 `
 const ImageUpload = styled.div`
+  padding-top: 24px;
   display: grid;
-  grid-template-columns: 1fr 1fr 10fr;
+  grid-gap: 4px;
+  grid-template-columns: 1fr 1fr 1fr 10fr;
 
   p {
     padding: 8px
@@ -74,14 +87,16 @@ class UploadForm extends React.Component {
     super(props)
 
     this.state = {
-      imagesFile: [],
+      imageFiles: [],
       templateFile: [],
       mimeType:'images',
       paddingTop: 0,
       paddingLeft: 0,
       paddingRight: 0,
       paddingBottom: 0,
-      opacity: 100
+      opacity: 100,
+      imagePreviews: {},
+      templatePreviews: {}
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -119,22 +134,37 @@ class UploadForm extends React.Component {
       browse_button: 'browseTemplate',
       max_retries: 3,
       chunk_size: '200kb',
+      urlstream_upload: true,
       init: {
-        FilesAdded: (up, files) => {
-          this.setState({ templateFile: arrToMap(files, 'id') })
+        FilesAdded: (uploader, files) => {
+          files.forEach((file) => {
+            const reader = new FileReader()
+            reader.onload = () => {
+              this.setState({
+                templatePreviews: {
+                  ...this.state.templatePreviews,
+                  [ file.id ]: reader.result
+                }
+              })
+            }
+            reader.readAsDataURL(file.getNative())
+          })
         },
-        FilesRemoved: (up ,files) => {
-          const { templateFile } = this.state
-          const id = files[0].id
-          const { [ id ]: removedFile, ...newTemplateFile } = templateFile
-
-          this.setState({ templateFile: newTemplateFile})
+        FilesRemoved: (uploader ,files) => {
+          const templatePreviews = files.reduce((state, file) => {
+            const { [ file.id ]: removed, ...reducedState } = state
+            return reducedState
+          }, this.state.templatePreviews)
+          this.setState({ templatePreviews })
         },
-        UploadProgress: (up, file) => {
+        QueueChanged: (queue) => {
+          this.setState({ templateFile: arrToMap(queue.files, 'id') })
+        },
+        UploadProgress: (uploader, file) => {
           const { templateFile } = this.state
           this.setState({ templateFile })
         },
-        UploadComplete: (up, files) => {
+        UploadComplete: (uploader, files) => {
           if (files.length) {
             this.props.uploadFilesCompleted('UPLOAD_TEMPLATE_COMPLETED')
           }
@@ -161,21 +191,35 @@ class UploadForm extends React.Component {
       max_retries: 3,
       chunk_size: '200kb',
       init: {
-        FilesAdded: (up, imagesFile) => {
-          this.setState({ imagesFile: arrToMap(imagesFile, 'id') })
+        FilesAdded: (uploader, files) => {
+          files.forEach((file) => {
+            const reader = new FileReader()
+            reader.onload = () => {
+              this.setState({
+                imagePreviews: {
+                  ...this.state.imagePreviews,
+                  [ file.id ]: reader.result
+                }
+              })
+            }
+            reader.readAsDataURL(file.getNative())
+          })
         },
-        FilesRemoved: (up ,files) => {
-          const { imagesFile } = this.state
-          const id = files[0].id
-          const { [ id ]: removedFile, ...newImagesFile } = imagesFile
-
-          this.setState({ imagesFile: newImagesFile})
+        QueueChanged: (queue) => {
+          this.setState({ imageFiles: arrToMap(queue.files, 'id') })
         },
-        UploadProgress: (up, file) => {
+        FilesRemoved: (uploader ,files) => {
+          const imagePreviews = files.reduce((state, file) => {
+            const { [file.id]: removed, ...reducedState } = state
+            return reducedState
+          }, this.state.imagePreviews)
+          this.setState({ imagePreviews })
+        },
+        UploadProgress: (uploader, file) => {
           const { files } = this.state
           this.setState({ files })
         },
-        UploadComplete: (up, files) => {
+        UploadComplete: (uploader, files) => {
           if (files.length) {
             this.props.uploadFilesCompleted('UPLOAD_ITEMS_COMPLETED')
           }
@@ -252,7 +296,8 @@ class UploadForm extends React.Component {
   }
 
   render() {
-    const { templateFile, imagesFile } = this.state
+    const { templateFile, imageFiles, imagePreviews, templatePreviews } = this.state
+
     const templateUpload = Object.values(templateFile).map((file, index) => {
       return (
         <ImageUpload key = { index } >
@@ -261,13 +306,16 @@ class UploadForm extends React.Component {
             file.percent !== 0 ?
               <ProgressCircular
                 percent={ file.percent }
-                padding={ 8 }/>
+                />
                 :
               <PrimaryButton
                 onClick={ this.removeTemplate.bind(this, file) }
                 minWidth={ 20 }>
                   X
               </PrimaryButton>
+          }
+          {
+            templatePreviews[ file.id ] && <Preview src={ templatePreviews[ file.id ] }/>
           }
           <p>
             { file.name } { plupload.formatSize(file.size) }
@@ -276,7 +324,7 @@ class UploadForm extends React.Component {
       )
     })
 
-    const filesUpload = Object.values(imagesFile).map((file, index) => {
+    const filesUpload = Object.values(imageFiles).map((file, index) => {
       return (
         <ImageUpload key = { index } >
           <p>{ index }</p>
@@ -284,13 +332,16 @@ class UploadForm extends React.Component {
             file.percent !== 0 ?
               <ProgressCircular
                 percent={ file.percent }
-                padding={ 8 }/>
+                />
                 :
                 <PrimaryButton
                 onClick={ this.removeImage.bind(this, file) }
-                minWidth={ 20 }>
+                minWidth={ 40 }>
                   X
                 </PrimaryButton>
+          }
+          {
+            imagePreviews[ file.id ] && <Preview src={ imagePreviews[ file.id ] }/>
           }
           <p>
             { file.name } { plupload.formatSize(file.size) }
