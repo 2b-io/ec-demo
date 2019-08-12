@@ -4,15 +4,12 @@ import styled, { css } from 'styled-components'
 const WrapperItem = styled.div`
   border: solid 1px #007FFF;
   display: grid;
-  max-width: 320px;
-  max-height: 320px;
+  max-width: 302px;
   grid-template-rows: repeat(3, 100px);
   grid-template-columns: repeat(3,100px);
-  padding: 8px;
 `
 
 const Item = styled.button`
-
   ${
     ({ active, theme }) => active ?
     css`
@@ -30,6 +27,7 @@ const Item = styled.button`
   transition:
     background .3s linear,
     color .3s linear;
+
   border: none;
   outline: none;
   appearance: none;

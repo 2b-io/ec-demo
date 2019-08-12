@@ -1,7 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import plupload from 'plupload'
-import mOxie from 'plupload/js/moxie'
 
 import styled, { css } from 'styled-components'
 
@@ -25,8 +24,6 @@ import PreviewConfig from './preview-config'
 const WrapperItem = styled.div`
   display: block;
   padding-top: 32px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
 `
 const Config = styled.div`
   display: grid;
@@ -34,19 +31,25 @@ const Config = styled.div`
 `
 const ActionButton = styled.div``
 
-const Preview = styled.img.attrs( props => {
+const Session = styled.div`
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+`
+
+const Thumbnail = styled.img.attrs( props => {
   src: props.src
 })`
   margin-top: 2px;
   width: 40px;
   height: 40px;
-  object-fit: cover
+  object-fit: contain;
 `
 
 const LabelItem = styled.span`
   font-size: 18px;
   font-weight: 500;
-  padding: 8px;
 `
 
 const TemplateUpload = styled.div`
@@ -96,7 +99,7 @@ class UploadForm extends React.Component {
       paddingBottom: 0,
       opacity: 100,
       imagePreviews: {},
-      templatePreviews: {}
+      templatePreview: {}
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -141,24 +144,17 @@ class UploadForm extends React.Component {
             const reader = new FileReader()
             reader.onload = () => {
               this.setState({
-                templatePreviews: {
-                  ...this.state.templatePreviews,
-                  [ file.id ]: reader.result
-                }
+                templatePreview: reader.result
               })
             }
             reader.readAsDataURL(file.getNative())
           })
         },
         FilesRemoved: (uploader ,files) => {
-          const templatePreviews = files.reduce((state, file) => {
-            const { [ file.id ]: removed, ...reducedState } = state
-            return reducedState
-          }, this.state.templatePreviews)
-          this.setState({ templatePreviews })
+          this.setState({ templatePreview:'' })
         },
         QueueChanged: (queue) => {
-          this.setState({ templateFile: arrToMap(queue.files, 'id') })
+          this.setState({ templateFile: queue.files[0] })
         },
         UploadProgress: (uploader, file) => {
           const { templateFile } = this.state
@@ -296,33 +292,29 @@ class UploadForm extends React.Component {
   }
 
   render() {
-    const { templateFile, imageFiles, imagePreviews, templatePreviews } = this.state
+    const { templateFile, imageFiles, imagePreviews, templatePreview } = this.state
 
-    const templateUpload = Object.values(templateFile).map((file, index) => {
-      return (
-        <ImageUpload key = { index } >
-          <p>{ index }</p>
-          {
-            file.percent !== 0 ?
-              <ProgressCircular
-                percent={ file.percent }
-                />
-                :
-              <PrimaryButton
-                onClick={ this.removeTemplate.bind(this, file) }
-                minWidth={ 20 }>
-                  X
-              </PrimaryButton>
-          }
-          {
-            templatePreviews[ file.id ] && <Preview src={ templatePreviews[ file.id ] }/>
-          }
-          <p>
-            { file.name } { plupload.formatSize(file.size) }
-          </p>
-        </ImageUpload>
-      )
-    })
+    const templateUpload = templatePreview.length ? <ImageUpload >
+      <p>1</p>
+      {
+        templateFile.percent !== 0 ?
+          <ProgressCircular
+            percent={ templateFile.percent }
+            />
+            :
+          <PrimaryButton
+            onClick={ this.removeTemplate.bind(this, templateFile) }
+            minWidth={ 20 }>
+              X
+          </PrimaryButton>
+      }
+      <Thumbnail src={ templatePreview }/>
+      <p>
+        { templateFile.name } { plupload.formatSize(templateFile.size) }
+      </p>
+    </ImageUpload>
+    :
+    <div></div>
 
     const filesUpload = Object.values(imageFiles).map((file, index) => {
       return (
@@ -341,7 +333,7 @@ class UploadForm extends React.Component {
                 </PrimaryButton>
           }
           {
-            imagePreviews[ file.id ] && <Preview src={ imagePreviews[ file.id ] }/>
+            imagePreviews[ file.id ] && <Thumbnail src={ imagePreviews[ file.id ] }/>
           }
           <p>
             { file.name } { plupload.formatSize(file.size) }
@@ -352,7 +344,7 @@ class UploadForm extends React.Component {
 
     return (
       <WrapperItem>
-        <div>
+        <Session>
           <div>
             <Upload>
               <LabelItem>Template</LabelItem>
@@ -367,8 +359,33 @@ class UploadForm extends React.Component {
               { templateUpload }
             </ListUpload>
           </div>
+          <div>
+          <Config>
+            <LabelItem>Config position</LabelItem>
+          </Config>
           <Break/>
-          <Break/>
+          <Config>
+            <TemplatePosition
+              handleGravity={ this.handleGravity.bind(this) }
+            />
+          </Config>
+          </div>
+          <div>
+            <LabelItem>Preview Config</LabelItem>
+            <Break/>
+            <PreviewConfig
+              gravity={ this.state.gravity }
+              paddingTop={ this.state.paddingTop }
+              paddingLeft={ this.state.paddingLeft }
+              paddingRight={ this.state.paddingRight }
+              paddingBottom={ this.state.paddingBottom }
+              opacity={ this.state.opacity / 100 }
+              templatePreview={ templatePreview }
+              imagePreviews={ imagePreviews }
+            />
+          </div>
+        </Session>
+        <Session>
           <div>
             <Upload>
               <LabelItem>Images</LabelItem>
@@ -383,7 +400,7 @@ class UploadForm extends React.Component {
                   name='images'
                   value='images'
                   onChange={ this.changeMimeType }
-                  checked={ this.state.mimeType === 'images' ? true : false  }/>Multiple Files
+                  checked={ this.state.mimeType === 'images' ? true : false }/>Multiple Files
               </FileType>
               <FileType>
                 <input
@@ -391,36 +408,26 @@ class UploadForm extends React.Component {
                   name='zip'
                   value='zip'
                   onChange={ this.changeMimeType }
-                  checked={ this.state.mimeType === 'zip' ? true : false  }/>Zip
+                  checked={ this.state.mimeType === 'zip' ? true : false }/>Zip
               </FileType>
             </Upload>
             <ListUpload>
               { filesUpload }
             </ListUpload>
+            <Break/>
           </div>
-          <Break/>
-        </div>
-        <div>
-          <Config>
-            <LabelItem>Config position</LabelItem>
-          </Config>
-          <Break/>
-          <Config>
-            <TemplatePosition
-              handleGravity={ this.handleGravity.bind(this) }
-            />
-          </Config>
-          <Break/>
-          <LabelItem>Config padding</LabelItem>
-          <Break/>
-            <TemplatePadding
-              handlePadding={ this.handlePadding.bind(this) }
-              gravity={ this.state.gravity }
-              paddingTop={ this.state.paddingTop }
-              paddingLeft={ this.state.paddingLeft }
-              paddingRight={ this.state.paddingRight }
-              paddingBottom={ this.state.paddingBottom }
-            />
+          <div>
+            <LabelItem>Config padding</LabelItem>
+            <Break/>
+              <TemplatePadding
+                handlePadding={ this.handlePadding.bind(this) }
+                gravity={ this.state.gravity }
+                paddingTop={ this.state.paddingTop }
+                paddingLeft={ this.state.paddingLeft }
+                paddingRight={ this.state.paddingRight }
+                paddingBottom={ this.state.paddingBottom }
+              />
+            <Break/>
             <Break/>
             <LabelItem>Opacity</LabelItem>
             <input
@@ -429,31 +436,24 @@ class UploadForm extends React.Component {
               onChange={ this.changeOpacity.bind(this) }
             />
             <LabelItem> { this.state.opacity }</LabelItem>
-          <Break/>
-          <ActionButton>
-            <PrimaryButton onClick={ this.uploadAllFiles.bind(this) }>Upload</PrimaryButton>
-            &nbsp;
-            &nbsp;
-            {
-              this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
-                  Download
-                </PrimaryButton>
-            }
-
-            </ActionButton>
-        </div>
-        <div>
-          <LabelItem>Preview Config</LabelItem>
-          <Break/>
-          <PreviewConfig
-            gravity={ this.state.gravity }
-            paddingTop={ this.state.paddingTop }
-            paddingLeft={ this.state.paddingLeft }
-            paddingRight={ this.state.paddingRight }
-            paddingBottom={ this.state.paddingBottom }
-            opacity={ this.state.opacity / 100 }
-          />
-        </div>
+            <Break/>
+          </div>
+          <div>
+          </div>
+        </Session>
+        <ActionButton>
+          <PrimaryButton
+            onClick={ this.uploadAllFiles.bind(this) }>
+            Upload
+          </PrimaryButton>
+          &nbsp;
+          &nbsp;
+          {
+            this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
+                Download
+              </PrimaryButton>
+          }
+        </ActionButton>
       </WrapperItem>
     )
   }

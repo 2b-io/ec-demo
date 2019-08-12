@@ -11,7 +11,6 @@ const PrimaryButton = styled.button.attrs( props => {
   line-height: 40px;
   height: 40px;
   margin: auto;
-  width: 100%;
   transition:
     background .3s linear,
     color .3s linear;
@@ -46,7 +45,14 @@ const PrimaryButton = styled.button.attrs( props => {
         }
       `
   }
-
+  ${
+    ({ minWidth }) => minWidth ? css`
+      min-width: ${ minWidth }px
+    `
+    : css`
+      min-width : 128px;
+    `
+  }
   &:focus {
     outline: none;
   }
