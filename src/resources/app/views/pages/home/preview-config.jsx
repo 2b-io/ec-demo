@@ -41,7 +41,7 @@ const Watermark = styled.img.attrs( props => {
       right,
       bottom,
       opacity = 1,
-      transform
+      transform,
     }) => css`
       padding-top: ${ paddingTop }px;
       padding-left: ${ paddingLeft }px;
@@ -76,6 +76,9 @@ const DescriptionTitle = styled.h1`
 class PreviewImage   extends React.Component {
   constructor(props) {
     super(props)
+
+    this.imageLivePreview = React.createRef()
+    this.watermarkLivePreview = React.createRef()
   }
 
   render() {
@@ -162,15 +165,25 @@ class PreviewImage   extends React.Component {
         break;
     }
 
-    let _imagesPreview
+    let _imagePreview
 
     if (previewImage) {
-      _imagesPreview = previewImage
+      _imagePreview = previewImage
     } else {
-      _imagesPreview = defaultWatermark
+      _imagePreview = defaultWatermark
     }
     if (defaultPreviewImage && !previewImage) {
-      _imagesPreview = defaultPreviewImage
+      _imagePreview = defaultPreviewImage
+    }
+
+    let ratioWithWatermarkH = 'auto'
+    let ratioWithWatermarkW = 'auto'
+
+    if (this.imageLivePreview.current && this.watermarkLivePreview.current) {
+      if (this.imageLivePreview.current.naturalHeight) {
+        ratioWithWatermarkH = ( 300 / this.imageLivePreview.current.naturalHeight) * this.watermarkLivePreview.current.naturalHeight
+        ratioWithWatermarkW = ( 300 / this.imageLivePreview.current.naturalWidth) * this.watermarkLivePreview.current.naturalWidth
+      }
     }
 
     return (
@@ -178,6 +191,9 @@ class PreviewImage   extends React.Component {
         <Preview>
           <FramePreview>
             <Watermark
+              height = { ratioWithWatermarkH }
+              width = { ratioWithWatermarkW }
+              ref={ this.watermarkLivePreview }
               src={ templatePreview.length ? templatePreview : iconWatermark }
               top={ top }
               left={ left }
@@ -191,7 +207,10 @@ class PreviewImage   extends React.Component {
               transform={ transform }
               >
             </Watermark>
-            <ImageLivePreview src={ _imagesPreview }/>
+            <ImageLivePreview
+              ref={ this.imageLivePreview }
+              src={ _imagePreview }
+             />
           </FramePreview>
         </Preview>
       </Wrapper>

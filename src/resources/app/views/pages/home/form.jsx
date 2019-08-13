@@ -38,6 +38,7 @@ const Session = styled.div`
   padding-top: 20px;
   padding-bottom: 20px;
   display: grid;
+  grid-gap: 8px;
   grid-template-columns: 1fr 1fr 1fr;
 `
 
@@ -77,8 +78,10 @@ const ImageUpload = styled.div`
 const Collection = styled.div`
   padding-top: 8px;
   display: grid;
-  grid-grap: 8px;
+  grid-gap: 8px;
   grid-template-columns: 1fr 1fr 1fr 1fr;
+  max-height: 400px;
+  overflow-y: scroll;
 `
 
 const ThumbnailPreview = styled.img.attrs( props => {
@@ -92,7 +95,10 @@ const Upload = styled.div`
   display: grid;
   grid-template-columns: 128px 128px;
 `
-const ListUpload = styled.div``
+const ListUpload = styled.div`
+  max-height: 312px;
+  overflow-y: scroll;
+`
 const FileType = styled.div`
   padding-top: 24px;
 `
@@ -451,7 +457,6 @@ class UploadForm extends React.Component {
             <ListUpload>
               { filesUpload }
             </ListUpload>
-            <Break/>
           </div>
           <div>
             <LabelItem>Config padding</LabelItem>
@@ -476,7 +481,7 @@ class UploadForm extends React.Component {
             <Break/>
           </div>
           <div>
-          <Collection >
+          <Collection>
             { thumbnails }
           </Collection>
           </div>
