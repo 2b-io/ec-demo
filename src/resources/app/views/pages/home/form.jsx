@@ -74,6 +74,20 @@ const ImageUpload = styled.div`
   }
 `
 
+const Collection = styled.div`
+  padding-top: 8px;
+  display: grid;
+  grid-grap: 8px;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+`
+
+const ThumbnailPreview = styled.img.attrs( props => {
+  src: props.src
+})`
+  width: 100px;
+  object-fit: cover;
+`
+
 const Upload = styled.div`
   display: grid;
   grid-template-columns: 128px 128px;
@@ -102,7 +116,8 @@ class UploadForm extends React.Component {
       paddingBottom: 0,
       opacity: 100,
       imagePreviews: {},
-      templatePreview: {}
+      templatePreview: {},
+      imagesPreview: ''
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -294,6 +309,12 @@ class UploadForm extends React.Component {
     plupItems.removeFile(file)
   }
 
+  changeImagePreview(image){
+    this.setState({
+      previewImage: image
+    })
+  }
+
   render() {
     const { templateFile, imageFiles, imagePreviews, templatePreview } = this.state
 
@@ -345,6 +366,16 @@ class UploadForm extends React.Component {
       )
     })
 
+    const thumbnails = Object.values(imagePreviews).map((image, index) => {
+      return (
+        <ThumbnailPreview
+          src={ image }
+          key={ index }
+          onClick={ this.changeImagePreview.bind(this, image)}
+        />
+      )
+    })
+
     return (
       <WrapperItem>
         <Session>
@@ -378,13 +409,16 @@ class UploadForm extends React.Component {
             <Break/>
             <PreviewConfig
               gravity={ this.state.gravity }
-              paddingTop={ this.state.paddingTop }
-              paddingLeft={ this.state.paddingLeft }
-              paddingRight={ this.state.paddingRight }
-              paddingBottom={ this.state.paddingBottom }
+              padding={{
+                top: this.state.paddingTop,
+                left: this.state.paddingLeft,
+                right: this.state.paddingRight,
+                bottom: this.state.paddingBottom
+              }}
               opacity={ this.state.opacity / 100 }
               templatePreview={ templatePreview }
-              imagePreviews={ imagePreviews }
+              previewImage={ this.state.previewImage }
+              defaultPreviewImage = { Object.values(imagePreviews)[0] }
             />
           </div>
         </Session>
@@ -442,6 +476,9 @@ class UploadForm extends React.Component {
             <Break/>
           </div>
           <div>
+          <Collection >
+            { thumbnails }
+          </Collection>
           </div>
         </Session>
         <ActionButton>

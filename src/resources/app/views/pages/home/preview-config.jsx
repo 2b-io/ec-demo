@@ -1,44 +1,58 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
-import defaultPreviewImage from 'img/image-preview.jpg'
+import defaultWatermark from 'img/image-preview.jpg'
 import iconWatermark from 'img/icon-watermark.jpg'
 
 import { PrimaryButton, Break } from 'app/ui/elements'
 
-const Preview = styled.div`
-  max-width: 750px;
+const Wrapper = styled.div`
   text-align: right;
 `
-
-const Thumbnail = styled.img.attrs( props => {
-  src: props.src
-})`
-  width: 100px;
-  object-fit: contain;
+const Preview = styled.div`
+  max-height: 300px;
+  max-width: 300px;
 `
 
 const FramePreview = styled.div`
-  width: 300px;
-  height: 300px;
+  position: relative;
+  display: table-cell;
+  width: auto;
+  height: auto;
 `
 
-const ImagePreview = styled.div`
-  max-width: 300px
+const ImageLivePreview = styled.img`
+  max-height: 100%;
+  margin: 0 auto;
+  display: block;
 `
 
-const Wrapper = styled.div`
-
-`
-const Watermark = styled.div`
+const Watermark = styled.img.attrs( props => {
+  src: props.src
+})`
   display: block;
   position: absolute;
   ${
-    ({ top = 0, left = 0, right = 0, bottom = 0, opacity = 1  }) => css`
-      padding-top: ${ top }px;
-      padding-left: ${ left }px;
-      padding-right: ${ right }px;
-      padding-bottom: ${ bottom }px;
-      opacity: ${ opacity }
+    ({ paddingTop = 0,
+      paddingLeft = 0,
+      paddingRight = 0,
+      paddingBottom = 0,
+      top,
+      left,
+      right,
+      bottom,
+      opacity = 1,
+      transform
+    }) => css`
+      padding-top: ${ paddingTop }px;
+      padding-left: ${ paddingLeft }px;
+      padding-right: ${ paddingRight }px;
+      padding-bottom: ${ paddingBottom }px;
+      opacity: ${ opacity };
+      top: ${ top };
+      left: ${ left };
+      right: ${ right };
+      bottom: ${ bottom };
+      transform: ${ transform };
     `
   }
 `
@@ -59,130 +73,128 @@ const DescriptionTitle = styled.h1`
   padding-bottom: 16px;
 `
 
-const Collection = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-`
-
 class PreviewImage   extends React.Component {
   constructor(props) {
     super(props)
-
-    this.state = {
-      imagesPreview: ''
-    }
-  }
-
-  changeImagePreview(image){
-    this.setState({
-      imagesPreview: image
-    })
   }
 
   render() {
     const {
       gravity = 'NorthWest',
-      paddingTop = 0,
-      paddingLeft = 0,
-      paddingRight = 0,
-      paddingBottom = 0,
+      padding,
       opacity,
       templatePreview,
-      imagePreviews
+      imagePreviews,
+      imagesPreview,
+      previewImage,
+      defaultPreviewImage
     } = this.props
-    let top = 0
-    let left = 0
-    let right = 0
-    let bottom = 0
+    let top
+    let left
+    let right
+    let bottom
 
-    const paddingTopRatio = paddingTop*100/125
-    const paddingLeftRatio = paddingLeft*100/125
-    const paddingRightRatio = paddingRight*100/125
-    const paddingBottomRatio = paddingBottom*100/125
+    let paddingTop = 0
+    let paddingLeft = 0
+    let paddingRight = 0
+    let paddingBottom = 0
+
+    let transform
+
+    const paddingTopRatio = padding.top*100/125
+    const paddingLeftRatio = padding.left*100/125
+    const paddingRightRatio = padding.right*100/125
+    const paddingBottomRatio = padding.bottom*100/125
 
     switch (gravity) {
       case 'NorthWest':
-        top = Number(paddingTopRatio) || 0
-        left = Number(paddingLeftRatio) || 0
+        paddingTop = Number(paddingTopRatio) || 0
+        paddingLeft = Number(paddingLeftRatio) || 0
+        top = 0
         break;
       case 'North':
-        top = Number(paddingTopRatio) || 0
-        left = 125
+        paddingTop = Number(paddingTopRatio) || 0
+        left = '50%'
+        transform = 'translateX(-50%)'
         break;
       case 'NorthEast':
-        top = Number(paddingTopRatio) || 0
-        left = 250 - Number(paddingRightRatio) || 0
+        paddingTop = Number(paddingTopRatio) || 0
+        paddingRight = Number(paddingRightRatio) || 0
+        right = '0'
         break;
       case 'West':
-        top = 125
-        left = Number(paddingLeftRatio) || 0
+        top = '50%'
+        left = '0'
+        paddingLeft = Number(paddingLeftRatio) || 0
+        transform = 'translateY(-50%)'
         break;
       case 'Center':
-        top = 125
-        left = 125
+        top = '50%'
+        left = '50%'
+        paddingTop = Number(paddingTopRatio) || 0
+        paddingLeft = Number(paddingLeftRatio) || 0
+        paddingRight = Number(paddingRightRatio) || 0
+        paddingBottom = Number(paddingBottomRatio) || 0
+        transform = 'translate(-50%,-50%)'
         break;
       case 'East':
-        top = 125
-        left = 250 - Number(paddingRightRatio) || 0
+        paddingRight = Number(paddingRightRatio) || 0
+        right = '0'
+        top = '50%'
+        transform = 'translateY(-50%)'
         break;
       case 'SouthWest':
-        left = Number(paddingLeftRatio) || 0
-        top = 250 -Number(paddingBottomRatio) || 0
+        paddingLeft = Number(paddingLeftRatio) || 0
+        left = '0'
+        bottom = '0'
         break;
       case 'South':
-        top = 250 - Number(paddingBottomRatio) || 0
-        left = 125
-        break;
+        paddingBottom = Number(paddingBottomRatio) || 0
+        left = '50%'
+        bottom = '0'
+        transform = 'translateX(-50%)'
+      break;
       case 'SouthEast':
-        top = 250 - Number(paddingBottomRatio) || 0
-        left = 250 - Number(paddingRightRatio) || 0
+        paddingBottom = Number(paddingBottomRatio) || 0
+        paddingRight = Number(paddingRightRatio) || 0
+        right = '0'
+        bottom = '0'
         break;
     }
-
-    const { imagesPreview } = this.state
 
     let _imagesPreview
 
-    if (imagesPreview) {
-      _imagesPreview = imagesPreview
+    if (previewImage) {
+      _imagesPreview = previewImage
     } else {
+      _imagesPreview = defaultWatermark
+    }
+    if (defaultPreviewImage && !previewImage) {
       _imagesPreview = defaultPreviewImage
     }
-    if (Object.values(imagePreviews)[0] && !imagesPreview) {
-      _imagesPreview = Object.values(imagePreviews)[0]
-    }
-
-    const thumbnails = Object.values(imagePreviews).map((image, index) => {
-      return (
-        <Thumbnail src={ image } key={ index } onClick={ this.changeImagePreview.bind(this, image)} />
-      )
-    })
 
     return (
-      <Preview>
-        <Wrapper>
-          <ImagePreview>
-          <Watermark
-            top={ top }
-            left={ left }
-            right={ right }
-            bottom={ bottom }
-            opacity={ opacity }
-            >
-              <img
-                width={ '50px' }
-                src={ templatePreview.length ? templatePreview : iconWatermark }
-              />
-          </Watermark>
-            <FramePreview>
-              <img src={ _imagesPreview }/>
-            </FramePreview>
-            <Collection >
-              { thumbnails }
-            </Collection>
-          </ImagePreview>
-        </Wrapper>
-      </Preview>
+      <Wrapper>
+        <Preview>
+          <FramePreview>
+            <Watermark
+              src={ templatePreview.length ? templatePreview : iconWatermark }
+              top={ top }
+              left={ left }
+              right={ right }
+              bottom={ bottom }
+              paddingTop={ paddingTop }
+              paddingLeft={ paddingLeft }
+              paddingRight={ paddingRight }
+              paddingBottom={ paddingBottom }
+              opacity={ opacity }
+              transform={ transform }
+              >
+            </Watermark>
+            <ImageLivePreview src={ _imagesPreview }/>
+          </FramePreview>
+        </Preview>
+      </Wrapper>
     )
   }
 }
