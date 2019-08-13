@@ -29,7 +29,10 @@ const Config = styled.div`
   display: grid;
   grid-template-columns: 1fr;
 `
-const ActionButton = styled.div``
+const ActionButton = styled.div`
+  text-align: center;
+  padding: 16px;
+`
 
 const Session = styled.div`
   padding-top: 20px;
