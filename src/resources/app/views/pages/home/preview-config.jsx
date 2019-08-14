@@ -72,12 +72,51 @@ const DescriptionTitle = styled.h1`
   text-transform: uppercase;
   padding-bottom: 16px;
 `
+const loadImage = (src) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.onload = (event) => resolve({
+      height: event.path[ 0 ].height,
+      width: event.path[ 0 ].width
+    })
+    img.onerror = reject
+    img.src = src
+  })
+}
 
-class PreviewImage   extends React.Component {
+class PreviewImage  extends React.Component {
+
   constructor(props) {
     super(props)
 
-    this.imageLivePreview = React.createRef()
+    this.state = {
+      ratioWithWatermarkH: 'auto',
+      ratioWithWatermarkW: 'auto'
+    }
+  }
+
+  async componentDidUpdate(prevProps) {
+    if (
+      prevProps.defaultPreviewImage !== this.props.defaultPreviewImage ||
+      prevProps.templateWidth !== this.props.templateWidth
+    ) {
+      let img
+
+      if (this.props.defaultPreviewImage) {
+        img = await loadImage(this.props.defaultPreviewImage)
+      }
+      else {
+        img = await loadImage(defaultWatermark)
+      }
+
+      const ratioWithWatermarkH = (300 / img.height) * this.props.templateHeight || 'auto'
+      const ratioWithWatermarkW = (300 / img.width) * this.props.templateWidth || 'auto'
+
+      this.setState({
+        ratioWithWatermarkH,
+        ratioWithWatermarkW
+      })
+    }
   }
 
   render() {
@@ -93,6 +132,12 @@ class PreviewImage   extends React.Component {
       templateWidth,
       templateHeight
     } = this.props
+
+    const {
+      ratioWithWatermarkH,
+      ratioWithWatermarkW
+    } = this.state
+
     let top
     let left
     let right
@@ -177,14 +222,6 @@ class PreviewImage   extends React.Component {
       _imagePreview = defaultPreviewImage
     }
 
-    let ratioWithWatermarkH = 'auto'
-    let ratioWithWatermarkW = 'auto'
-
-    if (this.imageLivePreview.current) {
-      ratioWithWatermarkH = ( 300 / this.imageLivePreview.current.naturalHeight) * templateHeight || 'auto'
-      ratioWithWatermarkW = ( 300 / this.imageLivePreview.current.naturalWidth) * templateWidth || 'auto'
-    }
-
     return (
       <Wrapper>
         <Preview>
@@ -206,7 +243,6 @@ class PreviewImage   extends React.Component {
               >
             </Watermark>
             <ImageLivePreview
-              ref={ this.imageLivePreview }
               src={ _imagePreview }
              />
           </FramePreview>

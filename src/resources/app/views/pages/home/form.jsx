@@ -169,7 +169,7 @@ class UploadForm extends React.Component {
           files.forEach((file) => {
             const reader = new FileReader()
             reader.onload = (e) => {
-              var img = new Image()
+              const img = new Image()
               img.src = e.target.result
               img.onload = (event) => {
                 this.setState({
@@ -178,8 +178,6 @@ class UploadForm extends React.Component {
                   templateWidth: event.path[ 0 ].width
                 })
               }
-
-
             }
             reader.readAsDataURL(file.getNative())
           })
@@ -326,9 +324,13 @@ class UploadForm extends React.Component {
   }
 
   changeImagePreview(image){
-    this.setState({
-      previewImage: image
-    })
+    const img = new Image()
+    img.src = image
+    img.onload = (event) => {
+      this.setState({
+        previewImage: image,
+      })
+    }
   }
 
   render() {
@@ -338,7 +340,8 @@ class UploadForm extends React.Component {
       imagePreviews,
       templatePreview,
       templateWidth,
-      templateHeight
+      templateHeight,
+      previewImage
     } = this.state
     const templateUpload = templatePreview.length ? <ImageUpload >
       <p>1</p>
@@ -440,7 +443,7 @@ class UploadForm extends React.Component {
               opacity={ this.state.opacity / 100 }
               templatePreview={ templatePreview }
               previewImage={ this.state.previewImage }
-              defaultPreviewImage = { Object.values(imagePreviews)[0] }
+              defaultPreviewImage = { previewImage || Object.values(imagePreviews)[0] }
               templateHeight = { templateHeight }
               templateWidth = { templateWidth }
             />
