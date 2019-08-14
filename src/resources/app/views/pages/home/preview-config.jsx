@@ -16,14 +16,28 @@ const Preview = styled.div`
 const FramePreview = styled.div`
   position: relative;
   display: table-cell;
-  width: auto;
-  height: auto;
+  ${
+    ({ width, height }) => ( width && height ) ? css`
+      width: ${ width }px;
+      height: ${ height }px;
+    ` :
+    css`
+      width: auto;
+      height: auto;
+    `
+  }
 `
 
 const ImageLivePreview = styled.img`
-  max-height: 100%;
+  max-height: 300px;
   margin: 0 auto;
   display: block;
+  ${
+    ({ width, height }) => css`
+      width: ${ width }px;
+      height: ${ height }px;
+    `
+  }
 `
 
 const Watermark = styled.img.attrs( props => {
@@ -57,21 +71,6 @@ const Watermark = styled.img.attrs( props => {
   }
 `
 
-const ImageIntro = styled.div`
-  margin: auto;
-  padding-top: 8px;
-  max-width: 1200px;
-`
-const Description = styled.div`
-  margin: auto;
-`
-
-const DescriptionTitle = styled.h1`
-  font-size: 22px;
-  font-weight: 600;
-  text-transform: uppercase;
-  padding-bottom: 16px;
-`
 const loadImage = (src) => {
   return new Promise((resolve, reject) => {
     const img = new Image()
@@ -108,14 +107,23 @@ class PreviewImage  extends React.Component {
       else {
         img = await loadImage(defaultWatermark)
       }
+      if (this.props.templateHeight < img.height || this.props.templateWidth < img.width) {
+        let ratioWithWatermarkH = (300 / img.height) * this.props.templateHeight || 'auto'
+        let ratioWithWatermarkW = (300 / img.width) * this.props.templateWidth || 'auto'
 
-      const ratioWithWatermarkH = (300 / img.height) * this.props.templateHeight || 'auto'
-      const ratioWithWatermarkW = (300 / img.width) * this.props.templateWidth || 'auto'
+        this.setState({
+          ratioWithWatermarkH,
+          ratioWithWatermarkW
+        })
+      } else {
+        let ratioWithImageH = (300 / this.props.templateHeight) * img.height || 'auto'
+        let ratioWithImageW = (300 / this.props.templateWidth) * img.width || 'auto'
 
-      this.setState({
-        ratioWithWatermarkH,
-        ratioWithWatermarkW
-      })
+        this.setState({
+          ratioWithImageH,
+          ratioWithImageW
+        })
+      }
     }
   }
 
@@ -135,7 +143,9 @@ class PreviewImage  extends React.Component {
 
     const {
       ratioWithWatermarkH,
-      ratioWithWatermarkW
+      ratioWithWatermarkW,
+      ratioWithImageW,
+      ratioWithImageH
     } = this.state
 
     let top
@@ -225,7 +235,10 @@ class PreviewImage  extends React.Component {
     return (
       <Wrapper>
         <Preview>
-          <FramePreview>
+          <FramePreview
+            width={ ratioWithImageW }
+            height={ ratioWithImageH }
+            >
             <Watermark
               height = { ratioWithWatermarkH }
               width = { ratioWithWatermarkW }
@@ -243,6 +256,8 @@ class PreviewImage  extends React.Component {
               >
             </Watermark>
             <ImageLivePreview
+              width={ ratioWithImageW }
+              height={ ratioWithImageH }
               src={ _imagePreview }
              />
           </FramePreview>
