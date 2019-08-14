@@ -123,6 +123,8 @@ class UploadForm extends React.Component {
       opacity: 100,
       imagePreviews: {},
       templatePreview: {},
+      templateWidth: 0,
+      templateHeight: 0,
       imagesPreview: ''
     }
 
@@ -166,10 +168,18 @@ class UploadForm extends React.Component {
         FilesAdded: (uploader, files) => {
           files.forEach((file) => {
             const reader = new FileReader()
-            reader.onload = () => {
-              this.setState({
-                templatePreview: reader.result
-              })
+            reader.onload = (e) => {
+              var img = new Image()
+              img.src = e.target.result
+              img.onload = (event) => {
+                this.setState({
+                  templatePreview: reader.result,
+                  templateHeight: event.path[ 0 ].height,
+                  templateWidth: event.path[ 0 ].width
+                })
+              }
+
+
             }
             reader.readAsDataURL(file.getNative())
           })
@@ -214,7 +224,7 @@ class UploadForm extends React.Component {
         FilesAdded: (uploader, files) => {
           files.forEach((file) => {
             const reader = new FileReader()
-            reader.onload = () => {
+            reader.onload = (e) => {
               this.setState({
                 imagePreviews: {
                   ...this.state.imagePreviews,
@@ -322,8 +332,14 @@ class UploadForm extends React.Component {
   }
 
   render() {
-    const { templateFile, imageFiles, imagePreviews, templatePreview } = this.state
-
+    const {
+      templateFile,
+      imageFiles,
+      imagePreviews,
+      templatePreview,
+      templateWidth,
+      templateHeight
+    } = this.state
     const templateUpload = templatePreview.length ? <ImageUpload >
       <p>1</p>
       {
@@ -425,6 +441,8 @@ class UploadForm extends React.Component {
               templatePreview={ templatePreview }
               previewImage={ this.state.previewImage }
               defaultPreviewImage = { Object.values(imagePreviews)[0] }
+              templateHeight = { templateHeight }
+              templateWidth = { templateWidth }
             />
           </div>
         </Session>

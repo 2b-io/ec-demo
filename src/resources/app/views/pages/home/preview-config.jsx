@@ -78,7 +78,6 @@ class PreviewImage   extends React.Component {
     super(props)
 
     this.imageLivePreview = React.createRef()
-    this.watermarkLivePreview = React.createRef()
   }
 
   render() {
@@ -90,7 +89,9 @@ class PreviewImage   extends React.Component {
       imagePreviews,
       imagesPreview,
       previewImage,
-      defaultPreviewImage
+      defaultPreviewImage,
+      templateWidth,
+      templateHeight
     } = this.props
     let top
     let left
@@ -179,11 +180,9 @@ class PreviewImage   extends React.Component {
     let ratioWithWatermarkH = 'auto'
     let ratioWithWatermarkW = 'auto'
 
-    if (this.imageLivePreview.current && this.watermarkLivePreview.current) {
-      if (this.imageLivePreview.current.naturalHeight) {
-        ratioWithWatermarkH = ( 300 / this.imageLivePreview.current.naturalHeight) * this.watermarkLivePreview.current.naturalHeight
-        ratioWithWatermarkW = ( 300 / this.imageLivePreview.current.naturalWidth) * this.watermarkLivePreview.current.naturalWidth
-      }
+    if (this.imageLivePreview.current) {
+      ratioWithWatermarkH = ( 300 / this.imageLivePreview.current.naturalHeight) * templateHeight || 'auto'
+      ratioWithWatermarkW = ( 300 / this.imageLivePreview.current.naturalWidth) * templateWidth || 'auto'
     }
 
     return (
@@ -193,7 +192,6 @@ class PreviewImage   extends React.Component {
             <Watermark
               height = { ratioWithWatermarkH }
               width = { ratioWithWatermarkW }
-              ref={ this.watermarkLivePreview }
               src={ templatePreview.length ? templatePreview : iconWatermark }
               top={ top }
               left={ left }
