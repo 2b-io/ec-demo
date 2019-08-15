@@ -5,7 +5,7 @@ const WrapperItem = styled.div`
   grid-gap: 8px;
   display: grid;
   max-width: 500px;
-  grid-template-columns: repeat(4,108px);
+  grid-template-columns: repeat(4,120px);
 `
 
 const PaddingItem = styled.input`
@@ -83,6 +83,7 @@ class TemplateConfig extends React.Component {
             value={ this.props.paddingTop }
             disabled={ stateInputTop }
           />
+          <label>px</label>
         </div>
         <div>
           <label>Left </label>
@@ -93,6 +94,7 @@ class TemplateConfig extends React.Component {
             value={ this.props.paddingLeft }
             disabled={ stateInputLeft }
           />
+          <label>px</label>
         </div>
         <div>
           <label>Right </label>
@@ -103,6 +105,7 @@ class TemplateConfig extends React.Component {
             value={ this.props.paddingRight }
             disabled={ stateInputRight }
           />
+          <label>px</label>
         </div>
         <div>
           <label>Bottom </label>
@@ -113,6 +116,7 @@ class TemplateConfig extends React.Component {
             value={ this.props.paddingBottom }
             disabled={ stateInputBottom }
           />
+          <label>px</label>
         </div>
       </WrapperItem>
     )

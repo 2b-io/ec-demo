@@ -42,6 +42,23 @@ const Session = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
 `
 
+const Slider = styled.div`
+  display: grid;
+  grid-gap: 8px;
+  grid-template-columns: 5fr 1fr;
+`
+const DropDown = styled.select`
+  width: 60px;
+  height: 24px;
+`
+const Input = styled.input.attrs( props => {
+  type: props.type;
+  max: props.max;
+  min: props.min;
+})`
+  width: 60px;
+`
+
 const Thumbnail = styled.img.attrs( props => {
   src: props.src
 })`
@@ -60,6 +77,17 @@ const TemplateUpload = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 `
+
+const Grid = styled.div`
+  display: grid;
+  ${
+    ({ columns, gap = 8 }) => css`
+      grid-gap: ${ gap }px;
+      grid-template-columns: repeat(${ columns }, 1fr);
+    `
+  }
+`
+
 const ImageUpload = styled.div`
   padding-top: 24px;
   display: grid;
@@ -125,7 +153,9 @@ class UploadForm extends React.Component {
       templatePreview: {},
       templateWidth: 0,
       templateHeight: 0,
-      imagesPreview: ''
+      ratioTemplate: 10,
+      imagesPreview: '',
+      typeResizeTemplate:'percent'
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -309,6 +339,10 @@ class UploadForm extends React.Component {
     this.setState({ opacity: e.target.value })
   }
 
+  changeRatioTemplate(e){
+    this.setState({ ratioTemplate: e.target.value })
+  }
+
   downloadFile(){
     window.location.href = this.props.linkDownload
   }
@@ -333,6 +367,11 @@ class UploadForm extends React.Component {
     }
   }
 
+  changeTypeResize(e){
+    this.setState({
+      typeResizeTemplate: e.target.value
+    })
+  }
   render() {
     const {
       templateFile,
@@ -341,7 +380,8 @@ class UploadForm extends React.Component {
       templatePreview,
       templateWidth,
       templateHeight,
-      previewImage
+      previewImage,
+      typeResizeTemplate
     } = this.state
     const templateUpload = templatePreview.length ? <ImageUpload >
       <p>1</p>
@@ -492,13 +532,72 @@ class UploadForm extends React.Component {
               />
             <Break/>
             <Break/>
+            <LabelItem>Resize Template</LabelItem>
+            <Break/>
+            <DropDown name='TypeResize' size='1' onChange={ this.changeTypeResize.bind(this) }>
+              <option value='percent'>Ratio</option>
+              <option value='pixel'>Pixel</option>
+            </DropDown>
+            <Break/>
+              { typeResizeTemplate === 'percent' ? <div>
+                <LabelItem>Ratio Template By Percent</LabelItem>
+                <Slider>
+                  <input
+                    type='range'
+                    defaultValue={ 10 }
+                    onChange={ this.changeRatioTemplate.bind(this) }
+                  />
+                  <Input
+                    type='number'
+                    max='100'
+                    min='0'
+                    value={ this.state.ratioTemplate }
+                    onChange={ this.changeRatioTemplate.bind(this) }
+                  />
+                </Slider>
+                </div>
+                :
+                <div>
+                  <LabelItem>Ratio Template By Pixel</LabelItem>
+                  <Break/>
+                  <Grid columns={ 4 }>
+                    <div>
+                      <label>Width </label>
+                      <Input
+                        type='number'
+                        defaultValue={ 0 }
+                        onChange={ this.changeRatioTemplate.bind(this) }
+                      />
+                      <label> px</label>
+                    </div>
+                    <div>
+                      <label>Height </label>
+                      <Input
+                        type='number'
+                        defaultValue={ 0 }
+                        onChange={ this.changeRatioTemplate.bind(this) }
+                      />
+                      <label> px</label>
+                    </div>
+                  </Grid>
+                </div>
+              }
+            <Break/>
             <LabelItem>Opacity</LabelItem>
-            <input
-              type="range"
-              defaultValue={ 100 }
-              onChange={ this.changeOpacity.bind(this) }
-            />
-            <LabelItem> { this.state.opacity }</LabelItem>
+            <Slider>
+              <input
+                type='range'
+                defaultValue={ 100 }
+                onChange={ this.changeOpacity.bind(this) }
+              />
+              <Input
+                type='number'
+                max='100'
+                min='0'
+                value={ this.state.opacity }
+                onChange={ this.changeOpacity.bind(this) }
+              />
+            </Slider>
             <Break/>
           </div>
           <div>

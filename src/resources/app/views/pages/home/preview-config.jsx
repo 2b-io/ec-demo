@@ -16,28 +16,14 @@ const Preview = styled.div`
 const FramePreview = styled.div`
   position: relative;
   display: table-cell;
-  ${
-    ({ width, height }) => ( width && height ) ? css`
-      width: ${ width }px;
-      height: ${ height }px;
-    ` :
-    css`
-      width: auto;
-      height: auto;
-    `
-  }
+  width: auto;
+  height: auto;
 `
 
 const ImageLivePreview = styled.img`
   max-height: 300px;
   margin: 0 auto;
   display: block;
-  ${
-    ({ width, height }) => css`
-      width: ${ width }px;
-      height: ${ height }px;
-    `
-  }
 `
 
 const Watermark = styled.img.attrs( props => {
