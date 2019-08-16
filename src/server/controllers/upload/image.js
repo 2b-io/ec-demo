@@ -32,7 +32,11 @@ export default {
         paddingleft: paddingLeft,
         paddingright: paddingRight,
         paddingbottom: paddingBottom,
-        opacity
+        opacity,
+        moderesize: modeResize,
+        heighttemplate: heightTemplate,
+        widthtemplate: widthTemplate,
+        percenttemplate: percentTemplate
       } = req.headers
 
       const { requestid: requestId } = req.params
@@ -76,7 +80,11 @@ export default {
               paddingRight,
               paddingBottom
             },
-          opacity
+          opacity,
+          modeResize,
+          heightTemplate,
+          widthTemplate,
+          percentTemplate
         })
 
         const tempPath = files.file.path

@@ -24,7 +24,17 @@ export default {
 
       await fs.ensureDir(`${ config.imageResultDir }/${ requestId }`)
 
-      const { s3Key, config: { gravity, padding, opacity } } = await configImage.get(requestId)
+      const {
+        s3Key,
+        config: {
+          gravity,
+          padding,
+          opacity,
+          modeResize,
+          heightTemplate,
+          widthTemplate,
+          percentTemplate
+        } } = await configImage.get(requestId)
 
       const s3KeyOriginImage = cacheRequest.get(requestId).images
 
@@ -43,7 +53,19 @@ export default {
 
         console.log('PROCESS_IMAGE...', file);
 
-        await overlayImage(file, watermarkPathS3, onputFilePath, gravity, requestId, padding, opacity)
+        await overlayImage(
+          file,
+          watermarkPathS3,
+          onputFilePath,
+          gravity,
+          requestId,
+          padding,
+          opacity,
+          modeResize,
+          heightTemplate,
+          widthTemplate,
+          percentTemplate
+        )
       }))
 
       // zip folder image result

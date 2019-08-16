@@ -48,8 +48,9 @@ const Slider = styled.div`
   grid-template-columns: 5fr 1fr;
 `
 const DropDown = styled.select`
-  width: 60px;
+  width: 80px;
   height: 24px;
+  margin-right: 8px;
 `
 const Input = styled.input.attrs( props => {
   type: props.type;
@@ -153,9 +154,11 @@ class UploadForm extends React.Component {
       templatePreview: {},
       templateWidth: 0,
       templateHeight: 0,
-      ratioTemplate: 10,
+      percentTemplate: 10,
       imagesPreview: '',
-      typeResizeTemplate:'percent'
+      heightTemplate: 0,
+      widthTemplate: 0,
+      modeResize:'percent'
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -170,7 +173,11 @@ class UploadForm extends React.Component {
       paddingLeft,
       paddingRight,
       paddingBottom,
-      opacity
+      opacity,
+      modeResize,
+      heightTemplate,
+      widthTemplate,
+      percentTemplate,
     } = this.state
 
     const padding = {
@@ -180,7 +187,17 @@ class UploadForm extends React.Component {
       paddingBottom
     }
 
-    this.props.uploadFiles(plupTemplate, plupItems, gravity, padding, opacity)
+    this.props.uploadFiles(
+      plupTemplate,
+      plupItems,
+      gravity,
+      padding,
+      opacity,
+      modeResize,
+      heightTemplate,
+      widthTemplate,
+      percentTemplate
+    )
   }
 
 
@@ -340,7 +357,7 @@ class UploadForm extends React.Component {
   }
 
   changeRatioTemplate(e){
-    this.setState({ ratioTemplate: e.target.value })
+    this.setState({ percentTemplate: e.target.value })
   }
 
   downloadFile(){
@@ -369,8 +386,14 @@ class UploadForm extends React.Component {
 
   changeTypeResize(e){
     this.setState({
-      typeResizeTemplate: e.target.value
+      modeResize: e.target.value
     })
+  }
+
+  changeSizeTemplate(e){
+    this.setState(
+      { [ e.target.name ]: e.target.value }
+    )
   }
   render() {
     const {
@@ -381,7 +404,7 @@ class UploadForm extends React.Component {
       templateWidth,
       templateHeight,
       previewImage,
-      typeResizeTemplate
+      modeResize
     } = this.state
     const templateUpload = templatePreview.length ? <ImageUpload >
       <p>1</p>
@@ -440,7 +463,6 @@ class UploadForm extends React.Component {
         />
       )
     })
-
     return (
       <WrapperItem>
         <Session>
@@ -535,26 +557,65 @@ class UploadForm extends React.Component {
             <LabelItem>Resize Template</LabelItem>
             <Break/>
             <DropDown name='TypeResize' size='1' onChange={ this.changeTypeResize.bind(this) }>
-              <option value='percent'>Ratio</option>
+              <option value='percent'>Percent</option>
               <option value='pixel'>Pixel</option>
             </DropDown>
+            {
+              modeResize === 'percent' || modeResize === 'noKeepRatioPercent' || modeResize === 'keepRatioPercent' ?
+              <DropDown name='TypeResize' size='1' onChange={ this.changeTypeResize.bind(this) }>
+                <option value='keepRatioPercent'>Keep Ratio</option>
+                <option value='noKeepRatioPercent'>No Keep Ratio</option>
+              </DropDown>
+              :
+              <div></div>
+            }
             <Break/>
-              { typeResizeTemplate === 'percent' ? <div>
+              { modeResize === 'percent' || modeResize === 'keepRatioPercent' ? <div>
                 <LabelItem>Ratio Template By Percent</LabelItem>
                 <Slider>
                   <input
                     type='range'
-                    defaultValue={ 10 }
+                    value={ this.state.percentTemplate }
                     onChange={ this.changeRatioTemplate.bind(this) }
                   />
-                  <Input
-                    type='number'
-                    max='100'
-                    min='0'
-                    value={ this.state.ratioTemplate }
-                    onChange={ this.changeRatioTemplate.bind(this) }
-                  />
+                  <div>
+                    <Input
+                      type='number'
+                      max='100'
+                      min='0'
+                      value={ this.state.percentTemplate }
+                      onChange={ this.changeRatioTemplate.bind(this) }
+                    />
+                    <label>%</label>
+                  </div>
                 </Slider>
+                </div>
+                :
+                modeResize === 'noKeepRatioPercent' ? <div>
+                <LabelItem>Ratio Template By Percent</LabelItem>
+                  <Break/>
+                  <Grid columns={ 4 }>
+                    <div>
+                      <label>Width </label>
+                      <Input
+                        type='number'
+                        name='widthTemplate'
+                        value={ this.state.widthTemplate }
+                        onChange={ this.changeSizeTemplate.bind(this) }
+                      />
+                      <label>%</label>
+                    </div>
+                    <div>
+                      <label>Height </label>
+                      <Input
+                        name='heightTemplate'
+                        type='number'
+                        value={ this.state.heightTemplate }
+                        onChange={ this.changeSizeTemplate.bind(this) }
+                      />
+                      <label>%</label>
+                    </div>
+                  </Grid>
                 </div>
                 :
                 <div>
@@ -565,21 +626,23 @@ class UploadForm extends React.Component {
                       <label>Width </label>
                       <Input
                         type='number'
-                        defaultValue={ 0 }
-                        onChange={ this.changeRatioTemplate.bind(this) }
+                        name='widthTemplate'
+                        value={ this.state.widthTemplate }
+                        onChange={ this.changeSizeTemplate.bind(this) }
                       />
-                      <label> px</label>
+                      <label>px</label>
                     </div>
                     <div>
                       <label>Height </label>
                       <Input
+                        name='heightTemplate'
                         type='number'
-                        defaultValue={ 0 }
-                        onChange={ this.changeRatioTemplate.bind(this) }
+                        value={ this.state.heightTemplate }
+                        onChange={ this.changeSizeTemplate.bind(this) }
                       />
-                      <label> px</label>
+                      <label>px</label>
                     </div>
-                  </Grid>
+                    </Grid>
                 </div>
               }
             <Break/>
@@ -587,16 +650,19 @@ class UploadForm extends React.Component {
             <Slider>
               <input
                 type='range'
-                defaultValue={ 100 }
-                onChange={ this.changeOpacity.bind(this) }
-              />
-              <Input
-                type='number'
-                max='100'
-                min='0'
                 value={ this.state.opacity }
                 onChange={ this.changeOpacity.bind(this) }
               />
+              <div>
+                <Input
+                  type='number'
+                  max='100'
+                  min='0'
+                  value={ this.state.opacity }
+                  onChange={ this.changeOpacity.bind(this) }
+                />
+                <label>%</label>
+              </div>
             </Slider>
             <Break/>
           </div>
