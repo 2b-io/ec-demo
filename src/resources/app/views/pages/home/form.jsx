@@ -182,7 +182,7 @@ class UploadForm extends React.Component {
       templatePreview: {},
       templateWidth: 0,
       templateHeight: 0,
-      percentTemplate: 100,
+      percentTemplate: 20,
       imagesPreview: '',
       heightTemplate: 0,
       widthTemplate: 0,
