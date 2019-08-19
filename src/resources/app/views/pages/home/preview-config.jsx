@@ -4,6 +4,7 @@ import defaultWatermark from 'img/image-preview.jpg'
 import iconWatermark from 'img/icon-watermark.jpg'
 
 import { PrimaryButton, Break } from 'app/ui/elements'
+import imageSize from 'app/services/image-size'
 
 const Wrapper = styled.div`
   text-align: right;
@@ -57,18 +58,6 @@ const Watermark = styled.img.attrs( props => {
   }
 `
 
-const loadImage = (src) => {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = (event) => resolve({
-      height: event.path[ 0 ].height,
-      width: event.path[ 0 ].width
-    })
-    img.onerror = reject
-    img.src = src
-  })
-}
-
 class PreviewImage  extends React.Component {
 
   constructor(props) {
@@ -81,6 +70,12 @@ class PreviewImage  extends React.Component {
   }
 
   async componentDidUpdate(prevProps) {
+
+    if (prevProps.templatePreview !== this.props.templatePreview) {
+      const _sizeTemplate = await imageSize(this.props.templatePreview)
+      this.props.sizeTemplate(_sizeTemplate)
+    }
+
     if (
       prevProps.defaultPreviewImage !== this.props.defaultPreviewImage ||
       prevProps.templateWidth !== this.props.templateWidth
@@ -88,10 +83,10 @@ class PreviewImage  extends React.Component {
       let img
 
       if (this.props.defaultPreviewImage) {
-        img = await loadImage(this.props.defaultPreviewImage)
+        img = await imageSize(this.props.defaultPreviewImage)
       }
       else {
-        img = await loadImage(defaultWatermark)
+        img = await imageSize(defaultWatermark)
       }
       if (this.props.templateHeight < img.height || this.props.templateWidth < img.width) {
         let ratioWithWatermarkH = (300 / img.height) * this.props.templateHeight || 'auto'
@@ -100,14 +95,6 @@ class PreviewImage  extends React.Component {
         this.setState({
           ratioWithWatermarkH,
           ratioWithWatermarkW
-        })
-      } else {
-        let ratioWithImageH = (300 / this.props.templateHeight) * img.height || 'auto'
-        let ratioWithImageW = (300 / this.props.templateWidth) * img.width || 'auto'
-
-        this.setState({
-          ratioWithImageH,
-          ratioWithImageW
         })
       }
     }

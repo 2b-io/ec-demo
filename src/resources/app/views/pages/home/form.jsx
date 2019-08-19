@@ -21,6 +21,34 @@ import TemplatePosition from './template-position'
 import TemplatePadding from './template-padding'
 import PreviewConfig from './preview-config'
 
+const Marriage = styled.button`
+  ${
+    ({ active, theme }) => active ?
+    css`
+      background: ${ theme.secondary.base };
+      color: ${ theme.secondary.on.base };
+    ` :
+    css`
+      background: 'none';
+    `
+  }
+  &:hover {
+    background-color: #007FFF;
+    color: white;
+  }
+  transition:
+    background .3s linear,
+    color .3s linear;
+
+  width: 60px;
+  margin: 0 auto;
+  border: none;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+  font-size: 24px;
+`
+
 const WrapperItem = styled.div`
   display: block;
   padding-top: 32px;
@@ -158,7 +186,10 @@ class UploadForm extends React.Component {
       imagesPreview: '',
       heightTemplate: 0,
       widthTemplate: 0,
-      modeResize:'percent'
+      modeResize:'percent',
+      marriageActive: true,
+      originHeightTemplate: 1,
+      originWidthTemplate: 1
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -391,10 +422,85 @@ class UploadForm extends React.Component {
   }
 
   changeSizeTemplate(e){
-    this.setState(
-      { [ e.target.name ]: e.target.value }
-    )
+    const {
+      widthTemplate,
+      heightTemplate,
+      originHeightTemplate,
+      originWidthTemplate
+    } = this.state
+
+    //  resize by ratio Pixel
+    if (this.state.marriageActive) {
+      if (e.target.name === 'widthTemplate') {
+        if (!heightTemplate) {
+          this.setState({
+            [ e.target.name ]: e.target.value,
+            heightTemplate: e.target.value
+          })
+          return
+        }
+        if (!e.target.value) {
+          this.setState({
+            heightTemplate: ((1 * heightTemplate) / 1)
+          })
+          return
+        } else {
+          this.setState({
+            [ e.target.name ]: e.target.value,
+            heightTemplate: Math.round((e.target.value * originHeightTemplate) / originWidthTemplate)
+          })
+          return
+        }
+      }
+
+      if (e.target.name === 'heightTemplate') {
+        if (!widthTemplate) {
+          this.setState({
+            [ e.target.name ]: e.target.value,
+            widthTemplate: e.target.value
+          })
+          return
+        }
+        if (!e.target.value) {
+          this.setState({
+            [ e.target.name ] : e.target.value,
+            widthTemplate: ((1 * widthTemplate) / 1)
+          })
+          return
+        } else {
+          this.setState({
+            [ e.target.name ] : e.target.value,
+            widthTemplate: Math.round((e.target.value * originWidthTemplate) / originHeightTemplate)
+          })
+          return
+        }
+      }
+    }
+
+    // resize no ratio
+    this.setState({
+      [ e.target.name ] : e.target.value
+    })
   }
+
+  changeTypeResizePixel(e){
+    const { marriageActive } = this.state
+
+    this.setState({
+      modeResize: marriageActive === false ? 'keepPercentPixel' : 'noKeepPercentPixel',
+      marriageActive: !marriageActive
+    })
+  }
+
+  sizeTemplate(originSizeTemplate){
+    this.setState({
+      originHeightTemplate: originSizeTemplate.height,
+      originWidthTemplate: originSizeTemplate.width,
+      heightTemplate: originSizeTemplate.height,
+      widthTemplate: originSizeTemplate.width
+    })
+  }
+
   render() {
     const {
       templateFile,
@@ -404,8 +510,11 @@ class UploadForm extends React.Component {
       templateWidth,
       templateHeight,
       previewImage,
-      modeResize
+      modeResize,
+      marriageActive,
+      originSizeTemplate
     } = this.state
+
     const templateUpload = templatePreview.length ? <ImageUpload >
       <p>1</p>
       {
@@ -506,8 +615,9 @@ class UploadForm extends React.Component {
               templatePreview={ templatePreview }
               previewImage={ this.state.previewImage }
               defaultPreviewImage = { previewImage || Object.values(imagePreviews)[0] }
-              templateHeight = { templateHeight }
-              templateWidth = { templateWidth }
+              templateHeight={ templateHeight }
+              templateWidth={ templateWidth }
+              sizeTemplate={ this.sizeTemplate.bind(this) }
             />
           </div>
         </Session>
@@ -632,6 +742,12 @@ class UploadForm extends React.Component {
                       />
                       <label>px</label>
                     </div>
+                    <Marriage
+                      onClick={ this.changeTypeResizePixel.bind(this) }
+                      active={ marriageActive }
+                      >
+                      &#9901;
+                    </Marriage>
                     <div>
                       <label>Height </label>
                       <Input
