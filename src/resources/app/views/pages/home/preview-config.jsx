@@ -100,7 +100,7 @@ class PreviewImage  extends React.Component {
       if (this.props.heightTemplate < img.height || this.props.widthTemplate < img.width) {
         if (this.props.modeResize === 'pixel') {
           this.setState({
-            ratioWithWatermarkW: this.props.widthTemplate ,
+            ratioWithWatermarkW: (this.props.widthTemplate / 300) * 100,
             ratioWithWatermarkH: 'auto'
           })
           return
