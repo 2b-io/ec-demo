@@ -629,6 +629,7 @@ class UploadForm extends React.Component {
               percentTemplate={ this.state.percentTemplate }
               widthTemplate={ this.state.widthTemplate }
               heightTemplate={ this.state.heightTemplate }
+              modeResize={ this.state.modeResize }
             />
           </div>
         </Session>

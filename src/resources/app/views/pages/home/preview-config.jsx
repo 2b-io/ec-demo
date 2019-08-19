@@ -97,21 +97,20 @@ class PreviewImage  extends React.Component {
         img = await imageSize(defaultWatermark)
       }
 
-      if (heightTemplateView < img.height || widthTemplateView < img.width) {
-        this.setState({
-          ratioWithWatermarkW: (widthTemplateView * 300) / 100,
-          ratioWithWatermarkH: 'auto'
-        })
-        return
+      if (this.props.heightTemplate < img.height || this.props.widthTemplate < img.width) {
+        if (this.props.modeResize === 'pixel') {
+          this.setState({
+            ratioWithWatermarkW: this.props.widthTemplate ,
+            ratioWithWatermarkH: 'auto'
+          })
+          return
+        }
       }
 
-      if (this.props.heightTemplate < img.height || this.props.widthTemplate < img.width) {
-        let ratioWithWatermarkH = 'auto'
-        let ratioWithWatermarkW = (this.props.widthTemplate * 300) / 100 || 'auto'
-
+      if (heightTemplateView < img.height || widthTemplateView < img.width ) {
         this.setState({
-          ratioWithWatermarkH,
-          ratioWithWatermarkW
+          ratioWithWatermarkW: ((widthTemplateView * 300) / 100),
+          ratioWithWatermarkH: 'auto'
         })
         return
       }
