@@ -70,15 +70,18 @@ class PreviewImage  extends React.Component {
   }
 
   async componentDidUpdate(prevProps) {
-
     if (prevProps.templatePreview !== this.props.templatePreview) {
-      const _sizeTemplate = await imageSize(this.props.templatePreview)
+      let _sizeTemplate = await imageSize(this.props.templatePreview)
+
       this.props.sizeTemplate(_sizeTemplate)
     }
 
     if (
       prevProps.defaultPreviewImage !== this.props.defaultPreviewImage ||
-      prevProps.templateWidth !== this.props.templateWidth
+      prevProps.templateWidth !== this.props.templateWidth ||
+      prevProps.percentTemplate !== this.props.percentTemplate ||
+      prevProps.widthTemplate !== this.props.widthTemplate ||
+      prevProps.heightTemplate !== this.props.heightTemplate
     ) {
       let img
 
@@ -88,6 +91,7 @@ class PreviewImage  extends React.Component {
       else {
         img = await imageSize(defaultWatermark)
       }
+
       if (this.props.templateHeight < img.height || this.props.templateWidth < img.width) {
         let ratioWithWatermarkH = (300 / img.height) * this.props.templateHeight || 'auto'
         let ratioWithWatermarkW = (300 / img.width) * this.props.templateWidth || 'auto'
@@ -96,6 +100,46 @@ class PreviewImage  extends React.Component {
           ratioWithWatermarkH,
           ratioWithWatermarkW
         })
+      }
+
+      if (this.props.templateHeight > img.height || this.props.templateWidth > img.width) {
+        this.setState({
+          ratioWithWatermarkH: this.state.ratioWithImageH,
+          ratioWithWatermarkW: this.state.ratioWithImageW
+        })
+      }
+
+      let _sizeTemplate = await imageSize(this.props.templatePreview)
+
+      const heightTemplateView = Math.round((_sizeTemplate.height * this.props.percentTemplate) / 100 )
+      const widthTemplateView = Math.round((_sizeTemplate.width * this.props.percentTemplate) / 100 )
+
+      if (heightTemplateView > img.height || widthTemplateView > img.width) {
+        this.setState({
+          ratioWithWatermarkW: 'auto',
+          ratioWithWatermarkH: 'auto'
+        })
+      } else {
+        this.setState({
+          ratioWithWatermarkW: widthTemplateView,
+          ratioWithWatermarkH: heightTemplateView
+        })
+      }
+
+      if (this.props.widthTemplate !== prevProps.widthTemplate || this.props.heightTemplate !== prevProps.heightTemplate) {
+        console.log('this.props.widthTemplate', this.props.widthTemplate);
+        console.log('prevProps.widthTemplate',prevProps.widthTemplate);
+        if (this.props.widthTemplate > img.height || this.props.heightTemplate > img.width) {
+          this.setState({
+            ratioWithWatermarkW: 'auto',
+            ratioWithWatermarkH: 'auto'
+          })
+        } else {
+          this.setState({
+            ratioWithWatermarkW: this.props.widthTemplate,
+            ratioWithWatermarkH: this.props.heightTemplate
+          })
+        }
       }
     }
   }
@@ -111,14 +155,14 @@ class PreviewImage  extends React.Component {
       previewImage,
       defaultPreviewImage,
       templateWidth,
-      templateHeight
+      templateHeight,
+      ratioWithImageW,
+      ratioWithImageH
     } = this.props
 
     const {
       ratioWithWatermarkH,
       ratioWithWatermarkW,
-      ratioWithImageW,
-      ratioWithImageH
     } = this.state
 
     let top

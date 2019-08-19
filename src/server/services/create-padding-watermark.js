@@ -11,7 +11,7 @@ const createPaddingImage = async (requestId, padding = {}, watermarkPath) => {
     const paddingLeft = Number(padding.paddingLeft) || 0
     const paddingRight = Number(padding.paddingRight) || 0
     const paddingBottom = Number(padding.paddingBottom) || 0
-    
+
     await fs.ensureDir(`${ config.watermarkPaddingDir }/${ requestId }`)
     const transparentImagePath = `${ config.watermarkPaddingDir }/${ requestId }/transparentImage.png`
 

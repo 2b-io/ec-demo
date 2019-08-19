@@ -182,14 +182,16 @@ class UploadForm extends React.Component {
       templatePreview: {},
       templateWidth: 0,
       templateHeight: 0,
-      percentTemplate: 10,
+      percentTemplate: 100,
       imagesPreview: '',
       heightTemplate: 0,
       widthTemplate: 0,
       modeResize:'percent',
       marriageActive: true,
       originHeightTemplate: 1,
-      originWidthTemplate: 1
+      originWidthTemplate: 1,
+      widthPercentTemplate: 100,
+      heightPercentTemplate: 100
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -501,6 +503,12 @@ class UploadForm extends React.Component {
     })
   }
 
+  changePercentTemplate(e){
+    this.setState({
+      [ e.target.name ] : e.target.value
+    })
+  }
+
   render() {
     const {
       templateFile,
@@ -618,6 +626,9 @@ class UploadForm extends React.Component {
               templateHeight={ templateHeight }
               templateWidth={ templateWidth }
               sizeTemplate={ this.sizeTemplate.bind(this) }
+              percentTemplate={ this.state.percentTemplate }
+              widthTemplate={ this.state.widthTemplate }
+              heightTemplate={ this.state.heightTemplate }
             />
           </div>
         </Session>
@@ -709,19 +720,19 @@ class UploadForm extends React.Component {
                       <label>Width </label>
                       <Input
                         type='number'
-                        name='widthTemplate'
-                        value={ this.state.widthTemplate }
-                        onChange={ this.changeSizeTemplate.bind(this) }
+                        name='widthPercentTemplate'
+                        value={ this.state.widthPercentTemplate }
+                        onChange={ this.changePercentTemplate.bind(this) }
                       />
                       <label>%</label>
                     </div>
                     <div>
                       <label>Height </label>
                       <Input
-                        name='heightTemplate'
+                        name='heightPercentTemplate'
                         type='number'
-                        value={ this.state.heightTemplate }
-                        onChange={ this.changeSizeTemplate.bind(this) }
+                        value={ this.state.heightPercentTemplate }
+                        onChange={ this.changePercentTemplate.bind(this) }
                       />
                       <label>%</label>
                     </div>

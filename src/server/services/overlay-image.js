@@ -25,7 +25,7 @@ const overlay = async (
   const paddingRight = Number(padding.paddingRight) || 0
   const paddingBottom = Number(padding.paddingBottom) || 0
 
-  if (modeResize) {
+  if (modeResize && percentTemplate !== 100) {
     await resizeWatermark(
       filePath,
       watermarkPath,
