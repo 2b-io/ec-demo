@@ -77,6 +77,7 @@ class PreviewImage  extends React.Component {
     }
 
     if (
+      prevProps.templatePreview !== this.props.templatePreview ||
       prevProps.defaultPreviewImage !== this.props.defaultPreviewImage ||
       prevProps.templateWidth !== this.props.templateWidth ||
       prevProps.percentTemplate !== this.props.percentTemplate ||
@@ -84,6 +85,10 @@ class PreviewImage  extends React.Component {
       prevProps.heightTemplate !== this.props.heightTemplate
     ) {
       let img
+      let _sizeTemplate = await imageSize(this.props.templatePreview)
+
+      const heightTemplateView = Math.round((_sizeTemplate.height * this.props.percentTemplate) / 100 )
+      const widthTemplateView = Math.round((_sizeTemplate.width * this.props.percentTemplate) / 100 )
 
       if (this.props.defaultPreviewImage) {
         img = await imageSize(this.props.defaultPreviewImage)
@@ -93,6 +98,7 @@ class PreviewImage  extends React.Component {
       }
 
       if (this.props.templateHeight < img.height || this.props.templateWidth < img.width) {
+      
         let ratioWithWatermarkH = (300 / img.height) * this.props.templateHeight || 'auto'
         let ratioWithWatermarkW = (300 / img.width) * this.props.templateWidth || 'auto'
 
@@ -100,6 +106,7 @@ class PreviewImage  extends React.Component {
           ratioWithWatermarkH,
           ratioWithWatermarkW
         })
+        return
       }
 
       if (this.props.templateHeight > img.height || this.props.templateWidth > img.width) {
@@ -109,35 +116,34 @@ class PreviewImage  extends React.Component {
         })
       }
 
-      let _sizeTemplate = await imageSize(this.props.templatePreview)
-
-      const heightTemplateView = Math.round((_sizeTemplate.height * this.props.percentTemplate) / 100 )
-      const widthTemplateView = Math.round((_sizeTemplate.width * this.props.percentTemplate) / 100 )
-
       if (heightTemplateView > img.height || widthTemplateView > img.width) {
         this.setState({
           ratioWithWatermarkW: 'auto',
           ratioWithWatermarkH: 'auto'
         })
-      } else {
+      }
+
+      if (heightTemplateView < img.height || widthTemplateView < img.width) {
         this.setState({
-          ratioWithWatermarkW: widthTemplateView,
-          ratioWithWatermarkH: heightTemplateView
+          ratioWithWatermarkW: (300 / img.width) * widthTemplateView,
+          ratioWithWatermarkH: (300 / img.height) * heightTemplateView
         })
+
+        return
       }
 
       if (this.props.widthTemplate !== prevProps.widthTemplate || this.props.heightTemplate !== prevProps.heightTemplate) {
-        console.log('this.props.widthTemplate', this.props.widthTemplate);
-        console.log('prevProps.widthTemplate',prevProps.widthTemplate);
-        if (this.props.widthTemplate > img.height || this.props.heightTemplate > img.width) {
+        if (this.props.widthTemplate > img.width || this.props.heightTemplate > img.height) {
           this.setState({
             ratioWithWatermarkW: 'auto',
             ratioWithWatermarkH: 'auto'
           })
-        } else {
+        }
+
+        if (this.props.widthTemplate < img.height || this.props.heightTemplate < img.width) {
           this.setState({
-            ratioWithWatermarkW: this.props.widthTemplate,
-            ratioWithWatermarkH: this.props.heightTemplate
+            ratioWithWatermarkW:(300 / img.width) * this.props.widthTemplate,
+            ratioWithWatermarkH:(300 / img.height) * this.props.heightTemplate,
           })
         }
       }

@@ -13,7 +13,7 @@ import {
   PrimaryButton,
   ProgressBar,
   ProgressCircular,
-  PlainButton
+  PlainButton,
 } from 'app/ui/elements'
 
 import arrToMap from 'services/array-to-map'
