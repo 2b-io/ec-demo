@@ -1,11 +1,8 @@
 import ConfigImageModel from 'models/config-image'
 
-const create = async (requestId, bucket, s3Key, config = {}) => {
-
+const create = async (requestId, config = {}) => {
   return await new ConfigImageModel({
     requestId,
-    bucket,
-    s3Key,
     config
   }).save()
 }

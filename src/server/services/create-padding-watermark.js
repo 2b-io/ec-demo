@@ -7,6 +7,7 @@ import config from 'infrastructure/config'
 promise.promisifyAll(gm.prototype)
 
 const createPaddingImage = async (requestId, padding = {}, watermarkPath) => {
+
     const paddingTop = Number(padding.paddingTop) || 0
     const paddingLeft = Number(padding.paddingLeft) || 0
     const paddingRight = Number(padding.paddingRight) || 0

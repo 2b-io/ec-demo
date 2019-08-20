@@ -19,6 +19,7 @@ const overlay = async (
   widthTemplate,
   percentTemplate
   ) => {
+  console.log('OVERLAY_IMAGE_START...')
 
   const paddingTop = Number(padding.paddingTop) || 0
   const paddingLeft = Number(padding.paddingLeft) || 0
@@ -26,6 +27,7 @@ const overlay = async (
   const paddingBottom = Number(padding.paddingBottom) || 0
 
   let watermarkPathNew
+
   if (modeResize) {
     watermarkPathNew = await resizeWatermark(
       filePath,
@@ -41,36 +43,20 @@ const overlay = async (
   if (paddingTop || paddingLeft || paddingRight || paddingBottom) {
     await paddingWatermark(requestId, { paddingTop, paddingLeft, paddingRight, paddingBottom }, watermarkPath)
   }
-  if (watermarkPathNew) {
-    // const {
-    //   width: widthWatermark,
-    //   height: heightWatermark
-    // } = await gm(watermarkPathNew).sizeAsync()
 
+  if (watermarkPathNew) {
     await gm(filePath)
       .composite(watermarkPathNew)
-      // .resize(600, 800)
       .gravity(gravity)
       .dissolve(opacity)
       .writeAsync(onputFilePath)
   } else {
-    // const {
-    //   width: widthWatermark,
-    //   height: heightWatermark
-    // } = await gm(watermarkPath).sizeAsync()
-
     await gm(filePath)
       .composite(watermarkPath)
-      // .resize(600, 800)
       .gravity(gravity)
       .dissolve(opacity)
       .writeAsync(onputFilePath)
   }
-
-
-
-
-
 }
 
 export default overlay

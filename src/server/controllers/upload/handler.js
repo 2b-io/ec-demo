@@ -25,7 +25,6 @@ export default {
       await fs.ensureDir(`${ config.imageResultDir }/${ requestId }`)
 
       const {
-        s3Key,
         config: {
           gravity,
           padding,

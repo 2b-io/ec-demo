@@ -68,25 +68,6 @@ export default {
           }
         }
 
-        await configImage.create(
-          requestId,
-          '',
-          '',
-          {
-            gravity,
-            padding: {
-              paddingTop,
-              paddingLeft,
-              paddingRight,
-              paddingBottom
-            },
-          opacity,
-          modeResize,
-          heightTemplate,
-          widthTemplate,
-          percentTemplate
-        })
-
         const tempPath = files.file.path
         const chunk = parseInt(fields.chunk, 10)
         const chunks = parseInt(fields.chunks, 10)
@@ -101,6 +82,25 @@ export default {
 
           if (chunk < chunks - 1) {
             return res.sendStatus(200)
+          }
+
+          if (filetype === 'watermark') {
+            await configImage.create(
+              requestId,
+              {
+                gravity,
+                padding: {
+                  paddingTop,
+                  paddingLeft,
+                  paddingRight,
+                  paddingBottom
+                },
+              opacity,
+              modeResize,
+              heightTemplate,
+              widthTemplate,
+              percentTemplate
+            })
           }
 
           const contentType = mime.lookup(storePath)
