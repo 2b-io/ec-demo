@@ -46,7 +46,7 @@ const gravitys = [
   'SouthEast',
 ]
 
-class TemplateConfig extends React.Component {
+class WatermarkPosition extends React.Component {
   constructor(props) {
     super(props)
 
@@ -66,12 +66,17 @@ class TemplateConfig extends React.Component {
 
   render() {
     const listItem = gravitys.map((gravity, index) => {
+      const active = this.state.gravity === gravity ? true : false
       return (
         <Item
           key={ index }
-          active={ this.state.gravity === gravity ? true : false }
+          active={ active }
           onClick= { this.changeGravity.bind(this, gravity) }
-        />
+        >
+        {
+          active ? 'Watermark' : ''
+        }
+        </Item>
       )
     })
     return (
@@ -82,4 +87,4 @@ class TemplateConfig extends React.Component {
   }
 }
 
-export default TemplateConfig
+export default WatermarkPosition

@@ -4,8 +4,12 @@ import plupload from 'plupload'
 
 import styled, { css } from 'styled-components'
 
+import imageSize from 'app/services/image-size'
 import { mapDispatch } from 'app/services/redux-helpers'
 import { actions, selectors } from 'app/state/interface'
+
+import defaultPreviewImage from 'img/image-preview.jpg'
+import defaultPreviewWatermark from 'img/watermark.png'
 
 import {
   Container,
@@ -17,9 +21,10 @@ import {
 } from 'app/ui/elements'
 
 import arrToMap from 'services/array-to-map'
-import TemplatePosition from './template-position'
-import TemplatePadding from './template-padding'
-import PreviewConfig from './preview-config'
+
+import WatermarkPosition from './watermark-config/position'
+import WatermarkPadding from './watermark-config/padding'
+import Preview from './preview'
 
 const Marriage = styled.button`
   ${
@@ -102,7 +107,7 @@ const LabelItem = styled.span`
   font-weight: 500;
 `
 
-const TemplateUpload = styled.div`
+const WatermarkUpload = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 `
@@ -179,19 +184,18 @@ class UploadForm extends React.Component {
       paddingBottom: 0,
       opacity: 100,
       imagePreviews: {},
-      templatePreview: {},
-      templateWidth: 0,
-      templateHeight: 0,
-      percentTemplate: 20,
+      watermarkSrc: '',
+      imageSrc: '',
+      widthOriginWatermark: 1,
+      heightOriginWatermark: 1,
+      percentWatermark: 20,
       imagesPreview: '',
-      heightTemplate: 0,
-      widthTemplate: 0,
-      modeResize:'percent',
+      heightPixelWatermark: 0,
+      widthPixelWatermark: 0,
+      modeResize: 'percent',
       marriageActive: true,
-      originHeightTemplate: 1,
-      originWidthTemplate: 1,
-      widthPercentTemplate: 100,
-      heightPercentTemplate: 100
+      widthPercentWatermark: 100,
+      heightPercentWatermark: 100
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -199,7 +203,7 @@ class UploadForm extends React.Component {
 
   uploadAllFiles() {
     const {
-      plupTemplate,
+      plupWatermark,
       plupItems,
       gravity,
       paddingTop,
@@ -208,9 +212,9 @@ class UploadForm extends React.Component {
       paddingBottom,
       opacity,
       modeResize,
-      heightTemplate,
-      widthTemplate,
-      percentTemplate,
+      heightPixelWatermark,
+      widthPixelWatermark,
+      percentWatermark,
     } = this.state
 
     const padding = {
@@ -221,15 +225,15 @@ class UploadForm extends React.Component {
     }
 
     this.props.uploadFiles(
-      plupTemplate,
+      plupWatermark,
       plupItems,
       gravity,
       padding,
       opacity,
       modeResize,
-      heightTemplate,
-      widthTemplate,
-      percentTemplate
+      heightPixelWatermark,
+      widthPixelWatermark,
+      percentWatermark
     )
   }
 
@@ -238,9 +242,9 @@ class UploadForm extends React.Component {
     this.setState({ ...padding })
   }
 
-  uploadTemplate() {
-    const plupTemplate = new plupload.Uploader({
-      browse_button: 'browseTemplate',
+  uploadWatermark() {
+    const plupWatermark = new plupload.Uploader({
+      browse_button: 'browseWatermark',
       max_retries: 3,
       chunk_size: '200kb',
       urlstream_upload: true,
@@ -253,9 +257,9 @@ class UploadForm extends React.Component {
               img.src = e.target.result
               img.onload = (event) => {
                 this.setState({
-                  templatePreview: reader.result,
-                  templateHeight: event.path[ 0 ].height,
-                  templateWidth: event.path[ 0 ].width
+                  watermarkSrc: reader.result,
+                  heightOriginWatermark: event.path[ 0 ].height,
+                  widthOriginWatermark: event.path[ 0 ].width
                 })
               }
             }
@@ -263,7 +267,7 @@ class UploadForm extends React.Component {
           })
         },
         FilesRemoved: (uploader ,files) => {
-          this.setState({ templatePreview:'' })
+          this.setState({ watermarkSrc:'' })
         },
         QueueChanged: (queue) => {
           this.setState({ templateFile: queue.files[0] })
@@ -286,10 +290,10 @@ class UploadForm extends React.Component {
       multi_selection: false
     })
 
-    plupTemplate.init()
+    plupWatermark.init()
 
     this.setState({
-      plupTemplate
+      plupWatermark
     })
   }
 
@@ -353,7 +357,7 @@ class UploadForm extends React.Component {
   }
 
   componentDidMount() {
-    this.uploadTemplate()
+    this.uploadWatermark()
     this.uploadItems(MIME_FILE[ 'images' ])
   }
 
@@ -389,17 +393,25 @@ class UploadForm extends React.Component {
     this.setState({ opacity: e.target.value })
   }
 
-  changeRatioTemplate(e){
-    this.setState({ percentTemplate: e.target.value })
+  changeRatioWatermark(e){
+    const imageSrc = this.state.imageSrc || defaultPreviewImage
+    const imagePreview = sizeOf(imageSrc)
+    const widthWatermark = Math.round(imagePreview.width * e.target.value) / 100
+
+    this.setState({
+      percentWatermark: e.target.value,
+      heightWatermark: 'auto',
+      widthWatermark,
+    })
   }
 
   downloadFile(){
     window.location.href = this.props.linkDownload
   }
 
-  removeTemplate(file){
-    const { plupTemplate } = this.state
-    plupTemplate.removeFile(file)
+  removeWatermark(file){
+    const { plupWatermark } = this.state
+    plupWatermark.removeFile(file)
   }
 
   removeImage(file){
@@ -423,56 +435,61 @@ class UploadForm extends React.Component {
     })
   }
 
-  changeSizeTemplate(e){
+  changeSizeWatermark(e){
     const {
-      widthTemplate,
-      heightTemplate,
-      originHeightTemplate,
-      originWidthTemplate
+      widthPixelWatermark,
+      heightPixelWatermark,
+      heightOriginWatermark,
+      widthOriginWatermark
     } = this.state
-
     //  resize by ratio Pixel
     if (this.state.marriageActive) {
-      if (e.target.name === 'widthTemplate') {
-        if (!heightTemplate) {
+      if (e.target.name === 'widthPixelWatermark') {
+        if (!heightPixelWatermark) {
+          console.log('a1');
           this.setState({
             [ e.target.name ]: e.target.value,
-            heightTemplate: e.target.value
+            heightPixelWatermark: e.target.value
           })
           return
         }
         if (!e.target.value) {
+          console.log('a2');
           this.setState({
-            heightTemplate: ((1 * heightTemplate) / 1)
+            heightPixelWatermark: ((1 * heightPixelWatermark) / 1)
           })
           return
         } else {
+          console.log('a3');
           this.setState({
             [ e.target.name ]: e.target.value,
-            heightTemplate: Math.round((e.target.value * originHeightTemplate) / originWidthTemplate)
+            heightPixelWatermark: Math.round((e.target.value * heightOriginWatermark) / widthOriginWatermark)
           })
           return
         }
       }
 
-      if (e.target.name === 'heightTemplate') {
-        if (!widthTemplate) {
+      if (e.target.name === 'heightPixelWatermark') {
+        if (!widthPixelWatermark) {
+          console.log('b1');
           this.setState({
             [ e.target.name ]: e.target.value,
-            widthTemplate: e.target.value
+            widthPixelWatermark: e.target.value
           })
           return
         }
         if (!e.target.value) {
+          console.log('b2');
           this.setState({
             [ e.target.name ] : e.target.value,
-            widthTemplate: ((1 * widthTemplate) / 1)
+            widthPixelWatermark: ((1 * widthPixelWatermark) / 1)
           })
           return
         } else {
+          console.log('b3');
           this.setState({
             [ e.target.name ] : e.target.value,
-            widthTemplate: Math.round((e.target.value * originWidthTemplate) / originHeightTemplate)
+            widthPixelWatermark: Math.round((e.target.value * widthOriginWatermark) / heightOriginWatermark)
           })
           return
         }
@@ -494,16 +511,16 @@ class UploadForm extends React.Component {
     })
   }
 
-  sizeTemplate(originSizeTemplate){
+  sizeWatermark(originSizeWatermark){
     this.setState({
-      originHeightTemplate: originSizeTemplate.height,
-      originWidthTemplate: originSizeTemplate.width,
-      heightTemplate: originSizeTemplate.height,
-      widthTemplate: originSizeTemplate.width
+      heightOriginWatermark: originSizeWatermark.height,
+      widthOriginWatermark: originSizeWatermark.width,
+      heightPixelWatermark: originSizeWatermark.height,
+      widthPixelWatermark: originSizeWatermark.width
     })
   }
 
-  changePercentTemplate(e){
+  changePercentWatermark(e){
     this.setState({
       [ e.target.name ] : e.target.value
     })
@@ -514,16 +531,14 @@ class UploadForm extends React.Component {
       templateFile,
       imageFiles,
       imagePreviews,
-      templatePreview,
-      templateWidth,
-      templateHeight,
+      watermarkSrc,
       previewImage,
       modeResize,
       marriageActive,
-      originSizeTemplate
+      originSizeWatermark
     } = this.state
 
-    const templateUpload = templatePreview.length ? <ImageUpload >
+    const watermarkUpload = watermarkSrc.length ? <ImageUpload >
       <p>1</p>
       {
         templateFile.percent !== 0 ?
@@ -532,12 +547,12 @@ class UploadForm extends React.Component {
             />
             :
           <PrimaryButton
-            onClick={ this.removeTemplate.bind(this, templateFile) }
+            onClick={ this.removeWatermark.bind(this, templateFile) }
             minWidth={ 20 }>
               X
           </PrimaryButton>
       }
-      <Thumbnail src={ templatePreview }/>
+      <Thumbnail src={ watermarkSrc }/>
       <p>
         { templateFile.name } { plupload.formatSize(templateFile.size) }
       </p>
@@ -585,16 +600,16 @@ class UploadForm extends React.Component {
         <Session>
           <div>
             <Upload>
-              <LabelItem>Template</LabelItem>
+              <LabelItem>Watermark</LabelItem>
               <PrimaryButton
-                id="browseTemplate"
+                id="browseWatermark"
                 free={ true }
               >
                 Browse file...
               </PrimaryButton>
             </Upload>
             <ListUpload>
-              { templateUpload }
+              { watermarkUpload }
             </ListUpload>
           </div>
           <div>
@@ -603,7 +618,7 @@ class UploadForm extends React.Component {
           </Config>
           <Break/>
           <Config>
-            <TemplatePosition
+            <WatermarkPosition
               handleGravity={ this.handleGravity.bind(this) }
             />
           </Config>
@@ -611,7 +626,7 @@ class UploadForm extends React.Component {
           <div>
             <LabelItem>Preview Config</LabelItem>
             <Break/>
-            <PreviewConfig
+            <Preview
               gravity={ this.state.gravity }
               padding={{
                 top: this.state.paddingTop,
@@ -620,16 +635,12 @@ class UploadForm extends React.Component {
                 bottom: this.state.paddingBottom
               }}
               opacity={ this.state.opacity / 100 }
-              templatePreview={ templatePreview }
-              previewImage={ this.state.previewImage }
-              defaultPreviewImage = { previewImage || Object.values(imagePreviews)[0] }
-              templateHeight={ templateHeight }
-              templateWidth={ templateWidth }
-              sizeTemplate={ this.sizeTemplate.bind(this) }
-              percentTemplate={ this.state.percentTemplate }
-              widthTemplate={ this.state.widthTemplate }
-              heightTemplate={ this.state.heightTemplate }
-              modeResize={ this.state.modeResize }
+              watermarkSrc={ this.state.watermarkSrc || defaultPreviewWatermark }
+              imageSrc={ this.state.imageSrc || defaultPreviewImage }
+              heightImage={ this.state.heightImage }
+              widthImage={ this.state.widthImage }
+              heightWatermark={ this.state.heightWatermark }
+              widthWatermark={ this.state.widthWatermark }
             />
           </div>
         </Session>
@@ -666,7 +677,7 @@ class UploadForm extends React.Component {
           <div>
             <LabelItem>Config padding</LabelItem>
             <Break/>
-              <TemplatePadding
+              <WatermarkPadding
                 handlePadding={ this.handlePadding.bind(this) }
                 gravity={ this.state.gravity }
                 paddingTop={ this.state.paddingTop }
@@ -676,7 +687,7 @@ class UploadForm extends React.Component {
               />
             <Break/>
             <Break/>
-            <LabelItem>Resize Template</LabelItem>
+            <LabelItem>Resize Watermark</LabelItem>
             <Break/>
             <DropDown name='TypeResize' size='1' onChange={ this.changeTypeResize.bind(this) }>
               <option value='percent'>Percent</option>
@@ -693,20 +704,20 @@ class UploadForm extends React.Component {
             }
             <Break/>
               { modeResize === 'percent' || modeResize === 'keepRatioPercent' ? <div>
-                <LabelItem>Ratio Template By Percent</LabelItem>
+                <LabelItem>Ratio Watermark By Percent</LabelItem>
                 <Slider>
                   <input
                     type='range'
-                    value={ this.state.percentTemplate }
-                    onChange={ this.changeRatioTemplate.bind(this) }
+                    value={ this.state.percentWatermark }
+                    onChange={ this.changeRatioWatermark.bind(this) }
                   />
                   <div>
                     <Input
                       type='number'
                       max='100'
                       min='0'
-                      value={ this.state.percentTemplate }
-                      onChange={ this.changeRatioTemplate.bind(this) }
+                      value={ this.state.percentWatermark }
+                      onChange={ this.changeRatioWatermark.bind(this) }
                     />
                     <label>%</label>
                   </div>
@@ -714,26 +725,26 @@ class UploadForm extends React.Component {
                 </div>
                 :
                 modeResize === 'noKeepRatioPercent' ? <div>
-                <LabelItem>Ratio Template By Percent</LabelItem>
+                <LabelItem>Ratio Watermark By Percent</LabelItem>
                   <Break/>
                   <Grid columns={ 4 }>
                     <div>
                       <label>Width </label>
                       <Input
                         type='number'
-                        name='widthPercentTemplate'
-                        value={ this.state.widthPercentTemplate }
-                        onChange={ this.changePercentTemplate.bind(this) }
+                        name='widthPercentWatermark'
+                        value={ this.state.widthPercentWatermark }
+                        onChange={ this.changePercentWatermark.bind(this) }
                       />
                       <label>%</label>
                     </div>
                     <div>
                       <label>Height </label>
                       <Input
-                        name='heightPercentTemplate'
+                        name='heightPercentWatermark'
                         type='number'
-                        value={ this.state.heightPercentTemplate }
-                        onChange={ this.changePercentTemplate.bind(this) }
+                        value={ this.state.heightPercentWatermark }
+                        onChange={ this.changePercentWatermark.bind(this) }
                       />
                       <label>%</label>
                     </div>
@@ -741,16 +752,16 @@ class UploadForm extends React.Component {
                 </div>
                 :
                 <div>
-                  <LabelItem>Ratio Template By Pixel</LabelItem>
+                  <LabelItem>Ratio Watermark By Pixel</LabelItem>
                   <Break/>
                   <Grid columns={ 4 }>
                     <div>
                       <label>Width </label>
                       <Input
                         type='number'
-                        name='widthTemplate'
-                        value={ this.state.widthTemplate }
-                        onChange={ this.changeSizeTemplate.bind(this) }
+                        name='widthPixelWatermark'
+                        value={ this.state.widthPixelWatermark }
+                        onChange={ this.changeSizeWatermark.bind(this) }
                       />
                       <label>px</label>
                     </div>
@@ -763,10 +774,10 @@ class UploadForm extends React.Component {
                     <div>
                       <label>Height </label>
                       <Input
-                        name='heightTemplate'
+                        name='heightPixelWatermark'
                         type='number'
-                        value={ this.state.heightTemplate }
-                        onChange={ this.changeSizeTemplate.bind(this) }
+                        value={ this.state.heightPixelWatermark }
+                        onChange={ this.changeSizeWatermark.bind(this) }
                       />
                       <label>px</label>
                     </div>
