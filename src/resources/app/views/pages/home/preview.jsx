@@ -55,20 +55,10 @@ const Watermark = styled.img.attrs( props => {
   }
 `
 
-class PreviewImage  extends React.Component {
+class PreviewImage extends React.Component {
 
   constructor(props) {
     super(props)
-
-  }
-
-  async componentDidUpdate(prevProps) {
-    // if (prevProps.templateSrc !== this.props.templateSrc) {
-    //   const sizeWatermark = await imageSize(this.props.templateSrc)
-    //   this.props.sizeWatermark(sizeWatermark)
-    // }
-
-    // const defaultPreviewImageSize = await imageSize(this.props.defaultPreviewImage)
   }
 
   paddingRatio(padding, gravity) {

@@ -183,7 +183,7 @@ class UploadForm extends React.Component {
       paddingRight: 0,
       paddingBottom: 0,
       opacity: 100,
-      imagePreviews: {},
+      listImagePreview: {},
       watermarkSrc: '',
       imageSrc: '',
       widthOriginWatermark: 1,
@@ -198,6 +198,7 @@ class UploadForm extends React.Component {
       heightPercentWatermark: 100
     }
 
+    this.imageDemo = React.createRef()
     this.changeMimeType = this.changeMimeType.bind(this)
   }
 
@@ -308,8 +309,8 @@ class UploadForm extends React.Component {
             const reader = new FileReader()
             reader.onload = (e) => {
               this.setState({
-                imagePreviews: {
-                  ...this.state.imagePreviews,
+                listImagePreview: {
+                  ...this.state.listImagePreview,
                   [ file.id ]: reader.result
                 }
               })
@@ -321,11 +322,11 @@ class UploadForm extends React.Component {
           this.setState({ imageFiles: arrToMap(queue.files, 'id') })
         },
         FilesRemoved: (uploader ,files) => {
-          const imagePreviews = files.reduce((state, file) => {
+          const listImagePreview = files.reduce((state, file) => {
             const { [file.id]: removed, ...reducedState } = state
             return reducedState
-          }, this.state.imagePreviews)
-          this.setState({ imagePreviews })
+          }, this.state.listImagePreview)
+          this.setState({ listImagePreview })
         },
         UploadProgress: (uploader, file) => {
           const { files } = this.state
@@ -354,6 +355,16 @@ class UploadForm extends React.Component {
   resetPlupload(mimeType) {
     this.state.plupItems.destroy()
     this.uploadItems(MIME_FILE[ mimeType ])
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const lastImageSrc = Object.values(prevState.listImagePreview)[0]
+    const imageSrc = Object.values(this.state.listImagePreview)[0]
+    if (lastImageSrc !== imageSrc) {
+      this.setState({
+        imageSrc
+      })
+    }
   }
 
   componentDidMount() {
@@ -394,15 +405,34 @@ class UploadForm extends React.Component {
   }
 
   changeRatioWatermark(e){
-    const imageSrc = this.state.imageSrc || defaultPreviewImage
-    const imagePreview = sizeOf(imageSrc)
-    const widthWatermark = Math.round(imagePreview.width * e.target.value) / 100
+    let { width: widthImage, height: heightImage } = imageSize(this.state.imageSrc)
 
-    this.setState({
-      percentWatermark: e.target.value,
-      heightWatermark: 'auto',
-      widthWatermark,
-    })
+    if (!widthImage || !heightImage) {
+      widthImage = 600
+      heightImage = 600
+    }
+
+    const ratio = (widthImage / heightImage)
+
+    if (ratio < 1) {
+      widthImage = Math.round(widthImage / (heightImage / 300))
+      const widthWatermark = Math.round(widthImage * e.target.value) / 100
+
+      this.setState({
+        percentWatermark: e.target.value,
+        heightWatermark: 'auto',
+        widthWatermark,
+      })
+    } else {
+      heightImage = Math.round(heightImage / (widthImage / 300))
+      let heightWatermark = Math.round(heightImage * e.target.value) / 100
+
+      this.setState({
+        percentWatermark: e.target.value,
+        widthWatermark: 'auto',
+        heightWatermark,
+      })
+    }
   }
 
   downloadFile(){
@@ -454,13 +484,11 @@ class UploadForm extends React.Component {
           return
         }
         if (!e.target.value) {
-          console.log('a2');
           this.setState({
             heightPixelWatermark: ((1 * heightPixelWatermark) / 1)
           })
           return
         } else {
-          console.log('a3');
           this.setState({
             [ e.target.name ]: e.target.value,
             heightPixelWatermark: Math.round((e.target.value * heightOriginWatermark) / widthOriginWatermark)
@@ -471,7 +499,6 @@ class UploadForm extends React.Component {
 
       if (e.target.name === 'heightPixelWatermark') {
         if (!widthPixelWatermark) {
-          console.log('b1');
           this.setState({
             [ e.target.name ]: e.target.value,
             widthPixelWatermark: e.target.value
@@ -479,14 +506,12 @@ class UploadForm extends React.Component {
           return
         }
         if (!e.target.value) {
-          console.log('b2');
           this.setState({
             [ e.target.name ] : e.target.value,
             widthPixelWatermark: ((1 * widthPixelWatermark) / 1)
           })
           return
         } else {
-          console.log('b3');
           this.setState({
             [ e.target.name ] : e.target.value,
             widthPixelWatermark: Math.round((e.target.value * widthOriginWatermark) / heightOriginWatermark)
@@ -530,7 +555,7 @@ class UploadForm extends React.Component {
     const {
       templateFile,
       imageFiles,
-      imagePreviews,
+      listImagePreview,
       watermarkSrc,
       previewImage,
       modeResize,
@@ -577,7 +602,7 @@ class UploadForm extends React.Component {
                 </PrimaryButton>
           }
           {
-            imagePreviews[ file.id ] && <Thumbnail src={ imagePreviews[ file.id ] }/>
+            listImagePreview[ file.id ] && <Thumbnail src={ listImagePreview[ file.id ] }/>
           }
           <p>
             { file.name } { plupload.formatSize(file.size) }
@@ -586,7 +611,7 @@ class UploadForm extends React.Component {
       )
     })
 
-    const thumbnails = Object.values(imagePreviews).map((image, index) => {
+    const thumbnails = Object.values(listImagePreview).map((image, index) => {
       return (
         <ThumbnailPreview
           src={ image }
