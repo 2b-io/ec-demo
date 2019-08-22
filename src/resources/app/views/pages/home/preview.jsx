@@ -171,7 +171,7 @@ class PreviewImage extends React.Component {
             <Watermark
               height = { this.props.heightWatermark }
               width = { this.props.widthWatermark }
-              src={ this.props.watermarkSrc}
+              src={ this.props.watermarkSrc }
               top={ top }
               left={ left }
               right={ right }
