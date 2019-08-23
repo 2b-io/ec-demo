@@ -363,12 +363,18 @@ class UploadForm extends React.Component {
     this.uploadItems(MIME_FILE[ mimeType ])
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  async componentDidUpdate(prevProps, prevState) {
     const lastImageSrc = Object.values(prevState.listImagePreview)[0]
     const imageSrc = Object.values(this.state.listImagePreview)[0]
     if (lastImageSrc !== imageSrc) {
+      let { width: widthOriginImage, height: heightOriginImage } = await imageSize(imageSrc)
+      const { percentWatermark } = this.state
+      const { widthWatermark, heightWatermark } = this.ratioWatermark(widthOriginImage, heightOriginImage, percentWatermark)
+
       this.setState({
-        imageSrc
+        imageSrc,
+        widthWatermark,
+        heightWatermark
       })
     }
   }
@@ -421,19 +427,19 @@ class UploadForm extends React.Component {
 
   ratioWatermark(widthOriginImage, heightOriginImage, percentWatermark = this.state.percentWatermark){
     let _widthOriginImage = widthOriginImage || 600
-    let _heightOriginImage = _heightOriginImage || 600
+    let _heightOriginImage = heightOriginImage || 600
     const ratio = (_widthOriginImage / _heightOriginImage)
 
     if (ratio < 1) {
       _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 300))
-      let widthWatermark = Math.round((_widthOriginImage * percentWatermark) / 100)
+      let widthWatermark = Math.round(_widthOriginImage * (percentWatermark / 100))
       return {
         widthWatermark,
         heightWatermark: 'auto',
       }
     } else {
-      _heightOriginImage = Math.round(_heightOriginImage / (_widthOriginImage / 300))
-      let heightWatermark = Math.round((_heightOriginImage * percentWatermark) / 100)
+      _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 300))
+      let heightWatermark = Math.round(_heightOriginImage * (percentWatermark / 100))
       return {
         widthWatermark: 'auto',
         heightWatermark,
