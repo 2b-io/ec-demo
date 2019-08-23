@@ -160,6 +160,12 @@ const Upload = styled.div`
 const ListUpload = styled.div`
   max-height: 312px;
   overflow-y: scroll;
+
+  p {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
 `
 const FileType = styled.div`
   padding-top: 24px;
@@ -463,10 +469,17 @@ class UploadForm extends React.Component {
 
   changeImagePreview(image){
     const img = new Image()
+    const { percentWatermark } = this.state
     img.src = image
-    img.onload = (event) => {
+    let that = this
+    img.onload = async (event) => {
+      const { width: widthOriginImage, height: heightOriginImage } = await imageSize(image)
+      const { widthWatermark, heightWatermark } = that.ratioWatermark(widthOriginImage, heightOriginImage, percentWatermark)
+
       this.setState({
         imageSrc: image,
+        widthWatermark,
+        heightWatermark
       })
     }
   }
