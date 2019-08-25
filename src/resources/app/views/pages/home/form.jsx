@@ -374,7 +374,9 @@ class UploadForm extends React.Component {
       this.setState({
         imageSrc,
         widthWatermark,
-        heightWatermark
+        heightWatermark,
+        widthOriginImage,
+        heightOriginImage
       })
     }
   }
@@ -576,9 +578,26 @@ class UploadForm extends React.Component {
   }
 
   changePercentWatermark(e){
-    this.setState({
-      [ e.target.name ] : e.target.value
-    })
+    const percentWatermark = e.target.value
+    const  widthOriginImage = this.state.widthOriginImage || 600
+    const  heightOriginImage = this.state.heightOriginImage || 600
+
+    if ( e.target.name === 'widthPercentWatermark') {
+      this.setState({
+        widthWatermark: Math.round(widthOriginImage * (percentWatermark / 100)),
+        [ e.target.name ] : e.target.value
+      })
+      return
+    }
+
+    if (e.target.name === 'heightPercentWatermark') {
+      this.setState({
+        heightWatermark: Math.round(heightOriginImage * (percentWatermark / 100)),
+        [ e.target.name ] : e.target.value
+      })
+    }
+
+
   }
 
   render() {
