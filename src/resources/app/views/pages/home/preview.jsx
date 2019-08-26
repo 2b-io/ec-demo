@@ -161,16 +161,24 @@ class PreviewImage extends React.Component {
       transform
     } = this.paddingRatio(this.props.padding, this.props.gravity)
 
+    const {
+      heightWatermark,
+      widthWatermark,
+      widthWatermarkByRatio,
+      heightWatermarkByRatio,
+    } = this.props
+
+    const widthWatermarkPreview = widthWatermarkByRatio ? widthWatermarkByRatio : widthWatermark
+    const heightWatermarkPreview = heightWatermarkByRatio ? heightWatermarkByRatio : heightWatermark
+
     return (
       <Wrapper>
         <Preview>
           <FramePreview
-            width={ this.props.heightImage }
-            height={ this.props.widthImage }
             >
             <Watermark
-              height = { this.props.heightWatermark }
-              width = { this.props.widthWatermark }
+              height={ heightWatermarkPreview }
+              width={ widthWatermarkPreview }
               src={ this.props.watermarkSrc }
               top={ top }
               left={ left }
@@ -185,8 +193,6 @@ class PreviewImage extends React.Component {
               >
             </Watermark>
             <Image
-              width={ this.props.heightImage }
-              height={ this.props.widthImage }
               src={ this.props.imageSrc }
              />
           </FramePreview>

@@ -196,7 +196,7 @@ class UploadForm extends React.Component {
       heightOriginWatermark: 1,
       percentWatermark: 20,
       imagesPreview: '',
-      modeResize: 'percent',
+      modeResize: 'keepRatioPercent',
       marriageActive: true,
       widthPercentWatermark: 100,
       heightPercentWatermark: 100
@@ -241,7 +241,6 @@ class UploadForm extends React.Component {
       percentWatermark
     )
   }
-
 
   handlePadding(padding) {
     this.setState({ ...padding })
@@ -364,17 +363,38 @@ class UploadForm extends React.Component {
   async componentDidUpdate(prevProps, prevState) {
     const lastImageSrc = Object.values(prevState.listImagePreview)[0]
     const imageSrc = Object.values(this.state.listImagePreview)[0]
-    if (lastImageSrc !== imageSrc) {
+
+    if (lastImageSrc !== imageSrc || prevState.watermarkSrc !== this.state.watermarkSrc) {
       let { width: widthOriginImage, height: heightOriginImage } = await imageSize(imageSrc)
       const { percentWatermark } = this.state
-      const { widthWatermark, heightWatermark } = this.ratioWatermark(widthOriginImage, heightOriginImage, percentWatermark)
+
+      const { widthWatermark, heightWatermark, widthImagePreivew, heightImagePreivew } = this.ratioWatermark(
+        widthOriginImage,
+        heightOriginImage,
+        percentWatermark
+      )
 
       this.setState({
         imageSrc,
         widthWatermark,
         heightWatermark,
         widthOriginImage,
-        heightOriginImage
+        heightOriginImage,
+        widthImagePreivew,
+        heightImagePreivew
+      })
+    }
+    if (prevState.widthPixelWatermark !== this.state.widthPixelWatermark ||
+        prevState.heightPixelWatermark !== this.state.heightPixelWatermark
+      ) {
+      const {
+        widthWatermarkByRatio,
+        heightWatermarkByRatio
+      } = this.ratioWatermarkByPixel()
+
+      this.setState({
+        widthWatermarkByRatio,
+        heightWatermarkByRatio
       })
     }
   }
@@ -426,6 +446,8 @@ class UploadForm extends React.Component {
   }
 
   ratioWatermark(widthOriginImage, heightOriginImage, percentWatermark = this.state.percentWatermark){
+    const { widthOriginWatermark, heightOriginWatermark } = this.state
+
     let _widthOriginImage = widthOriginImage || 600
     let _heightOriginImage = heightOriginImage || 600
     const ratio = (_widthOriginImage / _heightOriginImage)
@@ -433,24 +455,40 @@ class UploadForm extends React.Component {
     if (ratio < 1) {
       _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 300))
       let widthWatermark = Math.round(_widthOriginImage * (percentWatermark / 100))
+      let heightWatermark = Math.round(heightOriginWatermark * (widthWatermark / widthOriginWatermark))
+
       return {
+        widthImagePreivew: _widthOriginImage,
+        heightImagePreivew: 300,
         widthWatermark,
-        heightWatermark: 'auto',
+        heightWatermark
       }
     } else {
       _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 300))
       let heightWatermark = Math.round(_heightOriginImage * (percentWatermark / 100))
+      let widthWatermark = Math.round(widthOriginWatermark * (heightWatermark / heightOriginWatermark))
+
       return {
-        widthWatermark: 'auto',
-        heightWatermark,
+        heightImagePreivew: _heightOriginImage,
+        widthImagePreivew: 300,
+        widthWatermark,
+        heightWatermark
       }
     }
   }
 
-  async changeRatioWatermark(e){
+  changeRatioWatermark(e){
     const percentWatermark = e.target.value
-    let { width: widthOriginImage, height: heightOriginImage } = await imageSize(this.state.imageSrc)
-    const { widthWatermark, heightWatermark } = this.ratioWatermark(widthOriginImage, heightOriginImage, percentWatermark)
+    const {
+      widthOriginImage,
+      heightOriginImage
+    } = this.state
+
+    const { widthWatermark, heightWatermark } = this.ratioWatermark(
+      widthOriginImage,
+      heightOriginImage,
+      percentWatermark
+    )
 
     this.setState({
       widthWatermark,
@@ -475,11 +513,20 @@ class UploadForm extends React.Component {
 
   changeImagePreview(image){
     const img = new Image()
-    const { percentWatermark, modeResize, widthPercentWatermark, heightPercentWatermark } = this.state
+    const {
+      percentWatermark,
+      modeResize,
+      widthPercentWatermark,
+      heightPercentWatermark,
+      widthPixelWatermark,
+      heightPixelWatermark
+    } = this.state
+
     img.src = image
     let that = this
     img.onload = async (event) => {
       const { width: widthOriginImage, height: heightOriginImage } = await imageSize(image)
+
       if (modeResize === 'keepRatioPercent') {
         let { widthWatermark, heightWatermark } = that.ratioWatermark(widthOriginImage, heightOriginImage, percentWatermark)
         this.setState({
@@ -496,11 +543,68 @@ class UploadForm extends React.Component {
           imageSrc: image
         })
       }
+
+      if (modeResize === 'keepPercentPixel' || modeResize === 'pixel') {
+        this.setState({
+          imageSrc: image
+        })
+      }
     }
   }
 
-  changeTypeResize(e){
+  ratioWatermarkByPixel() {
+    const {
+      widthImagePreivew,
+      heightImagePreivew,
+      widthOriginImage,
+      heightOriginImage,
+    } = this.state
+
+    const widthWatermark = this.state.widthPixelWatermark || this.state.widthWatermark
+    const heightWatermark = this.state.heightPixelWatermark || this.state.heightWatermark
+
+    const ratioWidthImage = widthImagePreivew / widthOriginImage
+    const ratioHeightImage = heightImagePreivew / heightOriginImage
+    const widthWatermarkByRatio = widthWatermark * ratioWidthImage
+    const heightWatermarkByRatio = heightWatermark * ratioHeightImage
+
+    return {
+      widthWatermarkByRatio,
+      heightWatermarkByRatio
+    }
+  }
+
+  changeModeResize(e){
+    if (e.target.value === 'pixel') {
+      const {
+        widthWatermarkByRatio,
+        heightWatermarkByRatio
+      } = this.ratioWatermarkByPixel()
+
+      this.setState({
+        modeResize: e.target.value,
+        widthWatermarkByRatio,
+        heightWatermarkByRatio
+      })
+
+      return
+    }
+
+    const {
+      widthOriginImage,
+      heightOriginImage,
+      percentWatermark
+    } = this.state
+
+    const { widthWatermark, heightWatermark } = this.ratioWatermark(
+      widthOriginImage,
+      heightOriginImage,
+      percentWatermark
+    )
+
     this.setState({
+      widthWatermarkByRatio: null,
+      heightWatermarkByRatio: null,
       modeResize: e.target.value
     })
   }
@@ -509,10 +613,14 @@ class UploadForm extends React.Component {
     const {
       widthWatermark,
       heightWatermark,
+      widthOriginImage,
+      heightOriginImage,
       heightOriginWatermark,
       widthOriginWatermark
+
     } = this.state
     //  resize by ratio Pixel
+
     if (this.state.marriageActive) {
       if (e.target.name === 'widthPixelWatermark') {
         if (!heightWatermark) {
@@ -530,7 +638,7 @@ class UploadForm extends React.Component {
           this.setState({
             [ e.target.name ]: e.target.value,
             widthWatermark: e.target.value,
-            heightWatermark: Math.round((e.target.value * heightOriginWatermark) / widthOriginWatermark)
+            heightWatermark: Math.round((e.target.value * (heightOriginWatermark / widthOriginWatermark)))
           })
         }
       }
@@ -552,9 +660,8 @@ class UploadForm extends React.Component {
         } else {
           this.setState({
             [ e.target.name ] : e.target.value,
-            widthWatermark: Math.round((e.target.value * widthOriginWatermark) / heightOriginWatermark)
+            widthWatermark: Math.round((e.target.value * (widthOriginWatermark / heightOriginWatermark)))
           })
-          return
         }
       }
     }
@@ -565,7 +672,7 @@ class UploadForm extends React.Component {
     })
   }
 
-  changeTypeResizePixel(e){
+  changeModeResizePixel(e){
     const { marriageActive } = this.state
 
     this.setState({
@@ -603,8 +710,6 @@ class UploadForm extends React.Component {
         [ e.target.name ] : e.target.value
       })
     }
-
-
   }
 
   render() {
@@ -718,10 +823,10 @@ class UploadForm extends React.Component {
               opacity={ this.state.opacity / 100 }
               watermarkSrc={ this.state.watermarkSrc || defaultPreviewWatermark }
               imageSrc={ this.state.imageSrc || defaultPreviewImage }
-              heightImage={ this.state.heightImage }
-              widthImage={ this.state.widthImage }
               heightWatermark={ this.state.heightWatermark }
               widthWatermark={ this.state.widthWatermark }
+              widthWatermarkByRatio={ this.state.widthWatermarkByRatio }
+              heightWatermarkByRatio={ this.state.heightWatermarkByRatio }
             />
           </div>
         </Session>
@@ -770,13 +875,22 @@ class UploadForm extends React.Component {
             <Break/>
             <LabelItem>Resize Watermark</LabelItem>
             <Break/>
-            <DropDown name='TypeResize' size='1' onChange={ this.changeTypeResize.bind(this) }>
-              <option value='percent'>Percent</option>
-              <option value='pixel'>Pixel</option>
+            <DropDown
+              name='TypeResize'
+              size='1'
+              onChange={ this.changeModeResize.bind(this) }>
+                <option value='percent'>Percent</option>
+                <option value='pixel'>Pixel</option>
             </DropDown>
             {
-              modeResize === 'percent' || modeResize === 'noKeepRatioPercent' || modeResize === 'keepRatioPercent' ?
-              <DropDown name='TypeResize' size='1' onChange={ this.changeTypeResize.bind(this) }>
+              modeResize === 'percent' ||
+              modeResize === 'noKeepRatioPercent' ||
+              modeResize === 'keepRatioPercent' ?
+              <DropDown
+                name='TypeResize'
+                size='1'
+                onChange={ this.changeModeResize.bind(this) }
+              >
                 <option value='keepRatioPercent'>Keep Ratio</option>
                 <option value='noKeepRatioPercent'>No Keep Ratio</option>
               </DropDown>
@@ -847,7 +961,7 @@ class UploadForm extends React.Component {
                       <label>px</label>
                     </div>
                     <Marriage
-                      onClick={ this.changeTypeResizePixel.bind(this) }
+                      onClick={ this.changeModeResizePixel.bind(this) }
                       active={ marriageActive }
                       >
                       &#9901;
