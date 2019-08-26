@@ -12,7 +12,7 @@ const PaddingItem = styled.input`
   max-width: 60px
 `
 
-class TemplateConfig extends React.Component {
+class TemplatePadding extends React.Component {
   constructor(props) {
     super(props)
   }
@@ -20,6 +20,7 @@ class TemplateConfig extends React.Component {
   changePadding(e) {
     this.props.handlePadding({ [ e.target.name ]: e.target.value })
   }
+
   render() {
     let stateInputTop = false
     let stateInputLeft = false
@@ -72,6 +73,7 @@ class TemplateConfig extends React.Component {
         stateInputTop = true
         break;
     }
+
     return (
       <WrapperItem>
         <div>
@@ -123,4 +125,4 @@ class TemplateConfig extends React.Component {
   }
 }
 
-export default TemplateConfig
+export default TemplatePadding

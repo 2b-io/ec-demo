@@ -4,8 +4,12 @@ import plupload from 'plupload'
 
 import styled, { css } from 'styled-components'
 
+import imageSize from 'app/services/image-size'
 import { mapDispatch } from 'app/services/redux-helpers'
 import { actions, selectors } from 'app/state/interface'
+
+import defaultPreviewImage from 'img/image-preview.jpg'
+import defaultPreviewWatermark from 'img/watermark.png'
 
 import {
   Container,
@@ -17,9 +21,10 @@ import {
 } from 'app/ui/elements'
 
 import arrToMap from 'services/array-to-map'
-import TemplatePosition from './template-position'
-import TemplatePadding from './template-padding'
-import PreviewConfig from './preview-config'
+
+import WatermarkPosition from './watermark-config/position'
+import WatermarkPadding from './watermark-config/padding'
+import Preview from './preview'
 
 const Marriage = styled.button`
   ${
@@ -102,7 +107,7 @@ const LabelItem = styled.span`
   font-weight: 500;
 `
 
-const TemplateUpload = styled.div`
+const WatermarkUpload = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 `
@@ -155,6 +160,12 @@ const Upload = styled.div`
 const ListUpload = styled.div`
   max-height: 312px;
   overflow-y: scroll;
+
+  p {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
 `
 const FileType = styled.div`
   padding-top: 24px;
@@ -178,28 +189,26 @@ class UploadForm extends React.Component {
       paddingRight: 0,
       paddingBottom: 0,
       opacity: 100,
-      imagePreviews: {},
-      templatePreview: {},
-      templateWidth: 0,
-      templateHeight: 0,
-      percentTemplate: 20,
+      listImagePreview: {},
+      watermarkSrc: '',
+      imageSrc: '',
+      widthOriginWatermark: 1,
+      heightOriginWatermark: 1,
+      percentWatermark: 20,
       imagesPreview: '',
-      heightTemplate: 0,
-      widthTemplate: 0,
-      modeResize:'percent',
+      modeResize: 'keepRatioPercent',
       marriageActive: true,
-      originHeightTemplate: 1,
-      originWidthTemplate: 1,
-      widthPercentTemplate: 100,
-      heightPercentTemplate: 100
+      widthPercentWatermark: 100,
+      heightPercentWatermark: 100
     }
 
+    this.imageDemo = React.createRef()
     this.changeMimeType = this.changeMimeType.bind(this)
   }
 
   uploadAllFiles() {
     const {
-      plupTemplate,
+      plupWatermark,
       plupItems,
       gravity,
       paddingTop,
@@ -208,9 +217,9 @@ class UploadForm extends React.Component {
       paddingBottom,
       opacity,
       modeResize,
-      heightTemplate,
-      widthTemplate,
-      percentTemplate,
+      heightWatermark,
+      widthWatermark,
+      percentWatermark,
     } = this.state
 
     const padding = {
@@ -221,26 +230,25 @@ class UploadForm extends React.Component {
     }
 
     this.props.uploadFiles(
-      plupTemplate,
+      plupWatermark,
       plupItems,
       gravity,
       padding,
       opacity,
       modeResize,
-      heightTemplate,
-      widthTemplate,
-      percentTemplate
+      heightWatermark,
+      widthWatermark,
+      percentWatermark
     )
   }
-
 
   handlePadding(padding) {
     this.setState({ ...padding })
   }
 
-  uploadTemplate() {
-    const plupTemplate = new plupload.Uploader({
-      browse_button: 'browseTemplate',
+  uploadWatermark() {
+    const plupWatermark = new plupload.Uploader({
+      browse_button: 'browseWatermark',
       max_retries: 3,
       chunk_size: '200kb',
       urlstream_upload: true,
@@ -253,9 +261,9 @@ class UploadForm extends React.Component {
               img.src = e.target.result
               img.onload = (event) => {
                 this.setState({
-                  templatePreview: reader.result,
-                  templateHeight: event.path[ 0 ].height,
-                  templateWidth: event.path[ 0 ].width
+                  watermarkSrc: reader.result,
+                  heightOriginWatermark: event.path[ 0 ].height,
+                  widthOriginWatermark: event.path[ 0 ].width
                 })
               }
             }
@@ -263,7 +271,7 @@ class UploadForm extends React.Component {
           })
         },
         FilesRemoved: (uploader ,files) => {
-          this.setState({ templatePreview:'' })
+          this.setState({ watermarkSrc:'' })
         },
         QueueChanged: (queue) => {
           this.setState({ templateFile: queue.files[0] })
@@ -286,10 +294,10 @@ class UploadForm extends React.Component {
       multi_selection: false
     })
 
-    plupTemplate.init()
+    plupWatermark.init()
 
     this.setState({
-      plupTemplate
+      plupWatermark
     })
   }
 
@@ -304,8 +312,8 @@ class UploadForm extends React.Component {
             const reader = new FileReader()
             reader.onload = (e) => {
               this.setState({
-                imagePreviews: {
-                  ...this.state.imagePreviews,
+                listImagePreview: {
+                  ...this.state.listImagePreview,
                   [ file.id ]: reader.result
                 }
               })
@@ -317,11 +325,11 @@ class UploadForm extends React.Component {
           this.setState({ imageFiles: arrToMap(queue.files, 'id') })
         },
         FilesRemoved: (uploader ,files) => {
-          const imagePreviews = files.reduce((state, file) => {
+          const listImagePreview = files.reduce((state, file) => {
             const { [file.id]: removed, ...reducedState } = state
             return reducedState
-          }, this.state.imagePreviews)
-          this.setState({ imagePreviews })
+          }, this.state.listImagePreview)
+          this.setState({ listImagePreview })
         },
         UploadProgress: (uploader, file) => {
           const { files } = this.state
@@ -352,8 +360,56 @@ class UploadForm extends React.Component {
     this.uploadItems(MIME_FILE[ mimeType ])
   }
 
+  async componentDidUpdate(prevProps, prevState) {
+    const lastImageSrc = Object.values(prevState.listImagePreview)[0]
+    const imageSrc = Object.values(this.state.listImagePreview)[0]
+
+    if (lastImageSrc !== imageSrc || prevState.watermarkSrc !== this.state.watermarkSrc) {
+      let { width: widthOriginImage, height: heightOriginImage } = await imageSize(imageSrc)
+      const { percentWatermark } = this.state
+
+      const { widthWatermark, heightWatermark, widthImagePreivew, heightImagePreivew } = this.ratioWatermark(
+        widthOriginImage,
+        heightOriginImage,
+        percentWatermark
+      )
+
+      this.setState({
+        imageSrc,
+        widthWatermark,
+        heightWatermark,
+        widthOriginImage,
+        heightOriginImage,
+        widthImagePreivew,
+        heightImagePreivew
+      })
+    }
+    if (prevState.widthPixelWatermark !== this.state.widthPixelWatermark ||
+        prevState.heightPixelWatermark !== this.state.heightPixelWatermark
+      ) {
+      const {
+        widthWatermarkByRatio,
+        heightWatermarkByRatio
+      } = this.ratioWatermarkByPixel()
+
+      this.setState({
+        widthWatermarkByRatio,
+        heightWatermarkByRatio
+      })
+    }
+  }
+
   componentDidMount() {
-    this.uploadTemplate()
+    const {
+      widthWatermark,
+      heightWatermark
+    } = this.ratioWatermark()
+
+    this.setState({
+      widthWatermark,
+      heightWatermark
+    })
+    this.uploadWatermark()
     this.uploadItems(MIME_FILE[ 'images' ])
   }
 
@@ -389,17 +445,65 @@ class UploadForm extends React.Component {
     this.setState({ opacity: e.target.value })
   }
 
-  changeRatioTemplate(e){
-    this.setState({ percentTemplate: e.target.value })
+  ratioWatermark(widthOriginImage, heightOriginImage, percentWatermark = this.state.percentWatermark){
+    const { widthOriginWatermark, heightOriginWatermark } = this.state
+
+    let _widthOriginImage = widthOriginImage || 600
+    let _heightOriginImage = heightOriginImage || 600
+    const ratio = (_widthOriginImage / _heightOriginImage)
+
+    if (ratio < 1) {
+      _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 300))
+      let widthWatermark = Math.round(_widthOriginImage * (percentWatermark / 100))
+      let heightWatermark = Math.round(heightOriginWatermark * (widthWatermark / widthOriginWatermark))
+
+      return {
+        widthImagePreivew: _widthOriginImage,
+        heightImagePreivew: 300,
+        widthWatermark,
+        heightWatermark
+      }
+    } else {
+      _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 300))
+      let heightWatermark = Math.round(_heightOriginImage * (percentWatermark / 100))
+      let widthWatermark = Math.round(widthOriginWatermark * (heightWatermark / heightOriginWatermark))
+
+      return {
+        heightImagePreivew: _heightOriginImage,
+        widthImagePreivew: 300,
+        widthWatermark,
+        heightWatermark
+      }
+    }
+  }
+
+  changeRatioWatermark(e){
+    const percentWatermark = e.target.value
+    const {
+      widthOriginImage,
+      heightOriginImage
+    } = this.state
+
+    const { widthWatermark, heightWatermark } = this.ratioWatermark(
+      widthOriginImage,
+      heightOriginImage,
+      percentWatermark
+    )
+
+    this.setState({
+      widthWatermark,
+      heightWatermark,
+      percentWatermark
+    })
   }
 
   downloadFile(){
     window.location.href = this.props.linkDownload
   }
 
-  removeTemplate(file){
-    const { plupTemplate } = this.state
-    plupTemplate.removeFile(file)
+  removeWatermark(file){
+    const { plupWatermark } = this.state
+    plupWatermark.removeFile(file)
   }
 
   removeImage(file){
@@ -409,83 +513,176 @@ class UploadForm extends React.Component {
 
   changeImagePreview(image){
     const img = new Image()
+    const {
+      percentWatermark,
+      modeResize,
+      widthPercentWatermark,
+      heightPercentWatermark,
+      widthPixelWatermark,
+      heightPixelWatermark
+    } = this.state
+
     img.src = image
-    img.onload = (event) => {
-      this.setState({
-        previewImage: image,
-      })
+    let that = this
+    img.onload = async (event) => {
+      const { width: widthOriginImage, height: heightOriginImage } = await imageSize(image)
+
+      if (modeResize === 'keepRatioPercent') {
+        let { widthWatermark, heightWatermark } = that.ratioWatermark(widthOriginImage, heightOriginImage, percentWatermark)
+        this.setState({
+          imageSrc: image,
+          widthWatermark,
+          heightWatermark
+        })
+      }
+
+      if (modeResize === 'noKeepRatioPercent') {
+        this.setState({
+          widthWatermark: Math.round(widthOriginImage * (widthPercentWatermark / 100)),
+          heightWatermark: Math.round(heightOriginImage * (heightPercentWatermark / 100)),
+          imageSrc: image
+        })
+      }
+
+      if (modeResize === 'keepPercentPixel' || modeResize === 'pixel') {
+        this.setState({
+          imageSrc: image
+        })
+      }
     }
   }
 
-  changeTypeResize(e){
+  ratioWatermarkByPixel() {
+    const {
+      widthImagePreivew,
+      heightImagePreivew,
+      widthOriginImage,
+      heightOriginImage,
+    } = this.state
+
+    const widthWatermark = this.state.widthPixelWatermark || this.state.widthWatermark
+    const heightWatermark = this.state.heightPixelWatermark || this.state.heightWatermark
+
+    const ratioWidthImage = widthImagePreivew / widthOriginImage
+    const ratioHeightImage = heightImagePreivew / heightOriginImage
+    const widthWatermarkByRatio = widthWatermark * ratioWidthImage
+    const heightWatermarkByRatio = heightWatermark * ratioHeightImage
+
+    return {
+      widthWatermarkByRatio,
+      heightWatermarkByRatio
+    }
+  }
+
+  changeModeResize(e){
+    if (e.target.value === 'pixel') {
+      const {
+        widthWatermarkByRatio,
+        heightWatermarkByRatio
+      } = this.ratioWatermarkByPixel()
+
+      this.setState({
+        modeResize: e.target.value,
+        widthWatermarkByRatio,
+        heightWatermarkByRatio
+      })
+
+      return
+    }
+
+    const {
+      widthOriginImage,
+      heightOriginImage,
+      percentWatermark
+    } = this.state
+
+    const { widthWatermark, heightWatermark } = this.ratioWatermark(
+      widthOriginImage,
+      heightOriginImage,
+      percentWatermark
+    )
+
     this.setState({
+      widthWatermarkByRatio: null,
+      heightWatermarkByRatio: null,
       modeResize: e.target.value
     })
   }
 
-  changeSizeTemplate(e){
+  changeSizeWatermark(e){
     const {
-      widthTemplate,
-      heightTemplate,
-      originHeightTemplate,
-      originWidthTemplate
-    } = this.state
+      widthWatermark,
+      heightWatermark,
+      widthOriginImage,
+      heightOriginImage,
+      heightOriginWatermark,
+      widthOriginWatermark
 
+    } = this.state
     //  resize by ratio Pixel
+
     if (this.state.marriageActive) {
-      if (e.target.name === 'widthTemplate') {
-        if (!heightTemplate) {
+      if (e.target.name === 'widthPixelWatermark') {
+        if (!heightWatermark) {
           this.setState({
             [ e.target.name ]: e.target.value,
-            heightTemplate: e.target.value
+            widthWatermark: e.target.value,
+            heightWatermark: e.target.value
           })
-          return
         }
         if (!e.target.value) {
           this.setState({
-            heightTemplate: ((1 * heightTemplate) / 1)
+            heightWatermark: ((1 * heightWatermark) / 1)
           })
-          return
         } else {
           this.setState({
             [ e.target.name ]: e.target.value,
-            heightTemplate: Math.round((e.target.value * originHeightTemplate) / originWidthTemplate)
+            widthWatermark: e.target.value,
+            heightWatermark: Math.round((e.target.value * (heightOriginWatermark / widthOriginWatermark)))
           })
-          return
         }
       }
 
-      if (e.target.name === 'heightTemplate') {
-        if (!widthTemplate) {
+      if (e.target.name === 'heightPixelWatermark') {
+        if (!widthWatermark) {
           this.setState({
             [ e.target.name ]: e.target.value,
-            widthTemplate: e.target.value
+            widthWatermark: e.target.value
           })
           return
         }
         if (!e.target.value) {
           this.setState({
             [ e.target.name ] : e.target.value,
-            widthTemplate: ((1 * widthTemplate) / 1)
+            widthWatermark: ((1 * widthWatermark) / 1)
           })
           return
         } else {
           this.setState({
             [ e.target.name ] : e.target.value,
-            widthTemplate: Math.round((e.target.value * originWidthTemplate) / originHeightTemplate)
+            widthWatermark: Math.round((e.target.value * (widthOriginWatermark / heightOriginWatermark)))
           })
-          return
         }
       }
     }
 
     // resize no ratio
-    this.setState({
-      [ e.target.name ] : e.target.value
-    })
+    if (e.target.name === 'widthPixelWatermark') {
+      this.setState({
+        widthWatermark: e.target.value,
+        [ e.target.name ] : e.target.value
+      })
+    }
+
+    if (e.target.name === 'heightPixelWatermark') {
+      this.setState({
+        heightWatermark: e.target.value,
+        [ e.target.name ] : e.target.value
+      })
+    }
   }
 
-  changeTypeResizePixel(e){
+  changeModeResizePixel(e){
     const { marriageActive } = this.state
 
     this.setState({
@@ -494,36 +691,50 @@ class UploadForm extends React.Component {
     })
   }
 
-  sizeTemplate(originSizeTemplate){
+  sizeWatermark(originSizeWatermark){
     this.setState({
-      originHeightTemplate: originSizeTemplate.height,
-      originWidthTemplate: originSizeTemplate.width,
-      heightTemplate: originSizeTemplate.height,
-      widthTemplate: originSizeTemplate.width
+      heightOriginWatermark: originSizeWatermark.height,
+      widthOriginWatermark: originSizeWatermark.width,
+      heightPixelWatermark: originSizeWatermark.height,
+      widthPixelWatermark: originSizeWatermark.width
     })
   }
 
-  changePercentTemplate(e){
-    this.setState({
-      [ e.target.name ] : e.target.value
-    })
+
+  changePercentWatermark(e){
+    const percentWatermark = e.target.value
+    const  widthOriginImage = this.state.widthOriginImage || 600
+    const  heightOriginImage = this.state.heightOriginImage || 600
+
+    if ( e.target.name === 'widthPercentWatermark') {
+      this.setState({
+        widthWatermark: Math.round(widthOriginImage * (percentWatermark / 100)),
+        [ e.target.name ] : e.target.value
+      })
+      return
+    }
+
+    if (e.target.name === 'heightPercentWatermark') {
+      this.setState({
+        heightWatermark: Math.round(heightOriginImage * (percentWatermark / 100)),
+        [ e.target.name ] : e.target.value
+      })
+    }
   }
 
   render() {
     const {
       templateFile,
       imageFiles,
-      imagePreviews,
-      templatePreview,
-      templateWidth,
-      templateHeight,
+      listImagePreview,
+      watermarkSrc,
       previewImage,
       modeResize,
       marriageActive,
-      originSizeTemplate
+      originSizeWatermark
     } = this.state
 
-    const templateUpload = templatePreview.length ? <ImageUpload >
+    const watermarkUpload = watermarkSrc.length ? <ImageUpload >
       <p>1</p>
       {
         templateFile.percent !== 0 ?
@@ -532,12 +743,12 @@ class UploadForm extends React.Component {
             />
             :
           <PrimaryButton
-            onClick={ this.removeTemplate.bind(this, templateFile) }
+            onClick={ this.removeWatermark.bind(this, templateFile) }
             minWidth={ 20 }>
               X
           </PrimaryButton>
       }
-      <Thumbnail src={ templatePreview }/>
+      <Thumbnail src={ watermarkSrc }/>
       <p>
         { templateFile.name } { plupload.formatSize(templateFile.size) }
       </p>
@@ -562,7 +773,7 @@ class UploadForm extends React.Component {
                 </PrimaryButton>
           }
           {
-            imagePreviews[ file.id ] && <Thumbnail src={ imagePreviews[ file.id ] }/>
+            listImagePreview[ file.id ] && <Thumbnail src={ listImagePreview[ file.id ] }/>
           }
           <p>
             { file.name } { plupload.formatSize(file.size) }
@@ -571,7 +782,7 @@ class UploadForm extends React.Component {
       )
     })
 
-    const thumbnails = Object.values(imagePreviews).map((image, index) => {
+    const thumbnails = Object.values(listImagePreview).map((image, index) => {
       return (
         <ThumbnailPreview
           src={ image }
@@ -585,16 +796,16 @@ class UploadForm extends React.Component {
         <Session>
           <div>
             <Upload>
-              <LabelItem>Template</LabelItem>
+              <LabelItem>Watermark</LabelItem>
               <PrimaryButton
-                id="browseTemplate"
+                id="browseWatermark"
                 free={ true }
               >
                 Browse file...
               </PrimaryButton>
             </Upload>
             <ListUpload>
-              { templateUpload }
+              { watermarkUpload }
             </ListUpload>
           </div>
           <div>
@@ -603,7 +814,7 @@ class UploadForm extends React.Component {
           </Config>
           <Break/>
           <Config>
-            <TemplatePosition
+            <WatermarkPosition
               handleGravity={ this.handleGravity.bind(this) }
             />
           </Config>
@@ -611,7 +822,7 @@ class UploadForm extends React.Component {
           <div>
             <LabelItem>Preview Config</LabelItem>
             <Break/>
-            <PreviewConfig
+            <Preview
               gravity={ this.state.gravity }
               padding={{
                 top: this.state.paddingTop,
@@ -620,16 +831,12 @@ class UploadForm extends React.Component {
                 bottom: this.state.paddingBottom
               }}
               opacity={ this.state.opacity / 100 }
-              templatePreview={ templatePreview }
-              previewImage={ this.state.previewImage }
-              defaultPreviewImage = { previewImage || Object.values(imagePreviews)[0] }
-              templateHeight={ templateHeight }
-              templateWidth={ templateWidth }
-              sizeTemplate={ this.sizeTemplate.bind(this) }
-              percentTemplate={ this.state.percentTemplate }
-              widthTemplate={ this.state.widthTemplate }
-              heightTemplate={ this.state.heightTemplate }
-              modeResize={ this.state.modeResize }
+              watermarkSrc={ this.state.watermarkSrc || defaultPreviewWatermark }
+              imageSrc={ this.state.imageSrc || defaultPreviewImage }
+              heightWatermark={ this.state.heightWatermark }
+              widthWatermark={ this.state.widthWatermark }
+              widthWatermarkByRatio={ this.state.widthWatermarkByRatio }
+              heightWatermarkByRatio={ this.state.heightWatermarkByRatio }
             />
           </div>
         </Session>
@@ -666,7 +873,7 @@ class UploadForm extends React.Component {
           <div>
             <LabelItem>Config padding</LabelItem>
             <Break/>
-              <TemplatePadding
+              <WatermarkPadding
                 handlePadding={ this.handlePadding.bind(this) }
                 gravity={ this.state.gravity }
                 paddingTop={ this.state.paddingTop }
@@ -676,15 +883,24 @@ class UploadForm extends React.Component {
               />
             <Break/>
             <Break/>
-            <LabelItem>Resize Template</LabelItem>
+            <LabelItem>Resize Watermark</LabelItem>
             <Break/>
-            <DropDown name='TypeResize' size='1' onChange={ this.changeTypeResize.bind(this) }>
-              <option value='percent'>Percent</option>
-              <option value='pixel'>Pixel</option>
+            <DropDown
+              name='TypeResize'
+              size='1'
+              onChange={ this.changeModeResize.bind(this) }>
+                <option value='percent'>Percent</option>
+                <option value='pixel'>Pixel</option>
             </DropDown>
             {
-              modeResize === 'percent' || modeResize === 'noKeepRatioPercent' || modeResize === 'keepRatioPercent' ?
-              <DropDown name='TypeResize' size='1' onChange={ this.changeTypeResize.bind(this) }>
+              modeResize === 'percent' ||
+              modeResize === 'noKeepRatioPercent' ||
+              modeResize === 'keepRatioPercent' ?
+              <DropDown
+                name='TypeResize'
+                size='1'
+                onChange={ this.changeModeResize.bind(this) }
+              >
                 <option value='keepRatioPercent'>Keep Ratio</option>
                 <option value='noKeepRatioPercent'>No Keep Ratio</option>
               </DropDown>
@@ -693,20 +909,20 @@ class UploadForm extends React.Component {
             }
             <Break/>
               { modeResize === 'percent' || modeResize === 'keepRatioPercent' ? <div>
-                <LabelItem>Ratio Template By Percent</LabelItem>
+                <LabelItem>Ratio Watermark By Percent</LabelItem>
                 <Slider>
                   <input
                     type='range'
-                    value={ this.state.percentTemplate }
-                    onChange={ this.changeRatioTemplate.bind(this) }
+                    value={ this.state.percentWatermark }
+                    onChange={ this.changeRatioWatermark.bind(this) }
                   />
                   <div>
                     <Input
                       type='number'
                       max='100'
                       min='0'
-                      value={ this.state.percentTemplate }
-                      onChange={ this.changeRatioTemplate.bind(this) }
+                      value={ this.state.percentWatermark }
+                      onChange={ this.changeRatioWatermark.bind(this) }
                     />
                     <label>%</label>
                   </div>
@@ -714,26 +930,26 @@ class UploadForm extends React.Component {
                 </div>
                 :
                 modeResize === 'noKeepRatioPercent' ? <div>
-                <LabelItem>Ratio Template By Percent</LabelItem>
+                <LabelItem>Ratio Watermark By Percent</LabelItem>
                   <Break/>
                   <Grid columns={ 4 }>
                     <div>
                       <label>Width </label>
                       <Input
                         type='number'
-                        name='widthPercentTemplate'
-                        value={ this.state.widthPercentTemplate }
-                        onChange={ this.changePercentTemplate.bind(this) }
+                        name='widthPercentWatermark'
+                        value={ this.state.widthPercentWatermark }
+                        onChange={ this.changePercentWatermark.bind(this) }
                       />
                       <label>%</label>
                     </div>
                     <div>
                       <label>Height </label>
                       <Input
-                        name='heightPercentTemplate'
+                        name='heightPercentWatermark'
                         type='number'
-                        value={ this.state.heightPercentTemplate }
-                        onChange={ this.changePercentTemplate.bind(this) }
+                        value={ this.state.heightPercentWatermark }
+                        onChange={ this.changePercentWatermark.bind(this) }
                       />
                       <label>%</label>
                     </div>
@@ -741,21 +957,21 @@ class UploadForm extends React.Component {
                 </div>
                 :
                 <div>
-                  <LabelItem>Ratio Template By Pixel</LabelItem>
+                  <LabelItem>Ratio Watermark By Pixel</LabelItem>
                   <Break/>
                   <Grid columns={ 4 }>
                     <div>
                       <label>Width </label>
                       <Input
                         type='number'
-                        name='widthTemplate'
-                        value={ this.state.widthTemplate }
-                        onChange={ this.changeSizeTemplate.bind(this) }
+                        name='widthPixelWatermark'
+                        value={ this.state.widthWatermark }
+                        onChange={ this.changeSizeWatermark.bind(this) }
                       />
                       <label>px</label>
                     </div>
                     <Marriage
-                      onClick={ this.changeTypeResizePixel.bind(this) }
+                      onClick={ this.changeModeResizePixel.bind(this) }
                       active={ marriageActive }
                       >
                       &#9901;
@@ -763,10 +979,10 @@ class UploadForm extends React.Component {
                     <div>
                       <label>Height </label>
                       <Input
-                        name='heightTemplate'
+                        name='heightPixelWatermark'
                         type='number'
-                        value={ this.state.heightTemplate }
-                        onChange={ this.changeSizeTemplate.bind(this) }
+                        value={ this.state.heightWatermark }
+                        onChange={ this.changeSizeWatermark.bind(this) }
                       />
                       <label>px</label>
                     </div>
