@@ -667,9 +667,19 @@ class UploadForm extends React.Component {
     }
 
     // resize no ratio
-    this.setState({
-      [ e.target.name ] : e.target.value
-    })
+    if (e.target.name === 'widthPixelWatermark') {
+      this.setState({
+        widthWatermark: e.target.value,
+        [ e.target.name ] : e.target.value
+      })
+    }
+
+    if (e.target.name === 'heightPixelWatermark') {
+      this.setState({
+        heightWatermark: e.target.value,
+        [ e.target.name ] : e.target.value
+      })
+    }
   }
 
   changeModeResizePixel(e){
