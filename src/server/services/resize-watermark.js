@@ -34,16 +34,10 @@ const resizeWatermark = async (
     let heightWatermarkNew = heightOriginImage * (percent / 100 )
 
     if (modeResize === 'noKeepRatioPercent') {
-      let heightWatermarkNew = (heightOriginImage * (percent / 100 )) || null
-      await gm(watermarkPath).resize(widthWatermarkNew, heightWatermarkNew,"!").writeAsync(watermarkPathResize)
+      await gm(watermarkPath).resize(widthWatermark, heightWatermark,"!").writeAsync(watermarkPathResize)
     }
 
     if (modeResize === 'percent' || modeResize === 'keepRatioPercent') {
-      console.log('widthWatermarkNew', widthWatermarkNew)
-      console.log('heightWatermarkNew', heightWatermarkNew)
-      console.log('widthOriginImage', widthOriginImage)
-      console.log('heightOriginImage', heightOriginImage)
-      
       if (ratioOriginImage > 1) {
         await gm(watermarkPath).resize(null, heightWatermarkNew).writeAsync(watermarkPathResize)
       } else {
