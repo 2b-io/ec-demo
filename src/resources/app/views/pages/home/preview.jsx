@@ -16,6 +16,7 @@ const FramePreview = styled.div`
   display: table-cell;
   width: auto;
   height: auto;
+  overflow: hidden;
 `
 
 const Image = styled.img`
@@ -52,7 +53,8 @@ const Watermark = styled.img.attrs( props => {
       bottom: ${ bottom };
       transform: ${ transform };
     `
-  }
+  };
+  max-width: none
 `
 
 class PreviewImage extends React.Component {
