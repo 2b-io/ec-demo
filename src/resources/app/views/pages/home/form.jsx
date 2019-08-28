@@ -59,8 +59,7 @@ const WrapperItem = styled.div`
   padding-top: 32px;
 `
 const Config = styled.div`
-  display: grid;
-  grid-template-columns: 1fr;
+  text-align: center;
 `
 const ActionButton = styled.div`
   text-align: center;
@@ -865,8 +864,8 @@ class UploadForm extends React.Component {
             />
           </Config>
           </div>
-          <div>
-            <LabelItem>Preview Config</LabelItem>
+          <Config>
+            <LabelItem>Preview</LabelItem>
             <Break/>
             <Preview
               gravity={ this.state.gravity }
@@ -884,7 +883,7 @@ class UploadForm extends React.Component {
               widthWatermarkByRatio={ this.state.widthWatermarkByRatio }
               heightWatermarkByRatio={ this.state.heightWatermarkByRatio }
             />
-          </div>
+          </Config>
         </Session>
         <Session>
           <div>
@@ -916,8 +915,8 @@ class UploadForm extends React.Component {
               { filesUpload }
             </ListUpload>
           </div>
-          <div>
-            <LabelItem>Config padding</LabelItem>
+          <Config>
+            <LabelItem>Padding</LabelItem>
             <Break/>
               <WatermarkPadding
                 handlePadding={ this.handlePadding.bind(this) }
@@ -1055,7 +1054,7 @@ class UploadForm extends React.Component {
               </div>
             </Slider>
             <Break/>
-          </div>
+          </Config>
           <div>
           <Collection>
             { thumbnails }

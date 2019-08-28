@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components'
 import { PrimaryButton, Break } from 'app/ui/elements'
 
 const Wrapper = styled.div`
-  text-align: right;
+  display: inline-block;
 `
 const Preview = styled.div`
   max-height: 300px;

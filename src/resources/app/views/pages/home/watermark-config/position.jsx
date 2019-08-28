@@ -2,6 +2,10 @@ import React from 'react'
 import styled, { css } from 'styled-components'
 
 const WrapperItem = styled.div`
+  display: inline-block
+`
+
+const Position = styled.div`
   border: solid 1px #007FFF;
   display: grid;
   max-width: 302px;
@@ -81,7 +85,9 @@ class WatermarkPosition extends React.Component {
     })
     return (
       <WrapperItem>
-        { listItem }
+        <Position>
+          { listItem }
+        </Position>
       </WrapperItem>
     )
   }
