@@ -28,7 +28,7 @@ export const font = ({ bold, size, variant, theme }) => css`
 
 export const lineHeight = ({ size }) => css`
   line-height: ${
-    sizeToPixel(size) < 14 ? 24 : 40
+    sizeToPixel(size) < 14 ? 24 : 32
   }px;
 `
 

@@ -978,7 +978,6 @@ class UploadForm extends React.Component {
                           value={ this.state.widthPercentWatermark }
                           onChange={ this.changePercentWatermark.bind(this) }
                         />
-                        <label>%</label>
                       </div>
                       <div>
                         <label>Height </label>
@@ -1028,24 +1027,15 @@ class UploadForm extends React.Component {
                 </div>
               }
             <Break/>
-            <LabelItem>Opacity</LabelItem>
-            <SliderEl>
-              <input
-                type='range'
-                value={ this.state.opacity }
-                onChange={ this.changeOpacity.bind(this) }
-              />
-              <div>
-                <Input
-                  type='number'
-                  max='100'
-                  min='0'
-                  value={ this.state.opacity }
-                  onChange={ this.changeOpacity.bind(this) }
-                />
-                <label>%</label>
-              </div>
-            </SliderEl>
+            <Slider
+              label="Opacity"
+              name="Opacity"
+              min="0"
+              max="100"
+              value={ this.state.opacity }
+              onChange={ this.changeOpacity.bind(this) }
+            />
+            <label>%</label>
             <Break/>
           </Config>
           <div>
