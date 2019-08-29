@@ -855,7 +855,7 @@ class UploadForm extends React.Component {
           </div>
           <div>
           <Config>
-            <LabelItem>Config position</LabelItem>
+            <LabelItem>Position</LabelItem>
           </Config>
           <Break/>
           <Config>
@@ -977,34 +977,36 @@ class UploadForm extends React.Component {
                 modeResize === 'noKeepRatioPercent' ? <div>
                 <LabelItem>Ratio Watermark By Percent</LabelItem>
                   <Break/>
-                  <Grid columns={ 4 }>
-                    <div>
-                      <label>Width </label>
-                      <Input
-                        type='number'
-                        name='widthPercentWatermark'
-                        value={ this.state.widthPercentWatermark }
-                        onChange={ this.changePercentWatermark.bind(this) }
-                      />
-                      <label>%</label>
-                    </div>
-                    <div>
-                      <label>Height </label>
-                      <Input
-                        name='heightPercentWatermark'
-                        type='number'
-                        value={ this.state.heightPercentWatermark }
-                        onChange={ this.changePercentWatermark.bind(this) }
-                      />
-                      <label>%</label>
-                    </div>
-                  </Grid>
+                  <div>
+                    <Grid columns={ 2 }>
+                      <div>
+                        <label>Width </label>
+                        <Input
+                          type='number'
+                          name='widthPercentWatermark'
+                          value={ this.state.widthPercentWatermark }
+                          onChange={ this.changePercentWatermark.bind(this) }
+                        />
+                        <label>%</label>
+                      </div>
+                      <div>
+                        <label>Height </label>
+                        <Input
+                          name='heightPercentWatermark'
+                          type='number'
+                          value={ this.state.heightPercentWatermark }
+                          onChange={ this.changePercentWatermark.bind(this) }
+                        />
+                        <label>%</label>
+                      </div>
+                    </Grid>
+                  </div>
                 </div>
                 :
                 <div>
                   <LabelItem>Ratio Watermark By Pixel</LabelItem>
                   <Break/>
-                  <Grid columns={ 4 }>
+                  <Grid columns={ 3 }>
                     <div>
                       <label>Width </label>
                       <Input
