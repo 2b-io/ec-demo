@@ -18,6 +18,7 @@ import {
   ProgressBar,
   ProgressCircular,
   PlainButton,
+  Slider
 } from 'app/ui/elements'
 
 import arrToMap from 'services/array-to-map'
@@ -74,7 +75,7 @@ const Session = styled.div`
   grid-template-columns: 1fr 1fr 1fr;
 `
 
-const Slider = styled.div`
+const SliderEl = styled.div`
   display: grid;
   grid-gap: 8px;
   grid-template-columns: 5fr 1fr;
@@ -502,8 +503,8 @@ class UploadForm extends React.Component {
     }
   }
 
-  changeRatioWatermark(e){
-    const percentWatermark = e.target.value
+  changeRatioWatermark(value){
+    const percentWatermark = value
     const {
       widthOriginImage,
       heightOriginImage
@@ -954,24 +955,14 @@ class UploadForm extends React.Component {
             }
             <Break/>
               { modeResize === 'percent' || modeResize === 'keepRatioPercent' ? <div>
-                <LabelItem>Ratio Watermark By Percent</LabelItem>
-                <Slider>
-                  <input
-                    type='range'
-                    value={ this.state.percentWatermark }
-                    onChange={ this.changeRatioWatermark.bind(this) }
-                  />
-                  <div>
-                    <Input
-                      type='number'
-                      max='100'
-                      min='0'
-                      value={ this.state.percentWatermark }
-                      onChange={ this.changeRatioWatermark.bind(this) }
-                    />
-                    <label>%</label>
-                  </div>
-                </Slider>
+                <Slider
+                  label="Ratio Watermark By Percent"
+                  name="quality"
+                  min="0"
+                  max="100"
+                  value={ this.state.percentWatermark }
+                  onChange={ this.changeRatioWatermark.bind(this) }
+                />
                 </div>
                 :
                 modeResize === 'noKeepRatioPercent' ? <div>
@@ -1038,7 +1029,7 @@ class UploadForm extends React.Component {
               }
             <Break/>
             <LabelItem>Opacity</LabelItem>
-            <Slider>
+            <SliderEl>
               <input
                 type='range'
                 value={ this.state.opacity }
@@ -1054,7 +1045,7 @@ class UploadForm extends React.Component {
                 />
                 <label>%</label>
               </div>
-            </Slider>
+            </SliderEl>
             <Break/>
           </Config>
           <div>
