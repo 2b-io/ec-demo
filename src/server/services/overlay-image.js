@@ -26,6 +26,11 @@ const overlay = async (
   const paddingRight = Number(padding.paddingRight) || 0
   const paddingBottom = Number(padding.paddingBottom) || 0
 
+  console.log('paddingTop', paddingTop);
+  console.log('paddingLeft', paddingLeft);
+  console.log('paddingRight', paddingRight);
+  console.log('paddingBottom', paddingBottom);
+
   let watermarkPathNew
 
   if (modeResize) {
@@ -41,7 +46,18 @@ const overlay = async (
   }
 
   if (paddingTop || paddingLeft || paddingRight || paddingBottom) {
-    await paddingWatermark(requestId, { paddingTop, paddingLeft, paddingRight, paddingBottom }, watermarkPath)
+    const _watermarkPath = watermarkPathNew ? watermarkPathNew : watermarkPath
+
+    await paddingWatermark(
+      requestId,
+      {
+        paddingTop,
+        paddingLeft,
+        paddingRight,
+        paddingBottom
+      },
+      _watermarkPath
+    )
   }
 
   if (watermarkPathNew) {

@@ -242,8 +242,52 @@ class UploadForm extends React.Component {
     )
   }
 
-  handlePadding(padding) {
-    this.setState({ ...padding })
+  changePadding(padding) {
+    const {
+      widthOriginImage,
+      heightOriginImage,
+      widthImagePreivew,
+      heightImagePreivew
+    } = this.state
+
+    let paddingPreviewValue
+    let paddingPreviewKey
+    const paddingKey = Object.keys(padding)[0]
+    const paddingValue = Object.values(padding)[0]
+
+    if (paddingKey === 'paddingTop' ||
+      paddingKey === 'paddingBottom'
+    ) {
+      paddingPreviewValue = paddingValue * widthImagePreivew / widthOriginImage
+    }
+
+    if (paddingKey === 'paddingLeft' ||
+      paddingKey === 'paddingRight'
+    ) {
+      console.log('heightOriginImage', heightOriginImage);
+      paddingPreviewValue = paddingValue * heightImagePreivew / heightOriginImage
+    }
+
+    switch (paddingKey) {
+      case 'paddingTop':
+        paddingPreviewKey = 'paddingPreviewTop'
+        break
+      case 'paddingLeft':
+        paddingPreviewKey = 'paddingPreviewLeft'
+        break
+      case 'paddingRight':
+        paddingPreviewKey = 'paddingPreviewRight'
+        break
+      case 'paddingBottom':
+        paddingPreviewKey = 'paddingPreviewBottom'
+        break
+    }
+    const paddingPreview = { [ paddingPreviewKey ]: paddingPreviewValue }
+
+    this.setState({
+      ...padding,
+      ...paddingPreview
+    })
   }
 
   uploadWatermark() {
@@ -395,7 +439,12 @@ class UploadForm extends React.Component {
         const {
           widthWatermarkByRatio,
           heightWatermarkByRatio
-        } = this.ratioWatermarkByPixel(this.state.widthOriginImage, this.state.heightOriginImage, widthImagePreivew, heightImagePreivew)
+        } = this.ratioWatermarkByPixel(
+          this.state.widthOriginImage,
+          this.state.heightOriginImage,
+          widthImagePreivew,
+          heightImagePreivew
+        )
 
       this.setState({
         widthWatermarkByRatio,
@@ -746,7 +795,6 @@ class UploadForm extends React.Component {
     })
   }
 
-
   changePercentWatermark(e){
     const percentWatermark = e.target.value
     const  widthOriginImage = this.state.widthOriginImage || 600
@@ -757,7 +805,6 @@ class UploadForm extends React.Component {
         widthWatermark: Math.round(widthOriginImage * (percentWatermark / 100)),
         [ e.target.name ] : e.target.value
       })
-      return
     }
 
     if (e.target.name === 'heightPercentWatermark') {
@@ -871,10 +918,10 @@ class UploadForm extends React.Component {
             <Preview
               gravity={ this.state.gravity }
               padding={{
-                top: this.state.paddingTop,
-                left: this.state.paddingLeft,
-                right: this.state.paddingRight,
-                bottom: this.state.paddingBottom
+                top: this.state.paddingPreviewTop,
+                left: this.state.paddingPreviewLeft,
+                right: this.state.paddingPreviewRight,
+                bottom: this.state.paddingPreviewBottom
               }}
               opacity={ this.state.opacity / 100 }
               watermarkSrc={ this.state.watermarkSrc || defaultPreviewWatermark }
@@ -920,7 +967,7 @@ class UploadForm extends React.Component {
             <LabelItem>Padding</LabelItem>
             <Break/>
               <WatermarkPadding
-                handlePadding={ this.handlePadding.bind(this) }
+                handlePadding={ this.changePadding.bind(this) }
                 gravity={ this.state.gravity }
                 paddingTop={ this.state.paddingTop }
                 paddingLeft={ this.state.paddingLeft }

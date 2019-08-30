@@ -75,11 +75,11 @@ class PreviewImage extends React.Component {
     let paddingBottom = 0
 
     let transform
-
-    const paddingTopRatio = padding.top * 100 / 125
-    const paddingLeftRatio = padding.left * 100 / 125
-    const paddingRightRatio = padding.right * 100 / 125
-    const paddingBottomRatio = padding.bottom * 100 / 125
+    console.log('padding.top', padding.top)
+    const paddingTopRatio = padding.top
+    const paddingLeftRatio = padding.left
+    const paddingRightRatio = padding.right
+    const paddingBottomRatio = padding.bottom
 
     switch (gravity) {
       case 'NorthWest':
