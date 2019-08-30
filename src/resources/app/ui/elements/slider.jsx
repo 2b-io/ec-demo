@@ -5,6 +5,7 @@ import { TextLine } from 'app/ui/typo'
 
 const Wrapper = styled.div`
 `
+
 const Container = styled.div`
   display: grid;
   & > * {
@@ -22,7 +23,7 @@ const Header = styled.div`
     min-width: 0;
     min-height: 0;
   };
-  grid-template-columns: 1fr minmax(30px, min-content);
+  grid-template-columns: 1fr minmax(20px, 70px);
 `
 const Range = styled.input.attrs(props => ({
   type: 'range'
@@ -99,17 +100,20 @@ const SlideBar = ({
   label,
   ...props
 }) => {
-  const { disabled, min, max, value } = props
+  const { disabled, min, max, value, unit } = props
   const relativeValue = Math.abs((value - min) / (max - min)) * 100
 
   return (
     <Wrapper>
       <Header>
         <TextLine align="left">{ label }</TextLine>
-        <SliderInput
-          value={ value }
-          onChange={ (event) => props.onChange(Number(event.target.value)) }
-        />
+        <div>
+          <SliderInput
+            value={ value }
+            onChange={ (event) => props.onChange(Number(event.target.value)) }
+          />
+          <span>{ unit ? unit : '' }</span>
+        </div>
       </Header>
       <Container>
         <Track

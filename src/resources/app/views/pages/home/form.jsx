@@ -446,8 +446,8 @@ class UploadForm extends React.Component {
     })
   }
 
-  changeOpacity(e){
-    this.setState({ opacity: e.target.value })
+  changeOpacity(value){
+    this.setState({ opacity: value })
   }
 
   ratioImagePreview(widthOriginImage, heightOriginImage) {
@@ -962,6 +962,7 @@ class UploadForm extends React.Component {
                   max="100"
                   value={ this.state.percentWatermark }
                   onChange={ this.changeRatioWatermark.bind(this) }
+                  unit="%"
                 />
                 </div>
                 :
@@ -1034,8 +1035,8 @@ class UploadForm extends React.Component {
               max="100"
               value={ this.state.opacity }
               onChange={ this.changeOpacity.bind(this) }
+              unit="%"
             />
-            <label>%</label>
             <Break/>
           </Config>
           <div>
