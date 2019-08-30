@@ -31,6 +31,9 @@ const Watermark = styled.img.attrs( props => {
   display: block;
   position: absolute;
   ${
+    ({ modeResize }) => modeResize !== 'keepRatioPercent' ? '' : css`height: auto`
+  }
+  ${
     ({ paddingTop = 0,
       paddingLeft = 0,
       paddingRight = 0,
@@ -41,6 +44,7 @@ const Watermark = styled.img.attrs( props => {
       bottom,
       opacity = 1,
       transform,
+      modeResize,
     }) => css`
       padding-top: ${ paddingTop }px;
       padding-left: ${ paddingLeft }px;
@@ -75,7 +79,6 @@ class PreviewImage extends React.Component {
     let paddingBottom = 0
 
     let transform
-    console.log('padding.top', padding.top)
     const paddingTopRatio = padding.top
     const paddingLeftRatio = padding.left
     const paddingRightRatio = padding.right
@@ -160,7 +163,7 @@ class PreviewImage extends React.Component {
       paddingLeft,
       paddingRight,
       paddingBottom,
-      transform
+      transform,
     } = this.paddingRatio(this.props.padding, this.props.gravity)
 
     const {
@@ -173,6 +176,9 @@ class PreviewImage extends React.Component {
     const widthWatermarkPreview = widthWatermarkByRatio ? widthWatermarkByRatio : widthWatermark
     const heightWatermarkPreview = heightWatermarkByRatio ? heightWatermarkByRatio : heightWatermark
 
+    console.log('modeResize', this.props.modeResize);
+    console.log('widthWatermarkPreview', widthWatermarkPreview);
+    console.log('heightWatermarkPreview', heightWatermarkPreview);
     return (
       <Wrapper>
         <Preview>
@@ -192,6 +198,7 @@ class PreviewImage extends React.Component {
               paddingBottom={ paddingBottom }
               opacity={ this.props.opacity }
               transform={ transform }
+              modeResize={ this.props.modeResize }
               >
             </Watermark>
             <Image

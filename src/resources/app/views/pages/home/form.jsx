@@ -264,7 +264,6 @@ class UploadForm extends React.Component {
     if (paddingKey === 'paddingLeft' ||
       paddingKey === 'paddingRight'
     ) {
-      console.log('heightOriginImage', heightOriginImage);
       paddingPreviewValue = paddingValue * heightImagePreivew / heightOriginImage
     }
 
@@ -930,6 +929,7 @@ class UploadForm extends React.Component {
               widthWatermark={ this.state.widthWatermark }
               widthWatermarkByRatio={ this.state.widthWatermarkByRatio }
               heightWatermarkByRatio={ this.state.heightWatermarkByRatio }
+              modeResize={ this.state.modeResize }
             />
           </Config>
         </Session>
@@ -982,11 +982,10 @@ class UploadForm extends React.Component {
               name='TypeResize'
               size='1'
               onChange={ this.changeModeResize.bind(this) }>
-                <option value='percent'>Percent</option>
+                <option value='keepRatioPercent'>Percent</option>
                 <option value='pixel'>Pixel</option>
             </DropDown>
             {
-              modeResize === 'percent' ||
               modeResize === 'noKeepRatioPercent' ||
               modeResize === 'keepRatioPercent' ?
               <DropDown
@@ -1001,7 +1000,7 @@ class UploadForm extends React.Component {
               <div></div>
             }
             <Break/>
-              { modeResize === 'percent' || modeResize === 'keepRatioPercent' ? <div>
+              { modeResize === 'keepRatioPercent' ? <div>
                 <Slider
                   label="Ratio Watermark By Percent"
                   name="quality"
