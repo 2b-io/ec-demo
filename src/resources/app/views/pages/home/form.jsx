@@ -491,6 +491,10 @@ class UploadForm extends React.Component {
       paddingLeft: 0,
       paddingRight: 0,
       paddingBottom: 0,
+      paddingPreviewTop: 0,
+      paddingPreviewLeft: 0,
+      paddingPreviewRight: 0,
+      paddingPreviewBottom: 0
     })
   }
 
@@ -930,6 +934,8 @@ class UploadForm extends React.Component {
               widthWatermarkByRatio={ this.state.widthWatermarkByRatio }
               heightWatermarkByRatio={ this.state.heightWatermarkByRatio }
               modeResize={ this.state.modeResize }
+              heightImagePreivew = { this.state.heightImagePreivew }
+              widthImagePreivew = { this.state.widthImagePreivew }
             />
           </Config>
         </Session>

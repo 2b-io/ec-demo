@@ -31,32 +31,46 @@ const Watermark = styled.img.attrs( props => {
   display: block;
   position: absolute;
   ${
-    ({ modeResize }) => modeResize !== 'keepRatioPercent' ? '' : css`height: auto`
+    ({ modeResize, paddingTop, paddingLeft, paddingRight, paddingBottom }) => {
+      if (paddingTop || paddingBottom) {
+        return css`height: auto`
+      }
+      if (paddingLeft || paddingRight) {
+        return css`width: auto`
+      }
+    }
+  }
+  ${ ({ top, left, right, bottom }) => {
+      const _top = typeof(top) === 'number' ? `${ top }px` : top;
+      const _left = typeof(left) === 'number' ? `${ left }px` : left;
+      const _right = typeof(right) === 'number' ? `${ right }px` : right;
+      const _bottom = typeof(bottom) === 'number' ? `${ bottom }px` : bottom;
+
+      return css`
+        top: ${ _top };
+        left: ${ _left };
+        right: ${ _right };
+        bottom: ${ _bottom };
+        `
+    }
   }
   ${
     ({ paddingTop = 0,
       paddingLeft = 0,
       paddingRight = 0,
       paddingBottom = 0,
-      top,
-      left,
-      right,
-      bottom,
       opacity = 1,
       transform,
       modeResize,
     }) => css`
-      padding-top: ${ paddingTop }px;
-      padding-left: ${ paddingLeft }px;
-      padding-right: ${ paddingRight }px;
-      padding-bottom: ${ paddingBottom }px;
-      opacity: ${ opacity };
-      top: ${ top };
-      left: ${ left };
-      right: ${ right };
-      bottom: ${ bottom };
-      transform: ${ transform };
-    `
+          padding-top: ${ paddingTop }px;
+          padding-left: ${ paddingLeft }px;
+          padding-right: ${ paddingRight }px;
+          padding-bottom: ${ paddingBottom }px;
+          opacity: ${ opacity };
+          transform: ${ transform };
+        `
+    }
   };
   max-width: none
 `
@@ -87,7 +101,7 @@ class PreviewImage extends React.Component {
     switch (gravity) {
       case 'NorthWest':
         paddingTop = Number(paddingTopRatio) || 0
-        paddingLeft = Number(paddingLeftRatio) || 0
+        left = Number(paddingLeftRatio) || 0
         top = 0
         break;
       case 'North':
@@ -96,7 +110,7 @@ class PreviewImage extends React.Component {
         transform = 'translateX(-50%)'
         break;
       case 'NorthEast':
-        paddingTop = Number(paddingTopRatio) || 0
+        top = Number(paddingTopRatio) || 0
         paddingRight = Number(paddingRightRatio) || 0
         right = '0'
         break;
@@ -109,10 +123,10 @@ class PreviewImage extends React.Component {
       case 'Center':
         top = '50%'
         left = '50%'
-        paddingTop = Number(paddingTopRatio) || 0
-        paddingLeft = Number(paddingLeftRatio) || 0
-        paddingRight = Number(paddingRightRatio) || 0
-        paddingBottom = Number(paddingBottomRatio) || 0
+        paddingTop = 0
+        paddingLeft = 0
+        paddingRight = 0
+        paddingBottom = 0
         transform = 'translate(-50%,-50%)'
         break;
       case 'East':
@@ -122,8 +136,8 @@ class PreviewImage extends React.Component {
         transform = 'translateY(-50%)'
         break;
       case 'SouthWest':
-        paddingLeft = Number(paddingLeftRatio) || 0
-        left = '0'
+        paddingBottom = Number(paddingBottomRatio) || 0
+        left = Number(paddingLeftRatio) || 0
         bottom = '0'
         break;
       case 'South':
@@ -134,8 +148,7 @@ class PreviewImage extends React.Component {
       break;
       case 'SouthEast':
         paddingBottom = Number(paddingBottomRatio) || 0
-        paddingRight = Number(paddingRightRatio) || 0
-        right = '0'
+        right = Number(paddingRightRatio) || 0
         bottom = '0'
         break;
     }
@@ -155,6 +168,17 @@ class PreviewImage extends React.Component {
 
   render() {
     const {
+      heightWatermark,
+      widthWatermark,
+      widthWatermarkByRatio,
+      heightWatermarkByRatio,
+      gravity,
+      padding,
+      widthImagePreivew,
+      heightImagePreivew
+    } = this.props
+    console.log('widthImagePreivew', widthImagePreivew);
+    let {
       top,
       left,
       right,
@@ -164,21 +188,28 @@ class PreviewImage extends React.Component {
       paddingRight,
       paddingBottom,
       transform,
-    } = this.paddingRatio(this.props.padding, this.props.gravity)
-
-    const {
-      heightWatermark,
-      widthWatermark,
-      widthWatermarkByRatio,
-      heightWatermarkByRatio,
-    } = this.props
+    } = this.paddingRatio(padding, gravity)
 
     const widthWatermarkPreview = widthWatermarkByRatio ? widthWatermarkByRatio : widthWatermark
     const heightWatermarkPreview = heightWatermarkByRatio ? heightWatermarkByRatio : heightWatermark
 
-    console.log('modeResize', this.props.modeResize);
-    console.log('widthWatermarkPreview', widthWatermarkPreview);
-    console.log('heightWatermarkPreview', heightWatermarkPreview);
+    // case watermark in center image
+    if (gravity === 'Center') {
+      if (padding.top) {
+        top = heightImagePreivew / 2 + padding.top
+      }
+      if (padding.bottom) {
+        // top = heightImagePreivew / 2 - padding.bottom
+        paddingBottom = padding.bottom
+      }
+      if (padding.left) {
+        left = widthImagePreivew / 2 + padding.left
+      }
+      if (padding.right) {
+        left = widthImagePreivew / 2 - padding.right
+      }
+    }
+
     return (
       <Wrapper>
         <Preview>
