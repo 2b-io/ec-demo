@@ -32,7 +32,7 @@ const createPaddingImage = async (requestId, padding = {}, watermarkPath) => {
 
   await gm(transparentImagePath)
     .autoOrient()
-    .draw("image Over "+`${ paddingTop },${ paddingLeft } ${ widthOriginWatermark },${ heightOriginWatermark } '${ watermarkPath }'`)
+    .draw("image Over "+`${ paddingLeft },${ paddingTop } ${ widthOriginWatermark },${ heightOriginWatermark } '${ watermarkPath }'`)
     .writeAsync(watermarkPath)
 
   console.log('CREATE_PADDING_END...')
