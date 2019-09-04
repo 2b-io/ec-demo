@@ -171,6 +171,7 @@ class PreviewImage extends React.Component {
         paddingBottom = Number(paddingBottomRatio) || 0
         paddingRight = Number(paddingRightRatio) || 0
         bottom = '0'
+        right = '0'
         break;
     }
 
