@@ -11,6 +11,46 @@ const Preview = styled.div`
   max-width: 300px;
 `
 
+const WatermarkPadding = styled.div`
+  position: absolute;
+
+  ${ ({
+    top,
+    left,
+    right,
+    bottom,
+    paddingTop,
+    paddingLeft,
+    paddingRight,
+    paddingBottom
+  }) => {
+    const _top = typeof(top) === 'number' ? `${ top }px` : top;
+    const _left = typeof(left) === 'number' ? `${ left }px` : left;
+    const _right = typeof(right) === 'number' ? `${ right }px` : right;
+    const _bottom = typeof(bottom) === 'number' ? `${ bottom }px` : bottom;
+
+    return css`
+      top: ${ _top };
+      left: ${ _left };
+      right: ${ _right };
+      bottom: ${ _bottom };
+      padding-top: ${ paddingTop }px;
+      padding-left: ${ paddingLeft }px;
+      padding-right: ${ paddingRight }px;
+      padding-bottom: ${ paddingBottom }px;
+      `
+    }
+  }
+  ${
+    ({
+      transform,
+    }) => css`
+          transform: ${ transform };
+        `
+    }
+  };
+`
+
 const FramePreview = styled.div`
   position: relative;
   display: table-cell;
@@ -29,7 +69,7 @@ const Watermark = styled.img.attrs( props => {
   src: props.src
 })`
   display: block;
-  position: absolute;
+
   ${
     ({ modeResize, paddingTop, paddingLeft, paddingRight, paddingBottom }) => {
       if (paddingTop || paddingBottom) {
@@ -40,20 +80,6 @@ const Watermark = styled.img.attrs( props => {
       }
     }
   }
-  ${ ({ top, left, right, bottom }) => {
-      const _top = typeof(top) === 'number' ? `${ top }px` : top;
-      const _left = typeof(left) === 'number' ? `${ left }px` : left;
-      const _right = typeof(right) === 'number' ? `${ right }px` : right;
-      const _bottom = typeof(bottom) === 'number' ? `${ bottom }px` : bottom;
-
-      return css`
-        top: ${ _top };
-        left: ${ _left };
-        right: ${ _right };
-        bottom: ${ _bottom };
-        `
-    }
-  }
   ${
     ({ paddingTop = 0,
       paddingLeft = 0,
@@ -61,14 +87,9 @@ const Watermark = styled.img.attrs( props => {
       paddingBottom = 0,
       opacity = 1,
       transform,
-      modeResize,
     }) => css`
-          padding-top: ${ paddingTop }px;
-          padding-left: ${ paddingLeft }px;
-          padding-right: ${ paddingRight }px;
-          padding-bottom: ${ paddingBottom }px;
+
           opacity: ${ opacity };
-          transform: ${ transform };
         `
     }
   };
@@ -101,7 +122,7 @@ class PreviewImage extends React.Component {
     switch (gravity) {
       case 'NorthWest':
         paddingTop = Number(paddingTopRatio) || 0
-        left = Number(paddingLeftRatio) || 0
+        paddingLeft = Number(paddingLeftRatio) || 0
         top = 0
         break;
       case 'North':
@@ -110,7 +131,7 @@ class PreviewImage extends React.Component {
         transform = 'translateX(-50%)'
         break;
       case 'NorthEast':
-        top = Number(paddingTopRatio) || 0
+        paddingTop = Number(paddingTopRatio) || 0
         paddingRight = Number(paddingRightRatio) || 0
         right = '0'
         break;
@@ -123,10 +144,10 @@ class PreviewImage extends React.Component {
       case 'Center':
         top = '50%'
         left = '50%'
-        paddingTop = 0
-        paddingLeft = 0
-        paddingRight = 0
-        paddingBottom = 0
+        paddingTop = paddingTopRatio
+        paddingLeft = paddingLeftRatio
+        paddingRight = paddingRightRatio
+        paddingBottom = paddingBottomRatio
         transform = 'translate(-50%,-50%)'
         break;
       case 'East':
@@ -137,7 +158,7 @@ class PreviewImage extends React.Component {
         break;
       case 'SouthWest':
         paddingBottom = Number(paddingBottomRatio) || 0
-        left = Number(paddingLeftRatio) || 0
+        paddingLeft = Number(paddingLeftRatio) || 0
         bottom = '0'
         break;
       case 'South':
@@ -148,7 +169,7 @@ class PreviewImage extends React.Component {
       break;
       case 'SouthEast':
         paddingBottom = Number(paddingBottomRatio) || 0
-        right = Number(paddingRightRatio) || 0
+        paddingRight = Number(paddingRightRatio) || 0
         bottom = '0'
         break;
     }
@@ -177,7 +198,7 @@ class PreviewImage extends React.Component {
       widthImagePreivew,
       heightImagePreivew
     } = this.props
-    console.log('widthImagePreivew', widthImagePreivew);
+
     let {
       top,
       left,
@@ -193,48 +214,31 @@ class PreviewImage extends React.Component {
     const widthWatermarkPreview = widthWatermarkByRatio ? widthWatermarkByRatio : widthWatermark
     const heightWatermarkPreview = heightWatermarkByRatio ? heightWatermarkByRatio : heightWatermark
 
-    // case watermark in center image
-    if (gravity === 'Center') {
-      if (padding.top) {
-        top = heightImagePreivew / 2 + padding.top
-      }
-      if (padding.bottom) {
-        // top = heightImagePreivew / 2 - padding.bottom
-        paddingBottom = padding.bottom
-      }
-      if (padding.left) {
-        left = widthImagePreivew / 2 + padding.left
-      }
-      if (padding.right) {
-        left = widthImagePreivew / 2 - padding.right
-      }
-    }
-
     return (
       <Wrapper>
         <Preview>
-          <FramePreview
-            >
+          <FramePreview>
+          <WatermarkPadding
+            top={ top }
+            left={ left }
+            right={ right }
+            bottom={ bottom }
+            paddingTop={ paddingTop }
+            paddingLeft={ paddingLeft }
+            paddingRight={ paddingRight }
+            paddingBottom={ paddingBottom }
+            transform={ transform }
+          >
             <Watermark
               height={ heightWatermarkPreview }
               width={ widthWatermarkPreview }
               src={ this.props.watermarkSrc }
-              top={ top }
-              left={ left }
-              right={ right }
-              bottom={ bottom }
-              paddingTop={ paddingTop }
-              paddingLeft={ paddingLeft }
-              paddingRight={ paddingRight }
-              paddingBottom={ paddingBottom }
               opacity={ this.props.opacity }
-              transform={ transform }
               modeResize={ this.props.modeResize }
               >
             </Watermark>
-            <Image
-              src={ this.props.imageSrc }
-             />
+          </WatermarkPadding>
+          <Image src={ this.props.imageSrc } />
           </FramePreview>
         </Preview>
       </Wrapper>
