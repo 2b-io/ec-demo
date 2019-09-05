@@ -41,7 +41,8 @@ const HeaderComponent = () => {
             Automatic & Manual Watermark Position
           </DescriptionTitle>
           <p>
-            You can add all your images into Watermarkly and the application will watermark photos at once. Watermarkly automatically scales watermark for landscapes, portraits and crops. Smaller photos get a smaller watermark, larger photos get a bigger one.
+            You can add all your images into Watermarkly and the application will watermark photos at once.
+            Watermarkly automatically scales watermark for landscapes, portraits and crops. Smaller photos get a smaller watermark, larger photos get a bigger one.
           </p>
           <Break />
           <Break />

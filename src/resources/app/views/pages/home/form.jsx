@@ -10,6 +10,7 @@ import { actions, selectors } from 'app/state/interface'
 
 import defaultPreviewImage from 'img/image-preview.jpg'
 import defaultPreviewWatermark from 'img/watermark.png'
+import iconZip from 'img/icon-zip.png'
 
 import {
   Container,
@@ -473,13 +474,17 @@ class UploadForm extends React.Component {
       this.resetPlupload(mimeType)
 
       this.setState({
-        mimeType
+        mimeType,
+        listImagePreview: {},
+        imageFiles: {}
       })
     } else {
       this.resetPlupload(mimeType)
 
       this.setState({
-        mimeType
+        mimeType,
+        listImagePreview: {},
+        imageFiles: {}
       })
     }
   }
@@ -827,7 +832,8 @@ class UploadForm extends React.Component {
       previewImage,
       modeResize,
       marriageActive,
-      originSizeWatermark
+      originSizeWatermark,
+      mimeType
     } = this.state
 
     const watermarkUpload = watermarkSrc.length ? <ImageUpload >
@@ -869,7 +875,10 @@ class UploadForm extends React.Component {
                 </PrimaryButton>
           }
           {
-            listImagePreview[ file.id ] && <Thumbnail src={ listImagePreview[ file.id ] }/>
+            listImagePreview[ file.id ] ?
+              this.state.mimeType === 'images' ?
+              <Thumbnail src={ listImagePreview[ file.id ] }/> :
+              <Thumbnail src={ iconZip }/> : <div></div>
           }
           <p>
             { file.name } { plupload.formatSize(file.size) }
@@ -1092,9 +1101,16 @@ class UploadForm extends React.Component {
             <Break/>
           </Config>
           <div>
-          <Collection>
-            { thumbnails }
-          </Collection>
+            {
+             Object.values(imageFiles).length > 0 ?
+              <Collection>
+               {
+                mimeType === 'images' ?
+                  thumbnails : <ThumbnailPreview src={ iconZip }/>
+                }
+               </Collection> :
+               <div></div>
+            }
           </div>
         </Session>
         <ActionButton>
