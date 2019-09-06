@@ -1,13 +1,12 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import plupload from 'plupload'
-
+import Popover, { ArrowContainer } from 'react-tiny-popover'
 import styled, { css } from 'styled-components'
 
 import imageSize from 'app/services/image-size'
 import { mapDispatch } from 'app/services/redux-helpers'
 import { actions, selectors } from 'app/state/interface'
-
 import defaultPreviewImage from 'img/image-preview.jpg'
 import defaultPreviewWatermark from 'img/watermark.png'
 import iconZip from 'img/icon-zip.png'
@@ -17,6 +16,7 @@ import {
   Break,
   PrimaryButton,
   ProgressBar,
+  ProgressStep,
   ProgressCircular,
   PlainButton,
   Slider
@@ -200,10 +200,10 @@ class UploadForm extends React.Component {
       modeResize: 'keepRatioPercent',
       marriageActive: true,
       widthPercentWatermark: 100,
-      heightPercentWatermark: 100
+      heightPercentWatermark: 100,
+      isPopoverOpen: false,
     }
 
-    this.imageDemo = React.createRef()
     this.changeMimeType = this.changeMimeType.bind(this)
   }
 
@@ -833,7 +833,8 @@ class UploadForm extends React.Component {
       modeResize,
       marriageActive,
       originSizeWatermark,
-      mimeType
+      mimeType,
+      isPopoverOpen
     } = this.state
 
     const watermarkUpload = watermarkSrc.length ? <ImageUpload >
@@ -898,6 +899,34 @@ class UploadForm extends React.Component {
     })
     return (
       <WrapperItem>
+        <Popover
+          isOpen={ isPopoverOpen }
+          position={[ 'top', 'right', 'left', 'bottom' ]}
+          padding={ 10 }
+          disableReposition={ true }
+          onClickOutside={ () => this.setState({ isPopoverOpen: false } ) }
+          content={ ({ position, targetRect, popoverRect }) => (
+          <ArrowContainer
+            position={ position }
+            targetRect={ targetRect }
+            popoverRect={ popoverRect }
+            arrowColor={ 'blue' }
+            arrowSize={ 10 }
+          >
+            <div
+              onClick={ () => this.setState({ isPopoverOpen: !isPopoverOpen }) }
+            >
+              Hi! I'm popover content. Here's my position: { position }.
+            </div>
+          </ArrowContainer>
+          )}
+          >
+          <p
+          style={ { textAlign: 'center' } }
+          onClick={ () => this.setState({ isPopoverOpen: !isPopoverOpen }) }>
+              Click me!
+          </p>
+        </Popover>
         <Session>
           <div>
             <Upload>
@@ -1126,6 +1155,7 @@ class UploadForm extends React.Component {
               </PrimaryButton>
           }
         </ActionButton>
+        <ProgressStep />
       </WrapperItem>
     )
   }
