@@ -1,5 +1,6 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
+import Popover, { ArrowContainer } from 'react-tiny-popover'
 
 import iconUpload from 'img/icon-upload.png'
 
@@ -65,15 +66,16 @@ const NodeStep = styled.li`
 
   ${
     ({ isActive }) => isActive ? css`
-    color: #3498DB;
+    color: #007fff;
 
     :before {
       color: #FFF;
-      background: #3498DB;
+      background: #007fff;
      }
     `:''
   }
 `
+const PopoverDescription = styled.p``
 
 const Progress = styled.ol`
   list-style: none;
@@ -89,30 +91,77 @@ const Progress = styled.ol`
   }
 `
 
-const ProgressStepComponent = ({ nodeData = [] }) => {
-  const nodeSteps = nodeData.map((data, index) => {
-    const {
-      isActive,
-      isComplete,
-      label
-    } = data
-    return (
-      <NodeStep
-        isComplete={ isComplete }
-        isActive={ isActive }
-        data-step={ index + 1}
-        key={ index }
-      >
-        { label }
-      </NodeStep>
-    )
-  })
+class ProgressStepComponent extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      isPopoverOpenid: null
+    }
+  }
 
-  return (
-    <Progress>
-      { nodeSteps }
-    </Progress>
-  )
+  popoverOpen(id) {
+    this.setState({
+      isPopoverOpenid: id
+    })
+  }
+
+  popoverClose() {
+    this.setState({ isPopoverOpenid: null } )
+  }
+
+  render() {
+    const { isPopoverOpenid } = this.state
+    const { nodeData } = this.props
+
+    const nodeSteps = nodeData.map((data, index) => {
+      const {
+        isActive,
+        isComplete,
+        label,
+        description
+      } = data
+
+      return (
+        <Popover
+          isOpen={ isPopoverOpenid === index }
+          position={[ 'bottom', 'top', 'right', 'left' ]}
+          padding={ 8 }
+          disableReposition={ true }
+          onClickOutside={ this.popoverClose.bind(this) }
+          key={ index }
+          content={ ({ position, targetRect, popoverRect }) => (
+          <ArrowContainer
+            position={ position }
+            targetRect={ targetRect }
+            popoverRect={ popoverRect }
+            arrowColor={ '#007fff' }
+            arrowSize={ 10 }
+          >
+            <PopoverDescription>
+              { description }
+            </PopoverDescription>
+          </ArrowContainer>
+          )}
+          >
+          <NodeStep
+            isComplete={ isComplete }
+            isActive={ isActive }
+            data-step={ index + 1}
+            key={ index }
+            onClick={ this.popoverOpen.bind(this, index) }
+          >
+          { label }
+          </NodeStep>
+        </Popover>
+      )
+    })
+
+    return (
+      <Progress>
+        { nodeSteps }
+      </Progress>
+    )
+  }
 }
 
 export default ProgressStepComponent
