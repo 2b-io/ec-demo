@@ -202,6 +202,19 @@ class UploadForm extends React.Component {
       widthPercentWatermark: 100,
       heightPercentWatermark: 100,
       isPopoverOpen: false,
+      nodeData: [{
+        isActive: true,
+        isComplete: false,
+        label: "Upload Images"
+      },{
+        isActive: false,
+        isComplete: false,
+        label: "Edit Images"
+      },{
+        isActive: false,
+        isComplete: false,
+        label: "Get Images"
+      }]
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
@@ -1155,7 +1168,7 @@ class UploadForm extends React.Component {
               </PrimaryButton>
           }
         </ActionButton>
-        <ProgressStep />
+        <ProgressStep nodeData={ this.state.nodeData } />
       </WrapperItem>
     )
   }
