@@ -1,6 +1,8 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 
+import iconUpload from 'img/icon-upload.png'
+
 const WrapperItem = styled.div`
   display: inline-block
 `
@@ -13,17 +15,9 @@ const Position = styled.div`
   grid-template-columns: repeat(3,100px);
 `
 
-const Item = styled.button`
-  ${
-    ({ active, theme }) => active ?
-    css`
-      background: ${ theme.secondary.base };
-      color: ${ theme.secondary.on.base };
-    ` :
-    css`
-      background: 'none';
-    `
-  }
+const Item = styled.button.attrs( props => {
+  id: props.id
+})`
   &:hover {
     background-color: #007FFF;
     color: white;
@@ -70,15 +64,32 @@ class WatermarkPosition extends React.Component {
 
   render() {
     const listItem = gravitys.map((gravity, index) => {
-      const active = this.state.gravity === gravity ? true : false
+    const active = this.state.gravity === gravity ? true : false
+    const {  watermarkSrc } = this.props
+    const idButtonUpload = watermarkSrc ? 'watermark' : 'browseWatermark'
+      if (index === 0) {
+        return (
+          <Item
+            id={ idButtonUpload }
+            key={ index }
+            active={ active }
+            onClick= { this.changeGravity.bind(this, gravity) }
+          >
+          {
+            !active ? '' : watermarkSrc ? <img width={ 60 } src={ watermarkSrc } /> : <img width={ 60 } src={ iconUpload }/>
+          }
+          </Item>
+        )
+      }
       return (
         <Item
+          id={`browseWatermark${ index + 1 }`}
           key={ index }
           active={ active }
           onClick= { this.changeGravity.bind(this, gravity) }
         >
         {
-          active ? 'Watermark' : ''
+          !active ? '' : watermarkSrc ? <img width={ 60 } src={ watermarkSrc } /> : 'Watermark'
         }
         </Item>
       )

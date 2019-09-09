@@ -307,7 +307,7 @@ class UploadForm extends React.Component {
 
   uploadWatermark() {
     const plupWatermark = new plupload.Uploader({
-      browse_button: 'browseWatermark',
+      browse_button: "browseWatermark",
       max_retries: 3,
       chunk_size: '200kb',
       urlstream_upload: true,
@@ -381,7 +381,25 @@ class UploadForm extends React.Component {
           })
         },
         QueueChanged: (queue) => {
-          this.setState({ imageFiles: arrToMap(queue.files, 'id') })
+          this.setState({
+            mageFiles: arrToMap(queue.files, 'id'),
+            nodeData: [{
+              isActive: false,
+              isComplete: true,
+              label: "Upload Images",
+              description: "Upload Images"
+            },{
+              isActive: true,
+              isComplete: false,
+              label: "Edit Images",
+              description: "Edit Images"
+            },{
+              isActive: false,
+              isComplete: false,
+              label: "Get Images",
+              description: "Get Images"
+            }]
+          })
         },
         FilesRemoved: (uploader ,files) => {
           const listImagePreview = files.reduce((state, file) => {
@@ -924,7 +942,6 @@ class UploadForm extends React.Component {
             <Upload>
               <LabelItem>Watermark</LabelItem>
               <PrimaryButton
-                id="browseWatermark"
                 free={ true }
               >
                 Browse file...
@@ -942,6 +959,7 @@ class UploadForm extends React.Component {
           <Config>
             <WatermarkPosition
               handleGravity={ this.handleGravity.bind(this) }
+              watermarkSrc={ watermarkSrc }
             />
           </Config>
           </div>
