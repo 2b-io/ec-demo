@@ -307,7 +307,7 @@ class UploadForm extends React.Component {
 
   uploadWatermark() {
     const plupWatermark = new plupload.Uploader({
-      browse_button: "browseWatermark",
+      browse_button: 'browseWatermark',
       max_retries: 3,
       chunk_size: '200kb',
       urlstream_upload: true,
@@ -441,6 +441,13 @@ class UploadForm extends React.Component {
     const lastImageSrc = Object.values(prevState.listImagePreview)[0]
     const imageSrc = Object.values(this.state.listImagePreview)[0]
 
+    if (prevState.watermarkSrc !== this.state.watermarkSrc && this.state.watermarkSrc) {
+      console.log('aa');
+      const { plupWatermark } = this.state
+      plupWatermark.setOption('browse_button', 'none')
+
+      this.setState({ plupWatermark })
+    }
     if (lastImageSrc !== imageSrc || prevState.watermarkSrc !== this.state.watermarkSrc) {
       let { width: widthOriginImage, height: heightOriginImage } = await imageSize(imageSrc)
       const { percentWatermark } = this.state
@@ -618,6 +625,7 @@ class UploadForm extends React.Component {
   }
 
   removeWatermark(file){
+    console.log('remove');
     const { plupWatermark } = this.state
     plupWatermark.removeFile(file)
   }
@@ -960,6 +968,7 @@ class UploadForm extends React.Component {
             <WatermarkPosition
               handleGravity={ this.handleGravity.bind(this) }
               watermarkSrc={ watermarkSrc }
+              removeWatermark={ this.removeWatermark.bind(this, templateFile) }
             />
           </Config>
           </div>
@@ -982,8 +991,8 @@ class UploadForm extends React.Component {
               widthWatermarkByRatio={ this.state.widthWatermarkByRatio }
               heightWatermarkByRatio={ this.state.heightWatermarkByRatio }
               modeResize={ this.state.modeResize }
-              heightImagePreivew = { this.state.heightImagePreivew }
-              widthImagePreivew = { this.state.widthImagePreivew }
+              heightImagePreivew= { this.state.heightImagePreivew }
+              widthImagePreivew= { this.state.widthImagePreivew }
             />
           </Config>
         </Session>

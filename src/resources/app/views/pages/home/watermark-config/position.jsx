@@ -3,6 +3,37 @@ import styled, { css } from 'styled-components'
 
 import iconUpload from 'img/icon-upload.png'
 
+
+const PrimaryButton = styled.div`
+  appearance: none;
+  border: none;
+  outline: none;
+  height: 22px;
+  width: 22px;
+  opacity: 0.5;
+  border-radius: 20px;
+  margin: auto 0 0 auto;
+  transition:
+    background .3s linear,
+    color .3s linear;
+
+  display: 'block';
+
+  ${
+    ({ theme }) =>
+      css`
+        background: ${ theme.error.base };
+        color: ${ theme.error.on.base };
+      `
+  }
+
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    opacity: 1;
+  }
+`
 const WrapperItem = styled.div`
   display: inline-block
 `
@@ -18,10 +49,16 @@ const Position = styled.div`
 const Item = styled.button.attrs( props => {
   id: props.id
 })`
-  &:hover {
-    background-color: #007FFF;
-    color: white;
+
+  ${
+    ({ active }) => active ? '' : css`
+      &:hover {
+        background-color: #007FFF;
+        color: white;
+      }
+    `
   }
+
   transition:
     background .3s linear,
     color .3s linear;
@@ -44,6 +81,38 @@ const gravitys = [
   'SouthEast',
 ]
 
+const Watermark = styled.div`
+  position: absolute;
+
+  ${ ({
+    top,
+    left,
+    right,
+    bottom
+  }) => {
+
+    return css`
+      top: ${ top };
+      left: ${ left };
+      right: ${ right };
+      bottom: ${ bottom };
+      `
+    }
+  }
+  ${
+    ({
+      transform,
+    }) => css`
+          transform: ${ transform };
+        `
+    }
+  };
+
+  img {
+    display: block;
+  }
+`
+
 class WatermarkPosition extends React.Component {
   constructor(props) {
     super(props)
@@ -62,34 +131,133 @@ class WatermarkPosition extends React.Component {
     this.props.handleGravity(gravity)
   }
 
+  paddingRatio(gravity) {
+    let top
+    let left
+    let right
+    let bottom
+
+    let transform
+
+    switch (gravity) {
+      case 'NorthWest':
+        top = 0
+        break;
+      case 'North':
+        top = 0
+        left = '50%'
+        transform = 'translateX(-50%)'
+        break;
+      case 'NorthEast':
+        top = 0
+        right = 0
+        break;
+      case 'West':
+        top = '50%'
+        left = '0'
+        transform = 'translateY(-50%)'
+        break;
+      case 'Center':
+        top = '50%'
+        left = '50%'
+        transform = 'translate(-50%,-50%)'
+        break;
+      case 'East':
+        right = 0
+        top = '50%'
+        transform = 'translateY(-50%)'
+        break;
+      case 'SouthWest':
+        bottom = 0
+        left = 0
+        break;
+      case 'South':
+        left = '50%'
+        bottom = 0
+        transform = 'translateX(-50%)'
+      break;
+      case 'SouthEast':
+        bottom = 0
+        right = 0
+        break;
+    }
+
+    return {
+      top,
+      left,
+      right,
+      bottom,
+      transform
+    }
+  }
+
   render() {
+    const {
+      top,
+      left,
+      right,
+      bottom,
+      transform
+    } = this.paddingRatio(this.state.gravity)
+
     const listItem = gravitys.map((gravity, index) => {
     const active = this.state.gravity === gravity ? true : false
     const {  watermarkSrc } = this.props
-    const idButtonUpload = watermarkSrc ? 'watermark' : 'browseWatermark'
+
       if (index === 0) {
         return (
           <Item
-            id={ idButtonUpload }
+            id={ 'browseWatermark' }
             key={ index }
             active={ active }
             onClick= { this.changeGravity.bind(this, gravity) }
           >
           {
-            !active ? '' : watermarkSrc ? <img width={ 60 } src={ watermarkSrc } /> : <img width={ 60 } src={ iconUpload }/>
+            !active ? '' : watermarkSrc ?
+              <Watermark
+                top={ top }
+                left={ left }
+                right={ right }
+                bottom={ bottom }
+                transform={ transform }
+              >
+                <PrimaryButton
+                  onClick={ () => this.props.removeWatermark() }
+                  minWidth={ 20 }>
+                    X
+                </PrimaryButton>
+                <img width={ 50 } src={ watermarkSrc } />
+              </Watermark> :
+              <img width={ 50 } src={ iconUpload }/>
           }
           </Item>
         )
       }
       return (
         <Item
-          id={`browseWatermark${ index + 1 }`}
           key={ index }
           active={ active }
           onClick= { this.changeGravity.bind(this, gravity) }
         >
         {
-          !active ? '' : watermarkSrc ? <img width={ 60 } src={ watermarkSrc } /> : 'Watermark'
+          !active ?
+            '' :
+            watermarkSrc ?
+              <Watermark
+                top={ top }
+                left={ left }
+                right={ right }
+                bottom={ bottom }
+                transform={ transform }
+              >
+                <PrimaryButton
+                  onClick={ () => this.props.removeWatermark() }
+                  minWidth={ 20 }>
+                    X
+                </PrimaryButton>
+                <img width={ 50 } src={ watermarkSrc } />
+              </Watermark> :
+              'Watermark'
         }
         </Item>
       )
