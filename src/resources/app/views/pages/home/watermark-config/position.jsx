@@ -219,7 +219,7 @@ class WatermarkPosition extends React.Component {
     const listItem = gravitys.map((gravity, index) => {
     const active = this.state.gravity === gravity ? true : false
     const {  watermarkSrc, percent } = this.props
-    console.log('percent', percent);
+
       if (index === 0) {
         return (
           <Item
@@ -253,14 +253,13 @@ class WatermarkPosition extends React.Component {
                     minWidth={ 20 }>
                       X
                   </PrimaryButton>
-                  <Progress>
-                    <ProgressCircular
-                      percent={ percent }
-                    />
-                  </Progress>
                 </div>
               }
-                <Image width={ 50 } src={ watermarkSrc } opacity={ 0.1 } />
+              {
+                percent < 100 ?
+                <Image width={ 50 } src={ watermarkSrc } opacity={ 0.3 } /> : 
+                <Image width={ 50 } src={ watermarkSrc } opacity={ 1 } />
+              }
               </Watermark> :
               <Image width={ 50 } src={ iconUpload } opacity={ 1 }/>
           }
@@ -289,7 +288,9 @@ class WatermarkPosition extends React.Component {
                   minWidth={ 20 }>
                     X
                 </PrimaryButton>
-                <Image width={ 50 } src={ watermarkSrc } />
+                {
+                  percent < 100 ? <Image width={ 50 } src={ watermarkSrc } opacity={ 0.3 } /> :   <Image width={ 50 } src={ watermarkSrc } opacity={ 1 } />
+                }
               </Watermark> :
               'Watermark'
         }
