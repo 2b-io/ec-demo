@@ -330,7 +330,10 @@ class UploadForm extends React.Component {
           })
         },
         FilesRemoved: (uploader ,files) => {
-          this.setState({ watermarkSrc:'' })
+          this.setState({
+            watermarkSrc:'',
+            templateFile:''
+          })
         },
         QueueChanged: (queue) => {
           this.setState({ templateFile: queue.files[0] })
@@ -382,7 +385,7 @@ class UploadForm extends React.Component {
         },
         QueueChanged: (queue) => {
           this.setState({
-            mageFiles: arrToMap(queue.files, 'id'),
+            imageFiles: arrToMap(queue.files, 'id'),
             nodeData: [{
               isActive: false,
               isComplete: true,
@@ -441,13 +444,12 @@ class UploadForm extends React.Component {
     const lastImageSrc = Object.values(prevState.listImagePreview)[0]
     const imageSrc = Object.values(this.state.listImagePreview)[0]
 
-    if (prevState.watermarkSrc !== this.state.watermarkSrc && this.state.watermarkSrc) {
-      console.log('aa');
-      const { plupWatermark } = this.state
-      plupWatermark.setOption('browse_button', 'none')
+    // if (prevState.watermarkSrc !== this.state.watermarkSrc && this.state.watermarkSrc) {
+      // const { plupWatermark } = this.state
 
-      this.setState({ plupWatermark })
-    }
+      // plupWatermark.setOption('browse_button', 'ss')
+    // }
+
     if (lastImageSrc !== imageSrc || prevState.watermarkSrc !== this.state.watermarkSrc) {
       let { width: widthOriginImage, height: heightOriginImage } = await imageSize(imageSrc)
       const { percentWatermark } = this.state
@@ -625,7 +627,6 @@ class UploadForm extends React.Component {
   }
 
   removeWatermark(file){
-    console.log('remove');
     const { plupWatermark } = this.state
     plupWatermark.removeFile(file)
   }
@@ -950,6 +951,7 @@ class UploadForm extends React.Component {
             <Upload>
               <LabelItem>Watermark</LabelItem>
               <PrimaryButton
+                id='ss'
                 free={ true }
               >
                 Browse file...
@@ -969,6 +971,7 @@ class UploadForm extends React.Component {
               handleGravity={ this.handleGravity.bind(this) }
               watermarkSrc={ watermarkSrc }
               removeWatermark={ this.removeWatermark.bind(this, templateFile) }
+              percent={ templateFile.percent }
             />
           </Config>
           </div>

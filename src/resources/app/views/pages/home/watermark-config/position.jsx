@@ -1,9 +1,16 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 
+import { ProgressCircular } from 'app/ui/elements'
 import iconUpload from 'img/icon-upload.png'
 
-
+const Progress = styled.div`
+  margin: auto 0 0 auto;
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+`
 const PrimaryButton = styled.div`
   appearance: none;
   border: none;
@@ -81,6 +88,15 @@ const gravitys = [
   'SouthEast',
 ]
 
+const Image = styled.img  .attrs( props => {
+  src: props.src
+})`
+  ${
+    ({ opacity }) => css`
+      opacity: ${ opacity }
+    `
+  }
+`
 const Watermark = styled.div`
   position: absolute;
 
@@ -202,8 +218,8 @@ class WatermarkPosition extends React.Component {
 
     const listItem = gravitys.map((gravity, index) => {
     const active = this.state.gravity === gravity ? true : false
-    const {  watermarkSrc } = this.props
-
+    const {  watermarkSrc, percent } = this.props
+    console.log('percent', percent);
       if (index === 0) {
         return (
           <Item
@@ -213,7 +229,9 @@ class WatermarkPosition extends React.Component {
             onClick= { this.changeGravity.bind(this, gravity) }
           >
           {
-            !active ? '' : watermarkSrc ?
+            !active ? watermarkSrc ? '' :
+              <img width={ 50 } src={ iconUpload }/> :
+              watermarkSrc ?
               <Watermark
                 top={ top }
                 left={ left }
@@ -221,14 +239,30 @@ class WatermarkPosition extends React.Component {
                 bottom={ bottom }
                 transform={ transform }
               >
+              {
+                percent && percent < 100 ?
                 <PrimaryButton
                   onClick={ () => this.props.removeWatermark() }
                   minWidth={ 20 }>
                     X
                 </PrimaryButton>
-                <img width={ 50 } src={ watermarkSrc } />
+                :
+                <div>
+                  <PrimaryButton
+                    onClick={ () => this.props.removeWatermark() }
+                    minWidth={ 20 }>
+                      X
+                  </PrimaryButton>
+                  <Progress>
+                    <ProgressCircular
+                      percent={ percent }
+                    />
+                  </Progress>
+                </div>
+              }
+                <Image width={ 50 } src={ watermarkSrc } opacity={ 0.1 } />
               </Watermark> :
-              <img width={ 50 } src={ iconUpload }/>
+              <Image width={ 50 } src={ iconUpload } opacity={ 1 }/>
           }
           </Item>
         )
@@ -255,7 +289,7 @@ class WatermarkPosition extends React.Component {
                   minWidth={ 20 }>
                     X
                 </PrimaryButton>
-                <img width={ 50 } src={ watermarkSrc } />
+                <Image width={ 50 } src={ watermarkSrc } />
               </Watermark> :
               'Watermark'
         }
