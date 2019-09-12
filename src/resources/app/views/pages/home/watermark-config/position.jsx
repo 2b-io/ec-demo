@@ -48,9 +48,9 @@ const WrapperItem = styled.div`
 const Position = styled.div`
   border: solid 1px #007FFF;
   display: grid;
-  max-width: 302px;
-  grid-template-rows: repeat(3, 100px);
-  grid-template-columns: repeat(3,100px);
+  max-width: 500px;
+  grid-template-rows: repeat(3, 150px);
+  grid-template-columns: repeat(3,150px);
 `
 
 const Item = styled.button.attrs( props => {
@@ -257,7 +257,7 @@ class WatermarkPosition extends React.Component {
               }
               {
                 percent < 100 ?
-                <Image width={ 50 } src={ watermarkSrc } opacity={ 0.3 } /> : 
+                <Image width={ 50 } src={ watermarkSrc } opacity={ 0.3 } /> :
                 <Image width={ 50 } src={ watermarkSrc } opacity={ 1 } />
               }
               </Watermark> :

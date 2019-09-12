@@ -9,6 +9,7 @@ import { actions, selectors } from 'app/state/interface'
 import defaultPreviewImage from 'img/image-preview.jpg'
 import defaultPreviewWatermark from 'img/watermark.png'
 import iconZip from 'img/icon-zip.png'
+import iconUpload from 'img/icon-upload.png'
 
 import {
   Container,
@@ -72,7 +73,7 @@ const Session = styled.div`
   padding-bottom: 20px;
   display: grid;
   grid-gap: 8px;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
 `
 
 const SliderEl = styled.div`
@@ -209,8 +210,8 @@ class UploadForm extends React.Component {
       },{
         isActive: false,
         isComplete: false,
-        label: "Edit Images",
-        description: "Edit Images"
+        label: "Config Images",
+        description: "Config Images"
       },{
         isActive: false,
         isComplete: false,
@@ -394,8 +395,8 @@ class UploadForm extends React.Component {
             },{
               isActive: true,
               isComplete: false,
-              label: "Edit Images",
-              description: "Edit Images"
+              label: "Config Images",
+              description: "Config Images"
             },{
               isActive: false,
               isComplete: false,
@@ -555,18 +556,18 @@ class UploadForm extends React.Component {
     const ratio = (_widthOriginImage / _heightOriginImage)
 
     if (ratio < 1) {
-      _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 300))
+      _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 450))
       return {
         widthImagePreivew: _widthOriginImage,
-        heightImagePreivew: 300,
+        heightImagePreivew: 450,
       }
     }
 
-    _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 300))
+    _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 450))
 
     return {
       heightImagePreivew: _heightOriginImage,
-      widthImagePreivew: 300,
+      widthImagePreivew: 450,
     }
   }
 
@@ -578,24 +579,24 @@ class UploadForm extends React.Component {
     const ratio = (_widthOriginImage / _heightOriginImage)
 
     if (ratio < 1) {
-      _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 300))
+      _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 450))
       let widthWatermark = Math.round(_widthOriginImage * (percentWatermark / 100))
       let heightWatermark = Math.round(heightOriginWatermark * (widthWatermark / widthOriginWatermark))
 
       return {
         widthImagePreivew: _widthOriginImage,
-        heightImagePreivew: 300,
+        heightImagePreivew: 450,
         widthWatermark,
         heightWatermark
       }
     } else {
-      _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 300))
+      _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 450))
       let heightWatermark = Math.round(_heightOriginImage * (percentWatermark / 100))
       let widthWatermark = Math.round(widthOriginWatermark * (heightWatermark / heightOriginWatermark))
 
       return {
         heightImagePreivew: _heightOriginImage,
-        widthImagePreivew: 300,
+        widthImagePreivew: 450,
         widthWatermark,
         heightWatermark
       }
@@ -948,20 +949,6 @@ class UploadForm extends React.Component {
       <Break/>
         <Session>
           <div>
-            <Upload>
-              <LabelItem>Watermark</LabelItem>
-              <PrimaryButton
-                id='ss'
-                free={ true }
-              >
-                Browse file...
-              </PrimaryButton>
-            </Upload>
-            <ListUpload>
-              { watermarkUpload }
-            </ListUpload>
-          </div>
-          <div>
           <Config>
             <LabelItem>Position</LabelItem>
           </Config>
@@ -1000,38 +987,10 @@ class UploadForm extends React.Component {
           </Config>
         </Session>
         <Session>
-          <div>
-            <Upload>
-              <LabelItem>Images</LabelItem>
-              <PrimaryButton
-                id="browseFiles"
-                >
-                Browse Files...
-              </PrimaryButton>
-              <FileType>
-                <input
-                  type='radio'
-                  name='images'
-                  value='images'
-                  onChange={ this.changeMimeType }
-                  checked={ this.state.mimeType === 'images' ? true : false }/>Multiple Files
-              </FileType>
-              <FileType>
-                <input
-                  type='radio'
-                  name='zip'
-                  value='zip'
-                  onChange={ this.changeMimeType }
-                  checked={ this.state.mimeType === 'zip' ? true : false }/>Zip
-              </FileType>
-            </Upload>
-            <ListUpload>
-              { filesUpload }
-            </ListUpload>
-          </div>
           <Config>
             <LabelItem>Padding</LabelItem>
             <Break/>
+            <div>
               <WatermarkPadding
                 handlePadding={ this.changePadding.bind(this) }
                 gravity={ this.state.gravity }
@@ -1040,6 +999,7 @@ class UploadForm extends React.Component {
                 paddingRight={ this.state.paddingRight }
                 paddingBottom={ this.state.paddingBottom }
               />
+            </div>
             <Break/>
             <Break/>
             <LabelItem>Resize Watermark</LabelItem>
@@ -1160,7 +1120,9 @@ class UploadForm extends React.Component {
                   thumbnails : <ThumbnailPreview src={ iconZip }/>
                 }
                </Collection> :
-               <div></div>
+               <Collection>
+                <img src={ iconUpload } />
+               </Collection>
             }
           </div>
         </Session>

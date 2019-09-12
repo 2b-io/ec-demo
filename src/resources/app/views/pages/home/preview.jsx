@@ -7,8 +7,8 @@ const Wrapper = styled.div`
   display: inline-block;
 `
 const Preview = styled.div`
-  max-height: 300px;
-  max-width: 300px;
+  max-height: 450px;
+  max-width: 450px;
 `
 
 const WatermarkPadding = styled.div`
@@ -60,7 +60,7 @@ const FramePreview = styled.div`
 `
 
 const Image = styled.img`
-  max-height: 300px;
+  max-height: 450px;
   margin: 0 auto;
   display: block;
 `

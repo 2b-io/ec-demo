@@ -1,14 +1,17 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
 
-const WrapperItem = styled.div`
+const Wrapper = styled.div`
+  display: inline-block;
+`
+const ListItem = styled.div`
   grid-gap: 8px;
   display: grid;
   max-width: 500px;
   grid-template-columns: repeat(4,120px);
 `
 
-const PaddingItem = styled.input`
+const Item = styled.input`
   max-width: 60px
 `
 
@@ -75,52 +78,54 @@ class TemplatePadding extends React.Component {
     }
 
     return (
-      <WrapperItem>
-        <div>
-          <label>Top </label>
-          <PaddingItem
-            name='paddingTop'
-            type='number'
-            onChange={ this.changePadding.bind(this) }
-            value={ this.props.paddingTop }
-            disabled={ stateInputTop }
-          />
-          <label>px</label>
-        </div>
-        <div>
-          <label>Left </label>
-          <PaddingItem
-            name='paddingLeft'
-            type='number'
-            onChange={ this.changePadding.bind(this) }
-            value={ this.props.paddingLeft }
-            disabled={ stateInputLeft }
-          />
-          <label>px</label>
-        </div>
-        <div>
-          <label>Right </label>
-          <PaddingItem
-            name='paddingRight'
-            type='number'
-            onChange={ this.changePadding.bind(this) }
-            value={ this.props.paddingRight }
-            disabled={ stateInputRight }
-          />
-          <label>px</label>
-        </div>
-        <div>
-          <label>Bottom </label>
-          <PaddingItem
-            name='paddingBottom'
-            type='number'
-            onChange={ this.changePadding.bind(this) }
-            value={ this.props.paddingBottom }
-            disabled={ stateInputBottom }
-          />
-          <label>px</label>
-        </div>
-      </WrapperItem>
+      <Wrapper>
+        <ListItem>
+          <div>
+            <label>Top </label>
+            <Item
+              name='paddingTop'
+              type='number'
+              onChange={ this.changePadding.bind(this) }
+              value={ this.props.paddingTop }
+              disabled={ stateInputTop }
+            />
+            <label>px</label>
+          </div>
+          <div>
+            <label>Left </label>
+            <Item
+              name='paddingLeft'
+              type='number'
+              onChange={ this.changePadding.bind(this) }
+              value={ this.props.paddingLeft }
+              disabled={ stateInputLeft }
+            />
+            <label>px</label>
+          </div>
+          <div>
+            <label>Right </label>
+            <Item
+              name='paddingRight'
+              type='number'
+              onChange={ this.changePadding.bind(this) }
+              value={ this.props.paddingRight }
+              disabled={ stateInputRight }
+            />
+            <label>px</label>
+          </div>
+          <div>
+            <label>Bottom </label>
+            <Item
+              name='paddingBottom'
+              type='number'
+              onChange={ this.changePadding.bind(this) }
+              value={ this.props.paddingBottom }
+              disabled={ stateInputBottom }
+            />
+            <label>px</label>
+          </div>
+        </ListItem>
+      </Wrapper>
     )
   }
 }
