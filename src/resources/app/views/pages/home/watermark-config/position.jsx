@@ -11,7 +11,7 @@ const Progress = styled.div`
   top: 50%;
   left: 50%;
 `
-const PrimaryButton = styled.div`
+const RemoveButton = styled.div`
   appearance: none;
   border: none;
   outline: none;
@@ -24,7 +24,7 @@ const PrimaryButton = styled.div`
     background .3s linear,
     color .3s linear;
 
-  display: 'block';
+  display: block;
 
   ${
     ({ theme }) =>
@@ -241,18 +241,18 @@ class WatermarkPosition extends React.Component {
               >
               {
                 percent && percent < 100 ?
-                <PrimaryButton
+                <RemoveButton
                   onClick={ () => this.props.removeWatermark() }
                   minWidth={ 20 }>
                     X
-                </PrimaryButton>
+                </RemoveButton>
                 :
                 <div>
-                  <PrimaryButton
+                  <RemoveButton
                     onClick={ () => this.props.removeWatermark() }
                     minWidth={ 20 }>
                       X
-                  </PrimaryButton>
+                  </RemoveButton>
                 </div>
               }
               {
@@ -283,11 +283,11 @@ class WatermarkPosition extends React.Component {
                 bottom={ bottom }
                 transform={ transform }
               >
-                <PrimaryButton
+                <RemoveButton
                   onClick={ () => this.props.removeWatermark() }
                   minWidth={ 20 }>
                     X
-                </PrimaryButton>
+                </RemoveButton>
                 {
                   percent < 100 ? <Image width={ 50 } src={ watermarkSrc } opacity={ 0.3 } /> :   <Image width={ 50 } src={ watermarkSrc } opacity={ 1 } />
                 }

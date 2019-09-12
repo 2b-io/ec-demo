@@ -28,6 +28,55 @@ import WatermarkPosition from './watermark-config/position'
 import WatermarkPadding from './watermark-config/padding'
 import Preview from './preview'
 
+const RemoveButton = styled.div`
+  position: absolute;
+  appearance: none;
+  border: none;
+  outline: none;
+  height: 22px;
+  width: 22px;
+  opacity: 0.5;
+  border-radius: 20px;
+  margin-left: 78px;
+  text-align: center;
+
+  transition:
+    background .3s linear,
+    color .3s linear;
+
+  display: block;
+
+  ${
+    ({ theme }) =>
+      css`
+        background: ${ theme.error.base };
+        color: ${ theme.error.on.base };
+      `
+  }
+
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    opacity: 1;
+  }
+`
+
+const UploadButton = styled.img.attrs( props => {
+  src: props.src;
+  width: props.width;
+})`
+  ${
+    ({ theme }) => {
+      return css`
+        :hover {
+          cursor: pointer;
+          background-color: #007FFF;
+        }
+      `;
+    }
+  }
+`
 const Marriage = styled.button`
   ${
     ({ active, theme }) => active ?
@@ -142,7 +191,8 @@ const Collection = styled.div`
   padding-top: 8px;
   display: grid;
   grid-gap: 8px;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
   max-height: 400px;
   overflow-y: scroll;
 `
@@ -151,6 +201,7 @@ const ThumbnailPreview = styled.img.attrs( props => {
   src: props.src
 })`
   width: 100px;
+  height: 100px;
   object-fit: cover;
 `
 
@@ -309,7 +360,7 @@ class UploadForm extends React.Component {
   uploadWatermark() {
     const plupWatermark = new plupload.Uploader({
       browse_button: 'browseWatermark',
-      max_retries: 3,
+      max_retries: 3,
       chunk_size: '200kb',
       urlstream_upload: true,
       init: {
@@ -367,7 +418,7 @@ class UploadForm extends React.Component {
   uploadItems(mimeTypes) {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
-      max_retries: 3,
+      max_retries: 3,
       chunk_size: '200kb',
       init: {
         FilesAdded: (uploader, files) => {
@@ -377,7 +428,10 @@ class UploadForm extends React.Component {
               this.setState({
                 listImagePreview: {
                   ...this.state.listImagePreview,
-                  [ file.id ]: reader.result
+                  [ file.id ]: {
+                    index: new Date().getTime(),
+                    src: reader.result
+                  }
                 }
               })
             }
@@ -442,8 +496,19 @@ class UploadForm extends React.Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const lastImageSrc = Object.values(prevState.listImagePreview)[0]
-    const imageSrc = Object.values(this.state.listImagePreview)[0]
+
+    let lastImageSrc = ''
+    let imageSrc = ''
+    const totalLastImages = Object.values(prevState.listImagePreview).length
+    const totalImages = Object.values(this.state.listImagePreview).length
+
+    if (totalLastImages) {
+      lastImageSrc = Object.values(prevState.listImagePreview)[ totalLastImages - 1 ].src
+    }
+
+    if (totalImages) {
+      imageSrc = Object.values(this.state.listImagePreview)[ totalImages - 1 ].src
+    }
 
     // if (prevState.watermarkSrc !== this.state.watermarkSrc && this.state.watermarkSrc) {
       // const { plupWatermark } = this.state
@@ -902,44 +967,19 @@ class UploadForm extends React.Component {
     :
     <div></div>
 
-    const filesUpload = Object.values(imageFiles).map((file, index) => {
-      return (
-        <ImageUpload key = { index } >
-          <p>{ index }</p>
-          {
-            file.percent !== 0 ?
-              <ProgressCircular
-                percent={ file.percent }
-                />
-                :
-                <PrimaryButton
-                onClick={ this.removeImage.bind(this, file) }
-                minWidth={ 40 }>
-                  X
-                </PrimaryButton>
-          }
-          {
-            listImagePreview[ file.id ] ?
-              this.state.mimeType === 'images' ?
-              <Thumbnail src={ listImagePreview[ file.id ] }/> :
-              <Thumbnail src={ iconZip }/> : <div></div>
-          }
-          <p>
-            { file.name } { plupload.formatSize(file.size) }
-          </p>
-        </ImageUpload>
-      )
-    })
-
-    const thumbnails = Object.values(listImagePreview).map((image, index) => {
-      return (
+    const thumbnails = Object.values(listImagePreview)
+      .sort((image, nextImage) => nextImage.index - image.index)
+      .map((image, index) => <div key={ index }>
+        <RemoveButton onClick={ this.removeImage.bind(this, image.id) }>
+          X
+        </RemoveButton>
         <ThumbnailPreview
-          src={ image }
-          key={ index }
-          onClick={ this.changeImagePreview.bind(this, image)}
+          src={ image.src }
+          onClick={ this.changeImagePreview.bind(this, image.src)}
         />
+        </div>
       )
-    })
+
     return (
       <WrapperItem>
       <ProgressStep nodeData={ this.state.nodeData } />
@@ -1113,15 +1153,12 @@ class UploadForm extends React.Component {
           </Config>
           <div>
             {
-             Object.values(imageFiles).length > 0 ?
               <Collection>
+                <UploadButton id='browseFiles' src={ iconUpload } width={ 50 } />
                {
                 mimeType === 'images' ?
                   thumbnails : <ThumbnailPreview src={ iconZip }/>
                 }
-               </Collection> :
-               <Collection>
-                <img src={ iconUpload } />
                </Collection>
             }
           </div>
