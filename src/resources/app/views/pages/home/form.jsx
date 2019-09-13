@@ -29,6 +29,7 @@ import WatermarkPadding from './watermark-config/padding'
 import Preview from './preview'
 
 const RemoveButton = styled.div`
+  cursor: pointer;
   position: absolute;
   appearance: none;
   border: none;
@@ -60,6 +61,11 @@ const RemoveButton = styled.div`
   &:hover {
     opacity: 1;
   }
+`
+const Center = styled.div`
+  display: block;
+  margin: 0 auto;
+  max-width: 450px;
 `
 
 const UploadButton = styled.img.attrs( props => {
@@ -429,6 +435,7 @@ class UploadForm extends React.Component {
                 listImagePreview: {
                   ...this.state.listImagePreview,
                   [ file.id ]: {
+                    id: file.id,
                     index: new Date().getTime(),
                     src: reader.result
                   }
@@ -969,16 +976,20 @@ class UploadForm extends React.Component {
 
     const thumbnails = Object.values(listImagePreview)
       .sort((image, nextImage) => nextImage.index - image.index)
-      .map((image, index) => <div key={ index }>
-        <RemoveButton onClick={ this.removeImage.bind(this, image.id) }>
-          X
-        </RemoveButton>
-        <ThumbnailPreview
-          src={ image.src }
-          onClick={ this.changeImagePreview.bind(this, image.src)}
-        />
-        </div>
-      )
+      .map((image, index) => {
+        const imageFile = imageFiles[ image.id ]
+        return (
+          <div key={ index }>
+            <RemoveButton onClick={ this.removeImage.bind(this, imageFile) }>
+              X
+            </RemoveButton>
+            <ThumbnailPreview
+              src={ image.src }
+              onClick={ this.changeImagePreview.bind(this, image.src)}
+            />
+          </div>
+        )
+      })
 
     return (
       <WrapperItem>
@@ -1066,6 +1077,7 @@ class UploadForm extends React.Component {
               <div></div>
             }
             <Break/>
+            <Center>
               { modeResize === 'keepRatioPercent' ? <div>
                 <Slider
                   label="Ratio Watermark By Percent"
@@ -1136,19 +1148,20 @@ class UploadForm extends React.Component {
                       />
                       <label>px</label>
                     </div>
-                    </Grid>
+                  </Grid>
                 </div>
               }
-            <Break/>
-            <Slider
-              label="Opacity"
-              name="Opacity"
-              min="0"
-              max="100"
-              value={ this.state.opacity }
-              onChange={ this.changeOpacity.bind(this) }
-              unit="%"
-            />
+              <Break/>
+              <Slider
+                label="Opacity"
+                name="Opacity"
+                min="0"
+                max="100"
+                value={ this.state.opacity }
+                onChange={ this.changeOpacity.bind(this) }
+                unit="%"
+              />
+            </Center>
             <Break/>
           </Config>
           <div>
