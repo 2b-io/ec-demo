@@ -124,11 +124,18 @@ const ActionButton = styled.div`
 `
 
 const Session = styled.div`
-  padding-top: 20px;
-  padding-bottom: 20px;
   display: grid;
   grid-gap: 8px;
   grid-template-columns: 1fr 1fr;
+`
+const HorizonLine = styled.div`
+  ${
+    ({ theme }) => {
+      return css`
+        border-right: 1px ${ theme.primary.base } solid;
+      `
+    }
+  }
 `
 
 const SliderEl = styled.div`
@@ -998,8 +1005,8 @@ class UploadForm extends React.Component {
       <Break/>
       <Break/>
       <Break/>
-        <Session>
-          <div>
+      <Session>
+        <HorizonLine>
           <Config>
             <LabelItem>Position</LabelItem>
           </Config>
@@ -1012,7 +1019,7 @@ class UploadForm extends React.Component {
               percent={ templateFile.percent }
             />
           </Config>
-          </div>
+        </HorizonLine>
           <Config>
             <LabelItem>Preview</LabelItem>
             <Break/>
@@ -1038,6 +1045,7 @@ class UploadForm extends React.Component {
           </Config>
         </Session>
         <Session>
+        <HorizonLine>
           <Config>
             <LabelItem>Padding</LabelItem>
             <Break/>
@@ -1088,82 +1096,82 @@ class UploadForm extends React.Component {
                   onChange={ this.changeRatioWatermark.bind(this) }
                   unit="%"
                 />
-                </div>
-                :
+              </div>:
                 modeResize === 'noKeepRatioPercent' ? <div>
-                <LabelItem>Ratio Watermark By Percent</LabelItem>
-                  <Break/>
+                  <LabelItem>Ratio Watermark By Percent</LabelItem>
+                    <Break/>
+                    <div>
+                      <Grid columns={ 2 }>
+                        <div>
+                          <label>Width </label>
+                          <Input
+                            type='number'
+                            name='widthPercentWatermark'
+                            value={ this.state.widthPercentWatermark }
+                            onChange={ this.changePercentWatermark.bind(this) }
+                          />
+                        </div>
+                        <div>
+                          <label>Height </label>
+                          <Input
+                            name='heightPercentWatermark'
+                            type='number'
+                            value={ this.state.heightPercentWatermark }
+                            onChange={ this.changePercentWatermark.bind(this) }
+                          />
+                          <label>%</label>
+                        </div>
+                      </Grid>
+                    </div>
+                  </div>
+                  :
                   <div>
-                    <Grid columns={ 2 }>
+                    <LabelItem>Ratio Watermark By Pixel</LabelItem>
+                    <Break/>
+                    <Grid columns={ 3 }>
                       <div>
                         <label>Width </label>
                         <Input
                           type='number'
-                          name='widthPercentWatermark'
-                          value={ this.state.widthPercentWatermark }
-                          onChange={ this.changePercentWatermark.bind(this) }
+                          name='widthPixelWatermark'
+                          value={ this.state.widthWatermark }
+                          onChange={ this.changeSizeWatermark.bind(this) }
                         />
+                        <label>px</label>
                       </div>
+                      <Marriage
+                        onClick={ this.changeModeResizePixel.bind(this) }
+                        active={ marriageActive }
+                        >
+                        &#9901;
+                      </Marriage>
                       <div>
                         <label>Height </label>
                         <Input
-                          name='heightPercentWatermark'
+                          name='heightPixelWatermark'
                           type='number'
-                          value={ this.state.heightPercentWatermark }
-                          onChange={ this.changePercentWatermark.bind(this) }
+                          value={ this.state.heightWatermark }
+                          onChange={ this.changeSizeWatermark.bind(this) }
                         />
-                        <label>%</label>
+                        <label>px</label>
                       </div>
                     </Grid>
                   </div>
-                </div>
-                :
-                <div>
-                  <LabelItem>Ratio Watermark By Pixel</LabelItem>
-                  <Break/>
-                  <Grid columns={ 3 }>
-                    <div>
-                      <label>Width </label>
-                      <Input
-                        type='number'
-                        name='widthPixelWatermark'
-                        value={ this.state.widthWatermark }
-                        onChange={ this.changeSizeWatermark.bind(this) }
-                      />
-                      <label>px</label>
-                    </div>
-                    <Marriage
-                      onClick={ this.changeModeResizePixel.bind(this) }
-                      active={ marriageActive }
-                      >
-                      &#9901;
-                    </Marriage>
-                    <div>
-                      <label>Height </label>
-                      <Input
-                        name='heightPixelWatermark'
-                        type='number'
-                        value={ this.state.heightWatermark }
-                        onChange={ this.changeSizeWatermark.bind(this) }
-                      />
-                      <label>px</label>
-                    </div>
-                  </Grid>
-                </div>
-              }
+                }
+                <Break/>
+                <Slider
+                  label="Opacity"
+                  name="Opacity"
+                  min="0"
+                  max="100"
+                  value={ this.state.opacity }
+                  onChange={ this.changeOpacity.bind(this) }
+                  unit="%"
+                />
+              </Center>
               <Break/>
-              <Slider
-                label="Opacity"
-                name="Opacity"
-                min="0"
-                max="100"
-                value={ this.state.opacity }
-                onChange={ this.changeOpacity.bind(this) }
-                unit="%"
-              />
-            </Center>
-            <Break/>
-          </Config>
+            </Config>
+          </HorizonLine>
           <div>
             {
               <Collection>

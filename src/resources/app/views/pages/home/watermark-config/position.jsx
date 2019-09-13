@@ -58,7 +58,13 @@ const Item = styled.button.attrs( props => {
 })`
 
   ${
-    ({ active }) => active ? '' : css`
+    ({ active, watermarkSrc, theme }) => active && !watermarkSrc ?
+      css`
+        background-color: ${ theme.secondary.base };
+        color: ${ theme.secondary.on.base };
+      `
+     :
+     css`
       &:hover {
         background-color: #007FFF;
         color: white;
@@ -223,6 +229,7 @@ class WatermarkPosition extends React.Component {
       if (index === 0) {
         return (
           <Item
+            watermarkSrc={ watermarkSrc }
             id={ 'browseWatermark' }
             key={ index }
             active={ active }
@@ -268,6 +275,7 @@ class WatermarkPosition extends React.Component {
       }
       return (
         <Item
+          watermarkSrc={ watermarkSrc }
           key={ index }
           active={ active }
           onClick= { this.changeGravity.bind(this, gravity) }

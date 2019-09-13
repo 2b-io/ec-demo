@@ -5,6 +5,9 @@ import { PrimaryButton, Break } from 'app/ui/elements'
 
 const Wrapper = styled.div`
   display: inline-block;
+  width: 450px;
+  height: 450px;
+  background-color: white;
 `
 const Preview = styled.div`
   max-height: 450px;
