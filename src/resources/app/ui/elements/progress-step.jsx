@@ -4,6 +4,24 @@ import Popover, { ArrowContainer } from 'react-tiny-popover'
 
 import iconUpload from 'img/icon-upload.png'
 
+
+const PopoverDescription = styled.div`
+  background: #fff;
+  border-radius: 2px;
+  display: inline-block;
+  margin: 0px 10px 10px 10px;
+  position: relative;
+  width: 450px;
+  height: 230px;
+
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 0px rgba(0, 0, 0, 0);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+`
+
+const PopoverContent = styled.p`
+  padding: 16px;
+  text-align: center;
+`
 const NodeStepLast = styled.li`
   :after {
     display: none !important;
@@ -35,13 +53,13 @@ const NodeStep = styled.li`
     content: '';
     position: absolute;
     display: block;
-    background: #DFE3E4;
+    background: #007fff;
     width: 100%;
     height: 0.5em;
     top: 1.25em;
     left: 50%;
-    margin-left: 1.5em\9;
-    z-index: -1;
+    margin-left: 1.5em;
+    z-index: 2;
   }
 
   :last-child:after {
@@ -49,24 +67,20 @@ const NodeStep = styled.li`
   }
 
   ${
-    ({ isComplete }) => {
-      if (isComplete) {
-        return css`
-            color: #2ECC71;
+    ({ isComplete }) => css`
+        color: #007fff;
 
-            :before, :after {
-              color: #FFF;
-              background: #2ECC71;
-            }
-          `
-      }
-    }
+        :before, :after {
+          color: #FFF;
+          background: #007fff;
+        }
+      `
   }
 
 
   ${
     ({ isActive }) => isActive ? css`
-    color: #007fff;
+    color: #2ECC71;
 
     :before {
       color: #FFF;
@@ -75,7 +89,6 @@ const NodeStep = styled.li`
     `:''
   }
 `
-const PopoverDescription = styled.p``
 
 const Progress = styled.ol`
   list-style: none;
@@ -103,6 +116,8 @@ class ProgressStepComponent extends React.Component {
     this.setState({
       isPopoverOpenid: id
     })
+
+    this.props.changeStepActive(id)
   }
 
   popoverClose() {
@@ -113,7 +128,7 @@ class ProgressStepComponent extends React.Component {
     const { isPopoverOpenid } = this.state
     const { nodeData } = this.props
 
-    const nodeSteps = nodeData.map((data, index) => {
+    const nodeSteps = Object.values(nodeData).map((data, index) => {
       const {
         isActive,
         isComplete,
@@ -125,7 +140,6 @@ class ProgressStepComponent extends React.Component {
         <Popover
           isOpen={ isPopoverOpenid === index }
           position={[ 'bottom', 'top', 'right', 'left' ]}
-          padding={ 8 }
           disableReposition={ true }
           onClickOutside={ this.popoverClose.bind(this) }
           key={ index }
@@ -134,11 +148,11 @@ class ProgressStepComponent extends React.Component {
             position={ position }
             targetRect={ targetRect }
             popoverRect={ popoverRect }
-            arrowColor={ '#007fff' }
+            arrowColor={ '#FFF' }
             arrowSize={ 10 }
           >
             <PopoverDescription>
-              { description }
+              <PopoverContent> { description } </PopoverContent>
             </PopoverDescription>
           </ArrowContainer>
           )}
@@ -149,6 +163,8 @@ class ProgressStepComponent extends React.Component {
             data-step={ index + 1}
             key={ index }
             onClick={ this.popoverOpen.bind(this, index) }
+            onMouseEnter={ () => this.props.hoverStep(index) }
+            onMouseLeave={ () => this.props.leaveStep(index) }
           >
           { label }
           </NodeStep>

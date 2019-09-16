@@ -1,4 +1,4 @@
-FROM node:carbon
+FROM node:buster
 
 # Create app directory
 WORKDIR /usr/ec-demo

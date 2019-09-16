@@ -15,8 +15,6 @@ import {
   Container,
   Break,
   PrimaryButton,
-  ProgressBar,
-  ProgressStep,
   ProgressCircular,
   PlainButton,
   Slider
@@ -454,23 +452,7 @@ class UploadForm extends React.Component {
         },
         QueueChanged: (queue) => {
           this.setState({
-            imageFiles: arrToMap(queue.files, 'id'),
-            nodeData: [{
-              isActive: false,
-              isComplete: true,
-              label: "Upload Images",
-              description: "Upload Images"
-            },{
-              isActive: true,
-              isComplete: false,
-              label: "Config Images",
-              description: "Config Images"
-            },{
-              isActive: false,
-              isComplete: false,
-              label: "Get Images",
-              description: "Get Images"
-            }]
+            imageFiles: arrToMap(queue.files, 'id')
           })
         },
         FilesRemoved: (uploader ,files) => {
@@ -523,12 +505,6 @@ class UploadForm extends React.Component {
     if (totalImages) {
       imageSrc = Object.values(this.state.listImagePreview)[ totalImages - 1 ].src
     }
-
-    // if (prevState.watermarkSrc !== this.state.watermarkSrc && this.state.watermarkSrc) {
-      // const { plupWatermark } = this.state
-
-      // plupWatermark.setOption('browse_button', 'ss')
-    // }
 
     if (lastImageSrc !== imageSrc || prevState.watermarkSrc !== this.state.watermarkSrc) {
       let { width: widthOriginImage, height: heightOriginImage } = await imageSize(imageSrc)
@@ -1000,7 +976,6 @@ class UploadForm extends React.Component {
 
     return (
       <WrapperItem>
-      <ProgressStep nodeData={ this.state.nodeData } />
       <Break/>
       <Break/>
       <Break/>
