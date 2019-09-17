@@ -11,8 +11,8 @@ const PopoverDescription = styled.div`
   display: inline-block;
   margin: 0px 10px 10px 10px;
   position: relative;
-  width: 450px;
-  height: 230px;
+  width: 550px;
+  height: 280px;
 
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 0px rgba(0, 0, 0, 0);
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
@@ -108,7 +108,7 @@ class ProgressStepComponent extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      isPopoverOpenid: null
+      isPopoverOpenid: 1
     }
   }
 

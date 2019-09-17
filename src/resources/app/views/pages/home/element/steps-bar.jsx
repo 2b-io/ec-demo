@@ -7,7 +7,7 @@ import { PrimaryButton, Break, ProgressStep } from 'app/ui/elements'
 const Introduction = styled.div`
   background-color: #ebebeb;
   padding-top: 48px;
-  min-height: 350px;
+  min-height: 450px;
 `
 
 const Wrapper = styled.div`
@@ -40,14 +40,14 @@ class StepComponent extends React.Component {
         0: {
           isActive: false,
           isComplete: true,
-          label: "Images",
-          description: "Images"
+          label: "Normalize",
+          description: "Normalize"
         },
         1: {
           isActive: false,
-          isComplete: false,
-          label: "Config Images",
-          description: "Config Images"
+          isComplete: true,
+          label: "Modify",
+          description: "Modify"
         },
         2: {
           isActive: false,
@@ -84,14 +84,14 @@ class StepComponent extends React.Component {
       0: {
         isActive: false,
         isComplete: false,
-        label: "Images",
-        description: "Images"
+        label: "Normalize",
+        description: "Normalize"
       },
       1: {
         isActive: false,
         isComplete: false,
-        label: "Config Images",
-        description: "Config Images"
+        label: "Modify",
+        description: "Modify"
       },
       2: {
         isActive: false,
