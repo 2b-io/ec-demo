@@ -119,11 +119,7 @@ class ProgressStepComponent extends React.Component {
 
     this.props.changeStepActive(id)
   }
-
-  popoverClose() {
-    this.setState({ isPopoverOpenid: null } )
-  }
-
+  
   render() {
     const { isPopoverOpenid } = this.state
     const { nodeData } = this.props
@@ -141,7 +137,6 @@ class ProgressStepComponent extends React.Component {
           isOpen={ isPopoverOpenid === index }
           position={[ 'bottom', 'top', 'right', 'left' ]}
           disableReposition={ true }
-          onClickOutside={ this.popoverClose.bind(this) }
           key={ index }
           content={ ({ position, targetRect, popoverRect }) => (
           <ArrowContainer

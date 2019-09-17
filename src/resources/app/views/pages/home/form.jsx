@@ -8,8 +8,8 @@ import { mapDispatch } from 'app/services/redux-helpers'
 import { actions, selectors } from 'app/state/interface'
 import defaultPreviewImage from 'img/image-preview.jpg'
 import defaultPreviewWatermark from 'img/watermark.png'
+import { AddIcon } from 'app/ui/elements/icons'
 import iconZip from 'img/icon-zip.png'
-import iconUpload from 'img/icon-upload.png'
 
 import {
   Container,
@@ -36,7 +36,7 @@ const RemoveButton = styled.div`
   width: 22px;
   opacity: 0.5;
   border-radius: 20px;
-  margin-left: 78px;
+  margin-left: 96px;
   text-align: center;
 
   transition:
@@ -66,17 +66,23 @@ const Center = styled.div`
   max-width: 450px;
 `
 
-const UploadButton = styled.img.attrs( props => {
-  src: props.src;
-  width: props.width;
-})`
+const WrapperIcon = styled.div`
+  margin-top: 40px
+`
+
+const UploadButton = styled.div`
+  width: 120px;
+  height: 120px;
+
   ${
     ({ theme }) => {
       return css`
         :hover {
           cursor: pointer;
-          background-color: #007FFF;
+          color: ${ theme.secondary.on.base };
+          background-color: ${ theme.primary.base };
         }
+        border: ${ theme.primary.base } 1px solid;
       `;
     }
   }
@@ -111,7 +117,6 @@ const Marriage = styled.button`
 
 const WrapperItem = styled.div`
   display: block;
-  padding-top: 32px;
 `
 const Config = styled.div`
   text-align: center;
@@ -200,6 +205,8 @@ const ImageUpload = styled.div`
 
 const Collection = styled.div`
   padding-top: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
   display: grid;
   grid-gap: 8px;
   grid-template-columns: repeat(7, 1fr);
@@ -211,8 +218,8 @@ const Collection = styled.div`
 const ThumbnailPreview = styled.img.attrs( props => {
   src: props.src
 })`
-  width: 100px;
-  height: 100px;
+  width: 120px;
+  height: 120px;
   object-fit: cover;
 `
 
@@ -370,7 +377,17 @@ class UploadForm extends React.Component {
 
   uploadWatermark() {
     const plupWatermark = new plupload.Uploader({
-      browse_button: 'browseWatermark',
+      browse_button: [
+        'browseWatermark0',
+        'browseWatermark1',
+        'browseWatermark2',
+        'browseWatermark3',
+        'browseWatermark4',
+        'browseWatermark5',
+        'browseWatermark6',
+        'browseWatermark7',
+        'browseWatermark8',
+      ],
       max_retries: 3,
       chunk_size: '200kb',
       urlstream_upload: true,
@@ -976,26 +993,26 @@ class UploadForm extends React.Component {
 
     return (
       <WrapperItem>
-      <Break/>
-      <Break/>
-      <Break/>
-      <Break/>
-      <Session>
-        <HorizonLine>
+        <Session>
+          <HorizonLine>
+            <Break />
+            <Break />
+            <Config>
+              <LabelItem>Position</LabelItem>
+            </Config>
+            <Break/>
+            <Config>
+              <WatermarkPosition
+                handleGravity={ this.handleGravity.bind(this) }
+                watermarkSrc={ watermarkSrc }
+                removeWatermark={ this.removeWatermark.bind(this, templateFile) }
+                percent={ templateFile.percent }
+              />
+            </Config>
+          </HorizonLine>
           <Config>
-            <LabelItem>Position</LabelItem>
-          </Config>
-          <Break/>
-          <Config>
-            <WatermarkPosition
-              handleGravity={ this.handleGravity.bind(this) }
-              watermarkSrc={ watermarkSrc }
-              removeWatermark={ this.removeWatermark.bind(this, templateFile) }
-              percent={ templateFile.percent }
-            />
-          </Config>
-        </HorizonLine>
-          <Config>
+            <Break />
+            <Break />
             <LabelItem>Preview</LabelItem>
             <Break/>
             <Preview
@@ -1022,6 +1039,8 @@ class UploadForm extends React.Component {
         <Session>
         <HorizonLine>
           <Config>
+            <Break/>
+            <Break/>
             <LabelItem>Padding</LabelItem>
             <Break/>
             <div>
@@ -1150,7 +1169,11 @@ class UploadForm extends React.Component {
           <div>
             {
               <Collection>
-                <UploadButton id='browseFiles' src={ iconUpload } width={ 50 } />
+                <UploadButton id='browseFiles'>
+                  <WrapperIcon>
+                    <AddIcon />
+                  </WrapperIcon>
+                </UploadButton>
                {
                 mimeType === 'images' ?
                   thumbnails : <ThumbnailPreview src={ iconZip }/>

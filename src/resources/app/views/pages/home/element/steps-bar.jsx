@@ -11,7 +11,7 @@ const Introduction = styled.div`
 `
 
 const Wrapper = styled.div`
-  max-width: 1600px;
+  /* max-width: 1600px; */
   margin: 0 auto;
   display: grid;
 `
@@ -70,7 +70,7 @@ class StepComponent extends React.Component {
   }
 
   leaveStep(id) {
-    console.log('id', id)
+
     const { nodeData } = this.state
     nodeData[ id ].isActive = false
 

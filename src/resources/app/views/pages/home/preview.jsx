@@ -2,12 +2,13 @@ import React from 'react'
 import styled, { css } from 'styled-components'
 
 import { PrimaryButton, Break } from 'app/ui/elements'
+import translateBackground from 'img/translate-background.png'
 
 const Wrapper = styled.div`
   display: inline-block;
   width: 450px;
   height: 450px;
-  background-color: white;
+  background-image: url(${ translateBackground });
 `
 const Preview = styled.div`
   max-height: 450px;

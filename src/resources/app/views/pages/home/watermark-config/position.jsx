@@ -2,7 +2,30 @@ import React from 'react'
 import styled, { css } from 'styled-components'
 
 import { ProgressCircular } from 'app/ui/elements'
+import { AddIcon } from 'app/ui/elements/icons'
+
 import iconUpload from 'img/icon-upload.png'
+
+const UploadButton = styled.div.attrs( props => {
+  id: props.id
+})`
+  ${
+    ({ hidden }) => hidden ?
+    css`display: none;`
+    :
+    css`display: inline-block;`
+  }
+
+  color: #c1c1c1;
+
+  :hover {
+    ${
+      ({ theme }) => css`
+        color: #FFF;
+      `
+    }
+  }
+`
 
 const Progress = styled.div`
   margin: auto 0 0 auto;
@@ -11,6 +34,7 @@ const Progress = styled.div`
   top: 50%;
   left: 50%;
 `
+
 const RemoveButton = styled.div`
   appearance: none;
   border: none;
@@ -104,8 +128,6 @@ const Image = styled.img  .attrs( props => {
   }
 `
 const Watermark = styled.div`
-  position: absolute;
-
   ${ ({
     top,
     left,
@@ -121,17 +143,7 @@ const Watermark = styled.div`
       `
     }
   }
-  ${
-    ({
-      transform,
-    }) => css`
-          transform: ${ transform };
-        `
-    }
-  };
 
-  img {
-    display: block;
   }
 `
 
@@ -226,53 +238,6 @@ class WatermarkPosition extends React.Component {
     const active = this.state.gravity === gravity ? true : false
     const {  watermarkSrc, percent } = this.props
 
-      if (index === 0) {
-        return (
-          <Item
-            watermarkSrc={ watermarkSrc }
-            id={ 'browseWatermark' }
-            key={ index }
-            active={ active }
-            onClick= { this.changeGravity.bind(this, gravity) }
-          >
-          {
-            !active ? watermarkSrc ? '' :
-              <img width={ 50 } src={ iconUpload }/> :
-              watermarkSrc ?
-              <Watermark
-                top={ top }
-                left={ left }
-                right={ right }
-                bottom={ bottom }
-                transform={ transform }
-              >
-              {
-                percent && percent < 100 ?
-                <RemoveButton
-                  onClick={ () => this.props.removeWatermark() }
-                  minWidth={ 20 }>
-                    X
-                </RemoveButton>
-                :
-                <div>
-                  <RemoveButton
-                    onClick={ () => this.props.removeWatermark() }
-                    minWidth={ 20 }>
-                      X
-                  </RemoveButton>
-                </div>
-              }
-              {
-                percent < 100 ?
-                <Image width={ 50 } src={ watermarkSrc } opacity={ 0.3 } /> :
-                <Image width={ 50 } src={ watermarkSrc } opacity={ 1 } />
-              }
-              </Watermark> :
-              <Image width={ 50 } src={ iconUpload } opacity={ 1 }/>
-          }
-          </Item>
-        )
-      }
       return (
         <Item
           watermarkSrc={ watermarkSrc }
@@ -281,26 +246,47 @@ class WatermarkPosition extends React.Component {
           onClick= { this.changeGravity.bind(this, gravity) }
         >
         {
-          !active ?
-            '' :
+          !active ? watermarkSrc ? '' :
+          <UploadButton
+            hidden={ true }
+            id={`browseWatermark${ index }`}
+            >
+            <AddIcon/>
+          </UploadButton> :
             watermarkSrc ?
-              <Watermark
-                top={ top }
-                left={ left }
-                right={ right }
-                bottom={ bottom }
-                transform={ transform }
-              >
+            <Watermark
+              top={ top }
+              left={ left }
+              right={ right }
+              bottom={ bottom }
+              transform={ transform }
+            >
+            {
+              percent && percent < 100 ?
+              <RemoveButton
+                onClick={ () => this.props.removeWatermark() }
+                minWidth={ 20 }>
+                  X
+              </RemoveButton>
+              :
+              <div>
                 <RemoveButton
                   onClick={ () => this.props.removeWatermark() }
                   minWidth={ 20 }>
                     X
                 </RemoveButton>
-                {
-                  percent < 100 ? <Image width={ 50 } src={ watermarkSrc } opacity={ 0.3 } /> :   <Image width={ 50 } src={ watermarkSrc } opacity={ 1 } />
-                }
-              </Watermark> :
-              'Watermark'
+              </div>
+            }
+            {
+              percent < 100 ?
+              <Image width={ 60 } src={ watermarkSrc } opacity={ 0.3 } /> :
+              <Image width={ 60 } src={ watermarkSrc } opacity={ 1 } />
+            }
+            </Watermark> :
+            <UploadButton id={`browseWatermark${ index }`}>
+              <AddIcon />
+              <span>Watermark</span>
+            </UploadButton>
         }
         </Item>
       )

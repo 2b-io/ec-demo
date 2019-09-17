@@ -90,7 +90,7 @@ const Track = styled.div.attrs(props => ({
 
       & > ${ Track } {
         transform: translate3d(0, 0, 0);
-        transition: width .2s;
+        /* transition: width .5s; */
       }
     `
   }
