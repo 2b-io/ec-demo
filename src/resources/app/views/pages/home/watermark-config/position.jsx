@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { Fragment } from 'react'
 import styled, { css } from 'styled-components'
 
-import { ProgressCircular } from 'app/ui/elements'
+import { ProgressCircular, Break } from 'app/ui/elements'
 import { AddIcon } from 'app/ui/elements/icons'
 
 import iconUpload from 'img/icon-upload.png'
@@ -9,6 +9,9 @@ import iconUpload from 'img/icon-upload.png'
 const UploadButton = styled.div.attrs( props => {
   id: props.id
 })`
+  ${
+    ({ hidden }) => hidden ? css`display: none` : css`display: inherit`
+  }
   ${
     ({ hidden }) => hidden ?
     css`display: none;`
@@ -28,11 +31,10 @@ const UploadButton = styled.div.attrs( props => {
 `
 
 const Progress = styled.div`
-  margin: auto 0 0 auto;
+  max-height: 40px;
   display: block;
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  margin-left: 100px;
+  margin-top: -24px;
 `
 
 const RemoveButton = styled.div`
@@ -43,7 +45,7 @@ const RemoveButton = styled.div`
   width: 22px;
   opacity: 0.5;
   border-radius: 20px;
-  margin: auto 0 0 auto;
+  margin: -62px -4px 0 auto;
   transition:
     background .3s linear,
     color .3s linear;
@@ -100,7 +102,12 @@ const Item = styled.button.attrs( props => {
     background .3s linear,
     color .3s linear;
 
-  border: none;
+  ${
+    ({ theme }) => css`
+      border: 1px ${ theme.primary.base } solid ;
+    `
+  }
+
   outline: none;
   appearance: none;
   cursor: pointer;
@@ -128,6 +135,13 @@ const Image = styled.img  .attrs( props => {
   }
 `
 const Watermark = styled.div`
+  ${
+    ({ hidden }) => {
+      console.log('hidden', hidden);
+
+      return hidden ? css`display: none` : css`display: inherit`
+    }
+  }
   ${ ({
     top,
     left,
@@ -142,9 +156,7 @@ const Watermark = styled.div`
       bottom: ${ bottom };
       `
     }
-  }
-
-  }
+  }}
 `
 
 class WatermarkPosition extends React.Component {
@@ -246,10 +258,31 @@ class WatermarkPosition extends React.Component {
           onClick= { this.changeGravity.bind(this, gravity) }
         >
         {
-          !active ? watermarkSrc ? '' :
-          <UploadButton
-            hidden={ true }
-            id={`browseWatermark${ index }`}
+          watermarkSrc && active ?
+            percent && percent < 100 ?
+              <Progress>
+                <ProgressCircular percent={ percent }/>
+                <Break/>
+              </Progress>
+              :
+              <div>
+                <Break/>
+                <Break/>
+                <RemoveButton
+                  onClick={ () => this.props.removeWatermark() }
+                  minWidth={ 20 }>
+                    X
+                </RemoveButton>
+              </div>
+              :''
+        }
+        {
+          !active ?
+            watermarkSrc ?
+              '' :
+            <UploadButton
+              hidden={ true }
+              id={`browseWatermark${ index }`}
             >
             <AddIcon/>
           </UploadButton> :
@@ -261,29 +294,16 @@ class WatermarkPosition extends React.Component {
               bottom={ bottom }
               transform={ transform }
             >
-            {
-              percent && percent < 100 ?
-              <RemoveButton
-                onClick={ () => this.props.removeWatermark() }
-                minWidth={ 20 }>
-                  X
-              </RemoveButton>
-              :
-              <div>
-                <RemoveButton
-                  onClick={ () => this.props.removeWatermark() }
-                  minWidth={ 20 }>
-                    X
-                </RemoveButton>
-              </div>
-            }
+
             {
               percent < 100 ?
               <Image width={ 60 } src={ watermarkSrc } opacity={ 0.3 } /> :
               <Image width={ 60 } src={ watermarkSrc } opacity={ 1 } />
             }
             </Watermark> :
-            <UploadButton id={`browseWatermark${ index }`}>
+            <UploadButton
+              id={`browseWatermark${ index }`}
+            >
               <AddIcon />
               <span>Watermark</span>
             </UploadButton>

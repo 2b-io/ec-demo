@@ -106,7 +106,7 @@ const SlideBar = ({
   return (
     <Wrapper>
       <Header>
-        <TextLine align="left">{ label }</TextLine>
+        <TextLine align="left" size={ "small" }>{ label }</TextLine>
         <div>
           <SliderInput
             value={ value }

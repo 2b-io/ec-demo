@@ -66,6 +66,13 @@ const Center = styled.div`
   max-width: 450px;
 `
 
+const Progress = styled.div`
+  max-height: 40px;
+  display: block;
+  position: absolute;
+  margin-left: 78px;
+`
+
 const WrapperIcon = styled.div`
   margin-top: 40px
 `
@@ -221,6 +228,15 @@ const ThumbnailPreview = styled.img.attrs( props => {
   width: 120px;
   height: 120px;
   object-fit: cover;
+  ${
+    ({ theme }) => css`
+      border: 1px ${ theme.primary.base } solid ;
+    `
+  }
+
+  ${
+    ({ opacity }) => css`opacity: ${ opacity }`
+  }
 `
 
 const Upload = styled.div`
@@ -437,7 +453,6 @@ class UploadForm extends React.Component {
     })
 
     plupWatermark.init()
-
     this.setState({
       plupWatermark
     })
@@ -503,9 +518,14 @@ class UploadForm extends React.Component {
     })
   }
 
-  resetPlupload(mimeType) {
+  resetPluploadImage(mimeType) {
     this.state.plupItems.destroy()
     this.uploadItems(MIME_FILE[ mimeType ])
+  }
+
+  resetPluploadWatermark(mimeType) {
+    this.state.plupWatermark.destroy()
+    this.uploadWatermark()
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -586,7 +606,7 @@ class UploadForm extends React.Component {
     const mimeType = event.target.value
 
     if (mimeType === 'zip') {
-      this.resetPlupload(mimeType)
+      this.resetPluploadImage(mimeType)
 
       this.setState({
         mimeType,
@@ -594,7 +614,7 @@ class UploadForm extends React.Component {
         imageFiles: {}
       })
     } else {
-      this.resetPlupload(mimeType)
+      this.resetPluploadImage(mimeType)
 
       this.setState({
         mimeType,
@@ -700,8 +720,14 @@ class UploadForm extends React.Component {
   }
 
   removeWatermark(file){
-    const { plupWatermark } = this.state
-    plupWatermark.removeFile(file)
+    // const { plupWatermark } = this.state
+    // plupWatermark.removeFile(file)
+    this.setState({
+      watermarkSrc:'',
+      templateFile:''
+    })
+
+    this.resetPluploadWatermark()
   }
 
   removeImage(file){
@@ -980,13 +1006,32 @@ class UploadForm extends React.Component {
         const imageFile = imageFiles[ image.id ]
         return (
           <div key={ index }>
-            <RemoveButton onClick={ this.removeImage.bind(this, imageFile) }>
-              X
-            </RemoveButton>
-            <ThumbnailPreview
-              src={ image.src }
-              onClick={ this.changeImagePreview.bind(this, image.src)}
-            />
+            {
+              imageFile.percent ?
+              <Progress>
+                <ProgressCircular percent={ imageFile.percent }/>
+                <Break/>
+              </Progress>
+              :
+              <RemoveButton onClick={ this.removeImage.bind(this, imageFile) }>
+                X
+              </RemoveButton>
+            }
+            {
+              imageFile.percent < 100 ?
+              <ThumbnailPreview
+                opacity={ 0.3 }
+                src={ image.src }
+                onClick={ this.changeImagePreview.bind(this, image.src)}
+              />
+              :
+              <ThumbnailPreview
+                opacity={ 1 }
+                src={ image.src }
+                onClick={ this.changeImagePreview.bind(this, image.src)}
+              />
+            }
+
           </div>
         )
       })
@@ -1167,6 +1212,9 @@ class UploadForm extends React.Component {
             </Config>
           </HorizonLine>
           <div>
+            <Break/>
+            <Break/>
+            <Break/>
             {
               <Collection>
                 <UploadButton id='browseFiles'>
