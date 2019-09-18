@@ -302,8 +302,8 @@ class WatermarkPosition extends React.Component {
 
             {
               percent < 100 ?
-              <Image width={ 60 } src={ watermarkSrc } opacity={ 0.3 } /> :
-              <Image width={ 60 } src={ watermarkSrc } opacity={ 1 } />
+              <Image height={ 76 } src={ watermarkSrc } opacity={ 0.3 } /> :
+              <Image height={ 76 } src={ watermarkSrc } opacity={ 1 } />
             }
             </Watermark> :
             <UploadButton

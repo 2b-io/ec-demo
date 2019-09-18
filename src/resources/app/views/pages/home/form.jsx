@@ -1004,6 +1004,28 @@ class UploadForm extends React.Component {
       .sort((image, nextImage) => nextImage.index - image.index)
       .map((image, index) => {
         const imageFile = imageFiles[ image.id ]
+        if (mimeType !== 'images') {
+          return (
+            <div key={ index }>
+              {
+                imageFile.percent ?
+                <Progress>
+                  <ProgressCircular percent={ imageFile.percent }/>
+                  <Break/>
+                </Progress>
+                :
+                <RemoveButton onClick={ this.removeImage.bind(this, imageFile) }>
+                  X
+                </RemoveButton>
+              }
+              {
+                imageFile.percent < 100 ?
+                  <ThumbnailPreview src={ iconZip } opacity={ 0.1 }/> :
+                  <ThumbnailPreview src={ iconZip } opacity={ 1 }/>
+              }
+            </div>
+          )
+        }
         return (
           <div key={ index }>
             {
@@ -1213,8 +1235,24 @@ class UploadForm extends React.Component {
           </HorizonLine>
           <div>
             <Break/>
-            <Break/>
-            <Break/>
+            <Config>
+              <FileType>
+                 <input
+                  type='radio'
+                  name='images'
+                  value='images'
+                  onChange={ this.changeMimeType }
+                  checked={ this.state.mimeType === 'images' ? true : false }/>Images
+                  &nbsp;
+                  &nbsp;
+                 <input
+                   type='radio'
+                   name='zip'
+                   value='zip'
+                   onChange={ this.changeMimeType }
+                   checked={ this.state.mimeType === 'zip' ? true : false }/>Zip
+               </FileType>
+             </Config>
             {
               <Collection>
                 <UploadButton id='browseFiles'>
@@ -1222,10 +1260,7 @@ class UploadForm extends React.Component {
                     <AddIcon />
                   </WrapperIcon>
                 </UploadButton>
-               {
-                mimeType === 'images' ?
-                  thumbnails : <ThumbnailPreview src={ iconZip }/>
-                }
+                  { thumbnails }
                </Collection>
             }
           </div>
