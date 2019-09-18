@@ -259,12 +259,13 @@ class WatermarkPosition extends React.Component {
         >
         {
           watermarkSrc && active ?
-            percent && percent < 100 ?
+            percent ?
               <Progress>
                 <ProgressCircular percent={ percent }/>
                 <Break/>
               </Progress>
               :
+              percent < 100 ?
               <div>
                 <Break/>
                 <Break/>
@@ -273,7 +274,11 @@ class WatermarkPosition extends React.Component {
                   minWidth={ 20 }>
                     X
                 </RemoveButton>
-              </div>
+              </div> :
+              <Progress>
+                <ProgressCircular percent={ percent }/>
+                <Break/>
+              </Progress>
               :''
         }
         {
