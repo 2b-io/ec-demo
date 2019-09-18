@@ -90,7 +90,7 @@ const Track = styled.div.attrs(props => ({
 
       & > ${ Track } {
         transform: translate3d(0, 0, 0);
-        transition: width .2s;
+        /* transition: width .5s; */
       }
     `
   }
@@ -106,7 +106,7 @@ const SlideBar = ({
   return (
     <Wrapper>
       <Header>
-        <TextLine align="left">{ label }</TextLine>
+        <TextLine align="left" size={ "small" }>{ label }</TextLine>
         <div>
           <SliderInput
             value={ value }

@@ -1,22 +1,20 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import plupload from 'plupload'
-
 import styled, { css } from 'styled-components'
 
 import imageSize from 'app/services/image-size'
 import { mapDispatch } from 'app/services/redux-helpers'
 import { actions, selectors } from 'app/state/interface'
-
 import defaultPreviewImage from 'img/image-preview.jpg'
 import defaultPreviewWatermark from 'img/watermark.png'
+import { AddIcon } from 'app/ui/elements/icons'
 import iconZip from 'img/icon-zip.png'
 
 import {
   Container,
   Break,
   PrimaryButton,
-  ProgressBar,
   ProgressCircular,
   PlainButton,
   Slider
@@ -28,6 +26,74 @@ import WatermarkPosition from './watermark-config/position'
 import WatermarkPadding from './watermark-config/padding'
 import Preview from './preview'
 
+const RemoveButton = styled.div`
+  cursor: pointer;
+  position: absolute;
+  appearance: none;
+  border: none;
+  outline: none;
+  height: 22px;
+  width: 22px;
+  opacity: 0.5;
+  border-radius: 20px;
+  margin-left: 96px;
+  text-align: center;
+
+  transition:
+    background .3s linear,
+    color .3s linear;
+
+  display: block;
+
+  ${
+    ({ theme }) =>
+      css`
+        background: ${ theme.error.base };
+        color: ${ theme.error.on.base };
+      `
+  }
+
+  &:focus {
+    outline: none;
+  }
+  &:hover {
+    opacity: 1;
+  }
+`
+const Center = styled.div`
+  display: block;
+  margin: 0 auto;
+  max-width: 450px;
+`
+
+const Progress = styled.div`
+  max-height: 40px;
+  display: block;
+  position: absolute;
+  margin-left: 78px;
+`
+
+const WrapperIcon = styled.div`
+  margin-top: 40px
+`
+
+const UploadButton = styled.div`
+  width: 120px;
+  height: 120px;
+
+  ${
+    ({ theme }) => {
+      return css`
+        :hover {
+          cursor: pointer;
+          color: ${ theme.secondary.on.base };
+          background-color: ${ theme.primary.base };
+        }
+        border: ${ theme.primary.base } 1px solid;
+      `;
+    }
+  }
+`
 const Marriage = styled.button`
   ${
     ({ active, theme }) => active ?
@@ -58,7 +124,6 @@ const Marriage = styled.button`
 
 const WrapperItem = styled.div`
   display: block;
-  padding-top: 32px;
 `
 const Config = styled.div`
   text-align: center;
@@ -69,11 +134,18 @@ const ActionButton = styled.div`
 `
 
 const Session = styled.div`
-  padding-top: 20px;
-  padding-bottom: 20px;
   display: grid;
   grid-gap: 8px;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+`
+const HorizonLine = styled.div`
+  ${
+    ({ theme }) => {
+      return css`
+        border-right: 1px ${ theme.primary.base } solid;
+      `
+    }
+  }
 `
 
 const SliderEl = styled.div`
@@ -140,9 +212,12 @@ const ImageUpload = styled.div`
 
 const Collection = styled.div`
   padding-top: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
   display: grid;
   grid-gap: 8px;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(7, 1fr);
   max-height: 400px;
   overflow-y: scroll;
 `
@@ -150,8 +225,18 @@ const Collection = styled.div`
 const ThumbnailPreview = styled.img.attrs( props => {
   src: props.src
 })`
-  width: 100px;
+  width: 120px;
+  height: 120px;
   object-fit: cover;
+  ${
+    ({ theme }) => css`
+      border: 1px ${ theme.primary.base } solid ;
+    `
+  }
+
+  ${
+    ({ opacity }) => css`opacity: ${ opacity }`
+  }
 `
 
 const Upload = styled.div`
@@ -200,10 +285,26 @@ class UploadForm extends React.Component {
       modeResize: 'keepRatioPercent',
       marriageActive: true,
       widthPercentWatermark: 100,
-      heightPercentWatermark: 100
+      heightPercentWatermark: 100,
+      isPopoverOpen: false,
+      nodeData: [{
+        isActive: true,
+        isComplete: false,
+        label: "Upload Images",
+        description: "Upload Images"
+      },{
+        isActive: false,
+        isComplete: false,
+        label: "Config Images",
+        description: "Config Images"
+      },{
+        isActive: false,
+        isComplete: false,
+        label: "Get Images",
+        description: "Get Images"
+      }]
     }
 
-    this.imageDemo = React.createRef()
     this.changeMimeType = this.changeMimeType.bind(this)
   }
 
@@ -292,8 +393,18 @@ class UploadForm extends React.Component {
 
   uploadWatermark() {
     const plupWatermark = new plupload.Uploader({
-      browse_button: 'browseWatermark',
-      max_retries: 3,
+      browse_button: [
+        'browseWatermark0',
+        'browseWatermark1',
+        'browseWatermark2',
+        'browseWatermark3',
+        'browseWatermark4',
+        'browseWatermark5',
+        'browseWatermark6',
+        'browseWatermark7',
+        'browseWatermark8',
+      ],
+      max_retries: 3,
       chunk_size: '200kb',
       urlstream_upload: true,
       init: {
@@ -315,7 +426,10 @@ class UploadForm extends React.Component {
           })
         },
         FilesRemoved: (uploader ,files) => {
-          this.setState({ watermarkSrc:'' })
+          this.setState({
+            watermarkSrc:'',
+            templateFile:''
+          })
         },
         QueueChanged: (queue) => {
           this.setState({ templateFile: queue.files[0] })
@@ -339,7 +453,6 @@ class UploadForm extends React.Component {
     })
 
     plupWatermark.init()
-
     this.setState({
       plupWatermark
     })
@@ -348,7 +461,7 @@ class UploadForm extends React.Component {
   uploadItems(mimeTypes) {
     const plupItems = new plupload.Uploader({
       browse_button: 'browseFiles',
-      max_retries: 3,
+      max_retries: 3,
       chunk_size: '200kb',
       init: {
         FilesAdded: (uploader, files) => {
@@ -358,7 +471,11 @@ class UploadForm extends React.Component {
               this.setState({
                 listImagePreview: {
                   ...this.state.listImagePreview,
-                  [ file.id ]: reader.result
+                  [ file.id ]: {
+                    id: file.id,
+                    index: new Date().getTime(),
+                    src: reader.result
+                  }
                 }
               })
             }
@@ -366,7 +483,9 @@ class UploadForm extends React.Component {
           })
         },
         QueueChanged: (queue) => {
-          this.setState({ imageFiles: arrToMap(queue.files, 'id') })
+          this.setState({
+            imageFiles: arrToMap(queue.files, 'id')
+          })
         },
         FilesRemoved: (uploader ,files) => {
           const listImagePreview = files.reduce((state, file) => {
@@ -399,14 +518,30 @@ class UploadForm extends React.Component {
     })
   }
 
-  resetPlupload(mimeType) {
+  resetPluploadImage(mimeType) {
     this.state.plupItems.destroy()
     this.uploadItems(MIME_FILE[ mimeType ])
   }
 
+  resetPluploadWatermark(mimeType) {
+    this.state.plupWatermark.destroy()
+    this.uploadWatermark()
+  }
+
   async componentDidUpdate(prevProps, prevState) {
-    const lastImageSrc = Object.values(prevState.listImagePreview)[0]
-    const imageSrc = Object.values(this.state.listImagePreview)[0]
+
+    let lastImageSrc = ''
+    let imageSrc = ''
+    const totalLastImages = Object.values(prevState.listImagePreview).length
+    const totalImages = Object.values(this.state.listImagePreview).length
+
+    if (totalLastImages) {
+      lastImageSrc = Object.values(prevState.listImagePreview)[ totalLastImages - 1 ].src
+    }
+
+    if (totalImages) {
+      imageSrc = Object.values(this.state.listImagePreview)[ totalImages - 1 ].src
+    }
 
     if (lastImageSrc !== imageSrc || prevState.watermarkSrc !== this.state.watermarkSrc) {
       let { width: widthOriginImage, height: heightOriginImage } = await imageSize(imageSrc)
@@ -471,7 +606,7 @@ class UploadForm extends React.Component {
     const mimeType = event.target.value
 
     if (mimeType === 'zip') {
-      this.resetPlupload(mimeType)
+      this.resetPluploadImage(mimeType)
 
       this.setState({
         mimeType,
@@ -479,7 +614,7 @@ class UploadForm extends React.Component {
         imageFiles: {}
       })
     } else {
-      this.resetPlupload(mimeType)
+      this.resetPluploadImage(mimeType)
 
       this.setState({
         mimeType,
@@ -513,18 +648,18 @@ class UploadForm extends React.Component {
     const ratio = (_widthOriginImage / _heightOriginImage)
 
     if (ratio < 1) {
-      _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 300))
+      _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 450))
       return {
         widthImagePreivew: _widthOriginImage,
-        heightImagePreivew: 300,
+        heightImagePreivew: 450,
       }
     }
 
-    _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 300))
+    _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 450))
 
     return {
       heightImagePreivew: _heightOriginImage,
-      widthImagePreivew: 300,
+      widthImagePreivew: 450,
     }
   }
 
@@ -536,24 +671,24 @@ class UploadForm extends React.Component {
     const ratio = (_widthOriginImage / _heightOriginImage)
 
     if (ratio < 1) {
-      _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 300))
+      _widthOriginImage = Math.round(_widthOriginImage / (_heightOriginImage / 450))
       let widthWatermark = Math.round(_widthOriginImage * (percentWatermark / 100))
       let heightWatermark = Math.round(heightOriginWatermark * (widthWatermark / widthOriginWatermark))
 
       return {
         widthImagePreivew: _widthOriginImage,
-        heightImagePreivew: 300,
+        heightImagePreivew: 450,
         widthWatermark,
         heightWatermark
       }
     } else {
-      _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 300))
+      _heightOriginImage = Math.round( _heightOriginImage / (_widthOriginImage / 450))
       let heightWatermark = Math.round(_heightOriginImage * (percentWatermark / 100))
       let widthWatermark = Math.round(widthOriginWatermark * (heightWatermark / heightOriginWatermark))
 
       return {
         heightImagePreivew: _heightOriginImage,
-        widthImagePreivew: 300,
+        widthImagePreivew: 450,
         widthWatermark,
         heightWatermark
       }
@@ -585,8 +720,14 @@ class UploadForm extends React.Component {
   }
 
   removeWatermark(file){
-    const { plupWatermark } = this.state
-    plupWatermark.removeFile(file)
+    // const { plupWatermark } = this.state
+    // plupWatermark.removeFile(file)
+    this.setState({
+      watermarkSrc:'',
+      templateFile:''
+    })
+
+    this.resetPluploadWatermark()
   }
 
   removeImage(file){
@@ -833,7 +974,8 @@ class UploadForm extends React.Component {
       modeResize,
       marriageActive,
       originSizeWatermark,
-      mimeType
+      mimeType,
+      isPopoverOpen
     } = this.state
 
     const watermarkUpload = watermarkSrc.length ? <ImageUpload >
@@ -858,73 +1000,64 @@ class UploadForm extends React.Component {
     :
     <div></div>
 
-    const filesUpload = Object.values(imageFiles).map((file, index) => {
-      return (
-        <ImageUpload key = { index } >
-          <p>{ index }</p>
-          {
-            file.percent !== 0 ?
-              <ProgressCircular
-                percent={ file.percent }
-                />
-                :
-                <PrimaryButton
-                onClick={ this.removeImage.bind(this, file) }
-                minWidth={ 40 }>
-                  X
-                </PrimaryButton>
-          }
-          {
-            listImagePreview[ file.id ] ?
-              this.state.mimeType === 'images' ?
-              <Thumbnail src={ listImagePreview[ file.id ] }/> :
-              <Thumbnail src={ iconZip }/> : <div></div>
-          }
-          <p>
-            { file.name } { plupload.formatSize(file.size) }
-          </p>
-        </ImageUpload>
-      )
-    })
+    const thumbnails = Object.values(listImagePreview)
+      .sort((image, nextImage) => nextImage.index - image.index)
+      .map((image, index) => {
+        const imageFile = imageFiles[ image.id ]
+        return (
+          <div key={ index }>
+            {
+              imageFile.percent ?
+              <Progress>
+                <ProgressCircular percent={ imageFile.percent }/>
+                <Break/>
+              </Progress>
+              :
+              <RemoveButton onClick={ this.removeImage.bind(this, imageFile) }>
+                X
+              </RemoveButton>
+            }
+            {
+              imageFile.percent < 100 ?
+              <ThumbnailPreview
+                opacity={ 0.3 }
+                src={ image.src }
+                onClick={ this.changeImagePreview.bind(this, image.src)}
+              />
+              :
+              <ThumbnailPreview
+                opacity={ 1 }
+                src={ image.src }
+                onClick={ this.changeImagePreview.bind(this, image.src)}
+              />
+            }
 
-    const thumbnails = Object.values(listImagePreview).map((image, index) => {
-      return (
-        <ThumbnailPreview
-          src={ image }
-          key={ index }
-          onClick={ this.changeImagePreview.bind(this, image)}
-        />
-      )
-    })
+          </div>
+        )
+      })
+
     return (
       <WrapperItem>
         <Session>
-          <div>
-            <Upload>
-              <LabelItem>Watermark</LabelItem>
-              <PrimaryButton
-                id="browseWatermark"
-                free={ true }
-              >
-                Browse file...
-              </PrimaryButton>
-            </Upload>
-            <ListUpload>
-              { watermarkUpload }
-            </ListUpload>
-          </div>
-          <div>
+          <HorizonLine>
+            <Break />
+            <Break />
+            <Config>
+              <LabelItem>Position</LabelItem>
+            </Config>
+            <Break/>
+            <Config>
+              <WatermarkPosition
+                handleGravity={ this.handleGravity.bind(this) }
+                watermarkSrc={ watermarkSrc }
+                removeWatermark={ this.removeWatermark.bind(this, templateFile) }
+                percent={ templateFile.percent }
+              />
+            </Config>
+          </HorizonLine>
           <Config>
-            <LabelItem>Position</LabelItem>
-          </Config>
-          <Break/>
-          <Config>
-            <WatermarkPosition
-              handleGravity={ this.handleGravity.bind(this) }
-            />
-          </Config>
-          </div>
-          <Config>
+            <Break />
+            <Break />
             <LabelItem>Preview</LabelItem>
             <Break/>
             <Preview
@@ -943,44 +1076,19 @@ class UploadForm extends React.Component {
               widthWatermarkByRatio={ this.state.widthWatermarkByRatio }
               heightWatermarkByRatio={ this.state.heightWatermarkByRatio }
               modeResize={ this.state.modeResize }
-              heightImagePreivew = { this.state.heightImagePreivew }
-              widthImagePreivew = { this.state.widthImagePreivew }
+              heightImagePreivew= { this.state.heightImagePreivew }
+              widthImagePreivew= { this.state.widthImagePreivew }
             />
           </Config>
         </Session>
         <Session>
-          <div>
-            <Upload>
-              <LabelItem>Images</LabelItem>
-              <PrimaryButton
-                id="browseFiles"
-                >
-                Browse Files...
-              </PrimaryButton>
-              <FileType>
-                <input
-                  type='radio'
-                  name='images'
-                  value='images'
-                  onChange={ this.changeMimeType }
-                  checked={ this.state.mimeType === 'images' ? true : false }/>Multiple Files
-              </FileType>
-              <FileType>
-                <input
-                  type='radio'
-                  name='zip'
-                  value='zip'
-                  onChange={ this.changeMimeType }
-                  checked={ this.state.mimeType === 'zip' ? true : false }/>Zip
-              </FileType>
-            </Upload>
-            <ListUpload>
-              { filesUpload }
-            </ListUpload>
-          </div>
+        <HorizonLine>
           <Config>
+            <Break/>
+            <Break/>
             <LabelItem>Padding</LabelItem>
             <Break/>
+            <div>
               <WatermarkPadding
                 handlePadding={ this.changePadding.bind(this) }
                 gravity={ this.state.gravity }
@@ -989,6 +1097,7 @@ class UploadForm extends React.Component {
                 paddingRight={ this.state.paddingRight }
                 paddingBottom={ this.state.paddingBottom }
               />
+            </div>
             <Break/>
             <Break/>
             <LabelItem>Resize Watermark</LabelItem>
@@ -1015,6 +1124,7 @@ class UploadForm extends React.Component {
               <div></div>
             }
             <Break/>
+            <Center>
               { modeResize === 'keepRatioPercent' ? <div>
                 <Slider
                   label="Ratio Watermark By Percent"
@@ -1025,91 +1135,98 @@ class UploadForm extends React.Component {
                   onChange={ this.changeRatioWatermark.bind(this) }
                   unit="%"
                 />
-                </div>
-                :
+              </div>:
                 modeResize === 'noKeepRatioPercent' ? <div>
-                <LabelItem>Ratio Watermark By Percent</LabelItem>
-                  <Break/>
+                  <LabelItem>Ratio Watermark By Percent</LabelItem>
+                    <Break/>
+                    <div>
+                      <Grid columns={ 2 }>
+                        <div>
+                          <label>Width </label>
+                          <Input
+                            type='number'
+                            name='widthPercentWatermark'
+                            value={ this.state.widthPercentWatermark }
+                            onChange={ this.changePercentWatermark.bind(this) }
+                          />
+                        </div>
+                        <div>
+                          <label>Height </label>
+                          <Input
+                            name='heightPercentWatermark'
+                            type='number'
+                            value={ this.state.heightPercentWatermark }
+                            onChange={ this.changePercentWatermark.bind(this) }
+                          />
+                          <label>%</label>
+                        </div>
+                      </Grid>
+                    </div>
+                  </div>
+                  :
                   <div>
-                    <Grid columns={ 2 }>
+                    <LabelItem>Ratio Watermark By Pixel</LabelItem>
+                    <Break/>
+                    <Grid columns={ 3 }>
                       <div>
                         <label>Width </label>
                         <Input
                           type='number'
-                          name='widthPercentWatermark'
-                          value={ this.state.widthPercentWatermark }
-                          onChange={ this.changePercentWatermark.bind(this) }
+                          name='widthPixelWatermark'
+                          value={ this.state.widthWatermark }
+                          onChange={ this.changeSizeWatermark.bind(this) }
                         />
+                        <label>px</label>
                       </div>
+                      <Marriage
+                        onClick={ this.changeModeResizePixel.bind(this) }
+                        active={ marriageActive }
+                        >
+                        &#9901;
+                      </Marriage>
                       <div>
                         <label>Height </label>
                         <Input
-                          name='heightPercentWatermark'
+                          name='heightPixelWatermark'
                           type='number'
-                          value={ this.state.heightPercentWatermark }
-                          onChange={ this.changePercentWatermark.bind(this) }
+                          value={ this.state.heightWatermark }
+                          onChange={ this.changeSizeWatermark.bind(this) }
                         />
-                        <label>%</label>
+                        <label>px</label>
                       </div>
                     </Grid>
                   </div>
-                </div>
-                :
-                <div>
-                  <LabelItem>Ratio Watermark By Pixel</LabelItem>
-                  <Break/>
-                  <Grid columns={ 3 }>
-                    <div>
-                      <label>Width </label>
-                      <Input
-                        type='number'
-                        name='widthPixelWatermark'
-                        value={ this.state.widthWatermark }
-                        onChange={ this.changeSizeWatermark.bind(this) }
-                      />
-                      <label>px</label>
-                    </div>
-                    <Marriage
-                      onClick={ this.changeModeResizePixel.bind(this) }
-                      active={ marriageActive }
-                      >
-                      &#9901;
-                    </Marriage>
-                    <div>
-                      <label>Height </label>
-                      <Input
-                        name='heightPixelWatermark'
-                        type='number'
-                        value={ this.state.heightWatermark }
-                        onChange={ this.changeSizeWatermark.bind(this) }
-                      />
-                      <label>px</label>
-                    </div>
-                    </Grid>
-                </div>
-              }
-            <Break/>
-            <Slider
-              label="Opacity"
-              name="Opacity"
-              min="0"
-              max="100"
-              value={ this.state.opacity }
-              onChange={ this.changeOpacity.bind(this) }
-              unit="%"
-            />
-            <Break/>
-          </Config>
+                }
+                <Break/>
+                <Slider
+                  label="Opacity"
+                  name="Opacity"
+                  min="0"
+                  max="100"
+                  value={ this.state.opacity }
+                  onChange={ this.changeOpacity.bind(this) }
+                  unit="%"
+                />
+              </Center>
+              <Break/>
+            </Config>
+          </HorizonLine>
           <div>
+            <Break/>
+            <Break/>
+            <Break/>
             {
-             Object.values(imageFiles).length > 0 ?
               <Collection>
+                <UploadButton id='browseFiles'>
+                  <WrapperIcon>
+                    <AddIcon />
+                  </WrapperIcon>
+                </UploadButton>
                {
                 mimeType === 'images' ?
                   thumbnails : <ThumbnailPreview src={ iconZip }/>
                 }
-               </Collection> :
-               <div></div>
+               </Collection>
             }
           </div>
         </Session>
