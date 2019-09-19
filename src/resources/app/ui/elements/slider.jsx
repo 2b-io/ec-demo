@@ -24,6 +24,7 @@ const Header = styled.div`
     min-height: 0;
   };
   grid-template-columns: 1fr minmax(20px, 70px);
+  padding: 8px;
 `
 const Range = styled.input.attrs(props => ({
   type: 'range'
