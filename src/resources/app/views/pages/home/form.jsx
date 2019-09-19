@@ -1297,10 +1297,12 @@ class UploadForm extends React.Component {
           </div>
         </Session>
         <ActionButton>
-          <PrimaryButton
-            onClick={ this.uploadAllFiles.bind(this) }>
-            Upload
-          </PrimaryButton>
+          {
+            !this.props.linkDownload && <PrimaryButton
+              onClick={ this.uploadAllFiles.bind(this) }>
+              Upload
+            </PrimaryButton>
+          }
           &nbsp;
           &nbsp;
           {
