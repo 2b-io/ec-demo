@@ -1,6 +1,8 @@
 import React from 'react'
 import styled, { css } from 'styled-components'
-import introductionImage from 'img/introduction.png'
+import normalizeData from 'img/normalize-data.jpg'
+import modifyData from 'img/modify-data.jpg'
+import integrateSystem from 'img/integrate-system.jpg'
 
 import { PrimaryButton, Break, ProgressStep } from 'app/ui/elements'
 
@@ -41,19 +43,19 @@ class StepComponent extends React.Component {
           isActive: false,
           isComplete: true,
           label: "Normalize",
-          description: "Normalize"
+          description: <img src={ normalizeData } width={ 550 }/>
         },
         1: {
           isActive: false,
           isComplete: true,
           label: "Modify",
-          description: "Modify"
+          description: <img src={ modifyData } width={ 550 }/>
         },
         2: {
           isActive: false,
           isComplete: false,
           label: "Integrate",
-          description: "Integrate"
+          description: <img src={ integrateSystem } width={ 550 }/>
         }
       }
     }
@@ -85,19 +87,19 @@ class StepComponent extends React.Component {
         isActive: false,
         isComplete: false,
         label: "Normalize",
-        description: "Normalize"
+        description: <img src={ normalizeData } width={ 350 }/>
       },
       1: {
         isActive: false,
         isComplete: false,
         label: "Modify",
-        description: "Modify"
+        description: <img src={ modifyData } width={ 550 }/>
       },
       2: {
         isActive: false,
         isComplete: false,
         label: "Integrate",
-        description: "Integrate"
+        description: <img src={ integrateSystem } width={ 550 }/>
       }
     }
 

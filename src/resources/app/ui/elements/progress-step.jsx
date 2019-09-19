@@ -7,18 +7,18 @@ import iconUpload from 'img/icon-upload.png'
 
 const PopoverDescription = styled.div`
   background: #fff;
-  border-radius: 2px;
+  border-radius: 5px;
   display: inline-block;
   margin: 0px 10px 10px 10px;
   position: relative;
-  width: 550px;
-  height: 280px;
+  width: 400px;
+  height: 300px;
 
   box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 0px rgba(0, 0, 0, 0);
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
 `
 
-const PopoverContent = styled.p`
+const PopoverContent = styled.div`
   padding: 16px;
   text-align: center;
 `
@@ -67,7 +67,7 @@ const NodeStep = styled.li`
   }
 
   ${
-    ({ isComplete }) => css`
+    ({ isComplete, theme }) => css`
         color: #007fff;
 
         :before, :after {
@@ -79,8 +79,8 @@ const NodeStep = styled.li`
 
 
   ${
-    ({ isActive }) => isActive ? css`
-    color: #2ECC71;
+    ({ isActive, theme }) => isActive ? css`
+    color: ${ theme.secondary.base };;
 
     :before {
       color: #FFF;
@@ -119,7 +119,7 @@ class ProgressStepComponent extends React.Component {
 
     this.props.changeStepActive(id)
   }
-  
+
   render() {
     const { isPopoverOpenid } = this.state
     const { nodeData } = this.props

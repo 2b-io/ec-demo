@@ -21,6 +21,7 @@ const ImageIntro = styled.div`
   margin: auto;
   padding-top: 8px;
   max-width: 1200px;
+  max-height: 600px;
 `
 const Description = styled.div`
   margin: auto;
@@ -49,7 +50,7 @@ const HeaderComponent = () => {
           <PrimaryButton>Lear more</PrimaryButton>
         </Description>
         <ImageIntro>
-          <img src={ introductionImage } />
+          <img src={ introductionImage } height={ 600 } />
         </ImageIntro>
       </Wrapper>
     </Introduction>
