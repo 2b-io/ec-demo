@@ -523,7 +523,7 @@ class UploadForm extends React.Component {
     this.uploadItems(MIME_FILE[ mimeType ])
   }
 
-  resetPluploadWatermark(mimeType) {
+  resetPluploadWatermark() {
     this.state.plupWatermark.destroy()
     this.uploadWatermark()
   }
@@ -585,6 +585,10 @@ class UploadForm extends React.Component {
         widthWatermarkByRatio,
         heightWatermarkByRatio
       })
+    }
+
+    if (this.state.watermarkSrc === '' && prevState.watermarkSrc !== this.state.watermarkSrc) {
+      this.uploadWatermark()
     }
   }
 
@@ -720,14 +724,10 @@ class UploadForm extends React.Component {
   }
 
   removeWatermark(file){
-    // const { plupWatermark } = this.state
-    // plupWatermark.removeFile(file)
-    this.setState({
-      watermarkSrc:'',
-      templateFile:''
-    })
+    const { plupWatermark } = this.state
+    plupWatermark.removeFile(file)
 
-    this.resetPluploadWatermark()
+    this.state.plupWatermark.destroy()
   }
 
   removeImage(file){

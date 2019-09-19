@@ -137,8 +137,6 @@ const Image = styled.img  .attrs( props => {
 const Watermark = styled.div`
   ${
     ({ hidden }) => {
-      console.log('hidden', hidden);
-
       return hidden ? css`display: none` : css`display: inherit`
     }
   }
