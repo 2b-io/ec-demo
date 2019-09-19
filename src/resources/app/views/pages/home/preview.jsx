@@ -218,7 +218,10 @@ class PreviewImage extends React.Component {
 
     const widthWatermarkPreview = widthWatermarkByRatio ? widthWatermarkByRatio : widthWatermark
     const heightWatermarkPreview = heightWatermarkByRatio ? heightWatermarkByRatio : heightWatermark
-
+    console.log('widthWatermarkByRatio', widthWatermarkByRatio);
+    console.log('heightWatermarkByRatio', heightWatermarkByRatio);
+    console.log('heightWatermark', heightWatermark);
+    console.log('widthWatermark', widthWatermark);
     return (
       <Wrapper>
         <Preview>

@@ -28,6 +28,7 @@ import Preview from './preview'
 
 const RemoveButton = styled.div`
   cursor: pointer;
+  z-index: 10;
   position: absolute;
   appearance: none;
   border: none;
@@ -306,6 +307,7 @@ class UploadForm extends React.Component {
     }
 
     this.changeMimeType = this.changeMimeType.bind(this)
+    this.removeImage = this.removeImage.bind(this)
   }
 
   uploadAllFiles() {
@@ -731,6 +733,7 @@ class UploadForm extends React.Component {
   }
 
   removeImage(file){
+    console.log('remove file');
     const { plupItems } = this.state
     plupItems.removeFile(file)
   }
@@ -761,9 +764,10 @@ class UploadForm extends React.Component {
       }
 
       if (modeResize === 'noKeepRatioPercent') {
+        const { widthImagePreivew, heightImagePreivew } = this.ratioImagePreview(widthOriginImage, heightOriginImage)
         this.setState({
-          widthWatermark: Math.round(widthOriginImage * (widthPercentWatermark / 100)),
-          heightWatermark: Math.round(heightOriginImage * (heightPercentWatermark / 100)),
+          widthWatermark: Math.round( widthPercentWatermark * (widthImagePreivew / 100)),
+          heightWatermark: Math.round(heightPercentWatermark * (heightImagePreivew / 100)),
           imageSrc: image
         })
       }
@@ -818,6 +822,20 @@ class UploadForm extends React.Component {
       })
 
       return
+    }
+
+    if (e.target.value === 'noKeepRatioPercent') {
+      const {
+        widthPercentWatermark,
+        heightPercentWatermark,
+        widthImagePreivew,
+        heightImagePreivew
+      } = this.state
+      
+      this.setState({
+        widthWatermark: Math.round( widthPercentWatermark * (widthImagePreivew / 100)),
+        heightWatermark: Math.round(heightPercentWatermark * (heightImagePreivew / 100)),
+      })
     }
 
     const {
@@ -946,19 +964,19 @@ class UploadForm extends React.Component {
 
   changePercentWatermark(e){
     const percentWatermark = e.target.value
-    const  widthOriginImage = this.state.widthOriginImage || 600
-    const  heightOriginImage = this.state.heightOriginImage || 600
+    const  widthImagePreivew = this.state.widthImagePreivew || 450
+    const  heightImagePreivew = this.state.heightImagePreivew || 450
 
     if ( e.target.name === 'widthPercentWatermark') {
       this.setState({
-        widthWatermark: Math.round(widthOriginImage * (percentWatermark / 100)),
+        widthWatermark: Math.round(widthImagePreivew * (percentWatermark / 100)),
         [ e.target.name ] : e.target.value
       })
     }
 
     if (e.target.name === 'heightPercentWatermark') {
       this.setState({
-        heightWatermark: Math.round(heightOriginImage * (percentWatermark / 100)),
+        heightWatermark: Math.round(heightImagePreivew * (percentWatermark / 100)),
         [ e.target.name ] : e.target.value
       })
     }
@@ -978,31 +996,10 @@ class UploadForm extends React.Component {
       isPopoverOpen
     } = this.state
 
-    const watermarkUpload = watermarkSrc.length ? <ImageUpload >
-      <p>1</p>
-      {
-        templateFile.percent !== 0 ?
-          <ProgressCircular
-            percent={ templateFile.percent }
-            />
-            :
-          <PrimaryButton
-            onClick={ this.removeWatermark.bind(this, templateFile) }
-            minWidth={ 20 }>
-              X
-          </PrimaryButton>
-      }
-      <Thumbnail src={ watermarkSrc }/>
-      <p>
-        { templateFile.name } { plupload.formatSize(templateFile.size) }
-      </p>
-    </ImageUpload>
-    :
-    <div></div>
-
     const thumbnails = Object.values(listImagePreview)
       .sort((image, nextImage) => nextImage.index - image.index)
       .map((image, index) => {
+
         const imageFile = imageFiles[ image.id ]
         if (mimeType !== 'images') {
           return (
@@ -1014,7 +1011,7 @@ class UploadForm extends React.Component {
                   <Break/>
                 </Progress>
                 :
-                <RemoveButton onClick={ this.removeImage.bind(this, imageFile) }>
+                <RemoveButton onClick={ () => this.removeImage(imageFile) }>
                   X
                 </RemoveButton>
               }
@@ -1035,7 +1032,7 @@ class UploadForm extends React.Component {
                 <Break/>
               </Progress>
               :
-              <RemoveButton onClick={ this.removeImage.bind(this, imageFile) }>
+              <RemoveButton onClick={ () => this.removeImage(imageFile) }>
                 X
               </RemoveButton>
             }
@@ -1171,6 +1168,7 @@ class UploadForm extends React.Component {
                             value={ this.state.widthPercentWatermark }
                             onChange={ this.changePercentWatermark.bind(this) }
                           />
+                          <label>%</label>
                         </div>
                         <div>
                           <label>Height </label>
