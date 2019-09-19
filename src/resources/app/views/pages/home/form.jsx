@@ -8,7 +8,7 @@ import { mapDispatch } from 'app/services/redux-helpers'
 import { actions, selectors } from 'app/state/interface'
 import defaultPreviewImage from 'img/image-preview.jpg'
 import defaultPreviewWatermark from 'img/watermark.png'
-import { AddIcon } from 'app/ui/elements/icons'
+import { AddIcon, DownloadIcon, RefreshIcon } from 'app/ui/elements/icons'
 import iconZip from 'img/icon-zip.png'
 import iconLoading from 'img/loading.gif'
 
@@ -16,6 +16,7 @@ import {
   Container,
   Break,
   PrimaryButton,
+  ErrorButton,
   ProgressCircular,
   PlainButton,
   Slider,
@@ -62,6 +63,29 @@ const RemoveButton = styled.div`
   &:hover {
     opacity: 1;
   }
+`
+const PopupDownload = styled.div`
+  display: block;
+  text-align: center;
+  height: 450px;
+`
+const IconLoading = styled.img.attrs( props => {
+  src: props.src;
+  width: props.width;
+})`
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+`
+const DownloadButton = styled.div`
+  position: absolute;
+  margin: auto;
+  top: 50%;
+  left: 0;
+  right: 0;
 `
 const Center = styled.div`
   display: block;
@@ -366,10 +390,6 @@ class UploadForm extends React.Component {
       widthWatermark,
       percentWatermark
     )
-
-    this.setState({
-      isProgress: true
-    })
   }
 
   changePadding(padding) {
@@ -469,6 +489,10 @@ class UploadForm extends React.Component {
         UploadComplete: (uploader, files) => {
           if (files.length) {
             this.props.uploadFilesCompleted('UPLOAD_TEMPLATE_COMPLETED')
+            this.setState({
+              isProgress: true,
+              isActiveDialog: true
+            })
           }
         }
       },
@@ -1311,15 +1335,37 @@ class UploadForm extends React.Component {
           }
 
           {
-            (!this.props.linkDownload && this.state.isProgress) && <img src={ iconLoading } width={ 100 }/>
-          }
-
-          {
-            this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
-                Download
-              </PrimaryButton>
+            (this.state.isProgress) &&
+              <Dialog isActive={ this.state.isActiveDialog }
+              content={() => <PopupDownload>
+                  {
+                    !this.props.linkDownload && <IconLoading src={ iconLoading } width={ 100 }/>
+                  }
+                  {
+                    this.props.linkDownload && <DownloadButton>
+                      <PrimaryButton onClick={ this.downloadFile.bind(this) }>
+                        Download
+                      </PrimaryButton>
+                      	&nbsp;
+                      	&nbsp;
+                      	&nbsp;
+                      	&nbsp;
+                      	&nbsp;
+                      <ErrorButton onClick={ () =>
+                          {
+                            this.setState({ isActiveDialog: false })
+                            location.reload()
+                          }
+                        }>
+                        Reload
+                      </ErrorButton>
+                      </DownloadButton>
+                  }
+                </PopupDownload>
+              }/>
           }
         </ActionButton>
+
       </WrapperItem>
     )
   }
