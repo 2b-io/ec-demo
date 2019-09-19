@@ -95,21 +95,25 @@ const UploadButton = styled.div`
     }
   }
 `
-const Marriage = styled.button`
+const Marriage = styled.p`
   ${
     ({ active, theme }) => active ?
     css`
-      background: ${ theme.secondary.base };
-      color: ${ theme.secondary.on.base };
-    ` :
+      color: ${ theme.secondary.base };
+    `:
     css`
-      background: 'none';
+      color: #777
     `
   }
-  &:hover {
-    background-color: #007FFF;
-    color: white;
+
+  ${
+    ({ active, theme }) => css`
+      &:hover {
+        color: ${ theme.primary.base };
+      }
+    `
   }
+
   transition:
     background .3s linear,
     color .3s linear;
@@ -120,7 +124,7 @@ const Marriage = styled.button`
   outline: none;
   appearance: none;
   cursor: pointer;
-  font-size: 24px;
+  font-size: 80px;
 `
 
 const WrapperItem = styled.div`
@@ -149,6 +153,11 @@ const HorizonLine = styled.div`
   }
 `
 
+const ResizeWatermark = styled.div`
+  display: inline-block;
+  margin: 0 auto;
+
+`
 const SliderEl = styled.div`
   display: grid;
   grid-gap: 8px;
@@ -192,6 +201,17 @@ const Grid = styled.div`
     ({ columns, gap = 8 }) => css`
       grid-gap: ${ gap }px;
       grid-template-columns: repeat(${ columns }, 1fr);
+    `
+  }
+`
+
+const UnitConfig = styled.div`
+  display: grid;
+  grid-gap: 8px;
+  ${
+    ({ columns, gap = 8 }) => css`
+      grid-gap: ${ gap }px;
+      grid-template-columns: repeat(${ columns }, 132px);
     `
   }
 `
@@ -831,7 +851,7 @@ class UploadForm extends React.Component {
         widthImagePreivew,
         heightImagePreivew
       } = this.state
-      
+
       this.setState({
         widthWatermark: Math.round( widthPercentWatermark * (widthImagePreivew / 100)),
         heightWatermark: Math.round(heightPercentWatermark * (heightImagePreivew / 100)),
@@ -1158,8 +1178,8 @@ class UploadForm extends React.Component {
                 modeResize === 'noKeepRatioPercent' ? <div>
                   <LabelItem>Ratio Watermark By Percent</LabelItem>
                     <Break/>
-                    <div>
-                      <Grid columns={ 2 }>
+                    <ResizeWatermark>
+                      <UnitConfig columns = { 2 }>
                         <div>
                           <label>Width </label>
                           <Input
@@ -1180,41 +1200,54 @@ class UploadForm extends React.Component {
                           />
                           <label>%</label>
                         </div>
-                      </Grid>
-                    </div>
+                      </UnitConfig>
+                    </ResizeWatermark>
                   </div>
                   :
                   <div>
                     <LabelItem>Ratio Watermark By Pixel</LabelItem>
                     <Break/>
-                    <Grid columns={ 3 }>
-                      <div>
-                        <label>Width </label>
-                        <Input
-                          type='number'
-                          name='widthPixelWatermark'
-                          value={ this.state.widthWatermark }
-                          onChange={ this.changeSizeWatermark.bind(this) }
-                        />
-                        <label>px</label>
-                      </div>
-                      <Marriage
-                        onClick={ this.changeModeResizePixel.bind(this) }
-                        active={ marriageActive }
-                        >
-                        &#9901;
-                      </Marriage>
-                      <div>
-                        <label>Height </label>
-                        <Input
-                          name='heightPixelWatermark'
-                          type='number'
-                          value={ this.state.heightWatermark }
-                          onChange={ this.changeSizeWatermark.bind(this) }
-                        />
-                        <label>px</label>
-                      </div>
-                    </Grid>
+                    <ResizeWatermark>
+                      <UnitConfig columns = { 3 }>
+                        <div>
+                          <label>Width </label>
+                          <Input
+                            type='number'
+                            name='widthPixelWatermark'
+                            value={ this.state.widthWatermark }
+                            onChange={ this.changeSizeWatermark.bind(this) }
+                          />
+                          <label>px</label>
+                        </div>
+                        {
+                          marriageActive ?
+                            <Marriage
+                              onClick={ this.changeModeResizePixel.bind(this) }
+                              active={ marriageActive }
+                              >
+                              &#x26AD;
+                            </Marriage>
+                            :
+                            <Marriage
+                              onClick={ this.changeModeResizePixel.bind(this) }
+                              active={ marriageActive }
+                              >
+                              &#x26AE;
+                            </Marriage>
+                        }
+
+                        <div>
+                          <label>Height </label>
+                          <Input
+                            name='heightPixelWatermark'
+                            type='number'
+                            value={ this.state.heightWatermark }
+                            onChange={ this.changeSizeWatermark.bind(this) }
+                          />
+                          <label>px</label>
+                        </div>
+                      </UnitConfig>
+                    </ResizeWatermark>
                   </div>
                 }
                 <Break/>
