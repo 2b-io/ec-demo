@@ -10,6 +10,7 @@ import defaultPreviewImage from 'img/image-preview.jpg'
 import defaultPreviewWatermark from 'img/watermark.png'
 import { AddIcon } from 'app/ui/elements/icons'
 import iconZip from 'img/icon-zip.png'
+import iconLoading from 'img/loading.gif'
 
 import {
   Container,
@@ -17,7 +18,8 @@ import {
   PrimaryButton,
   ProgressCircular,
   PlainButton,
-  Slider
+  Slider,
+  Dialog,
 } from 'app/ui/elements'
 
 import arrToMap from 'services/array-to-map'
@@ -364,6 +366,10 @@ class UploadForm extends React.Component {
       widthWatermark,
       percentWatermark
     )
+
+    this.setState({
+      isProgress: true
+    })
   }
 
   changePadding(padding) {
@@ -1298,13 +1304,16 @@ class UploadForm extends React.Component {
         </Session>
         <ActionButton>
           {
-            !this.props.linkDownload && <PrimaryButton
+            (!this.props.linkDownload && !this.state.isProgress) && <PrimaryButton
               onClick={ this.uploadAllFiles.bind(this) }>
               Upload
             </PrimaryButton>
           }
-          &nbsp;
-          &nbsp;
+
+          {
+            (!this.props.linkDownload && this.state.isProgress) && <img src={ iconLoading } width={ 100 }/>
+          }
+
           {
             this.props.linkDownload && <PrimaryButton onClick={ this.downloadFile.bind(this) }>
                 Download

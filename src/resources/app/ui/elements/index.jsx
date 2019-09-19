@@ -1,5 +1,6 @@
 export { default as Break } from './break'
 export { default as Container } from './container'
+export { default as Dialog } from './dialog'
 export { default as Form } from './form'
 export { default as ProgressCircular } from './circular-progress'
 export { default as ProgressStep } from './progress-step'
