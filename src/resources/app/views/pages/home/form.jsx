@@ -1349,12 +1349,21 @@ class UploadForm extends React.Component {
               Upload
             </PrimaryButton>
           }
-
+          {
+            (this.props.linkDownload && !this.state.isActiveDialog) && <PrimaryButton
+              onClick={ this.downloadFile.bind(this) }>
+                Download
+              </PrimaryButton>
+          }
           {
             (this.state.isProgress) &&
               <Dialog
               isActive={ this.state.isActiveDialog }
-              onOverlayClick={ ()=> this.setState({ isActiveDialog: false }) }
+              onOverlayClick={ ()=> {
+                if (this.props.linkDownload) {
+                  this.setState({ isActiveDialog: false })
+                }
+              } }
               content={() => <PopupDownload>
                   {
                     !this.props.linkDownload && <IconLoading src={ iconLoading } width={ 100 }/>
