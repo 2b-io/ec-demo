@@ -36,7 +36,9 @@ export default {
         moderesize: modeResize,
         heighttemplate: heightTemplate,
         widthtemplate: widthTemplate,
-        percenttemplate: percentTemplate
+        percenttemplate: percentTemplate,
+        heightpercentwatermark: heightPercentWatermark,
+        widthpercentwatermark: widthPercentWatermark
       } = req.headers
 
       const { requestid: requestId } = req.params
@@ -99,7 +101,9 @@ export default {
               modeResize,
               heightTemplate,
               widthTemplate,
-              percentTemplate
+              percentTemplate,
+              heightPercentWatermark,
+              widthPercentWatermark
             })
           }
 

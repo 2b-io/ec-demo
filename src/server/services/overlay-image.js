@@ -17,7 +17,9 @@ const overlay = async (
   modeResize,
   heightTemplate,
   widthTemplate,
-  percentTemplate
+  percentTemplate,
+  heightPercentWatermark,
+  widthPercentWatermark
   ) => {
   console.log('OVERLAY_IMAGE_START...')
 
@@ -36,6 +38,8 @@ const overlay = async (
       heightTemplate,
       widthTemplate,
       percentTemplate,
+      heightPercentWatermark,
+      widthPercentWatermark,
       requestId
     )
   }

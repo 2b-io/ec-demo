@@ -21,7 +21,9 @@ const getUploadIdentifierLoop = function*() {
           modeResize,
           heightTemplate,
           widthTemplate,
-          percentTemplate
+          percentTemplate,
+          widthPercentWatermark,
+          heightPercentWatermark
         }
       } = yield take(types.upload.UPLOAD_FILES)
 
@@ -44,7 +46,9 @@ const getUploadIdentifierLoop = function*() {
         modeResize,
         heightTemplate,
         widthTemplate,
-        percentTemplate
+        percentTemplate,
+        widthPercentWatermark,
+        heightPercentWatermark
       })
 
       plupItems.setOption('headers', {

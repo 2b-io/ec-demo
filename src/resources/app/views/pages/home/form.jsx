@@ -370,6 +370,8 @@ class UploadForm extends React.Component {
       heightWatermark,
       widthWatermark,
       percentWatermark,
+      widthPercentWatermark,
+      heightPercentWatermark
     } = this.state
 
     const padding = {
@@ -388,7 +390,9 @@ class UploadForm extends React.Component {
       modeResize,
       heightWatermark,
       widthWatermark,
-      percentWatermark
+      percentWatermark,
+      widthPercentWatermark,
+      heightPercentWatermark
     )
     this.setState({
       displayUpload: false

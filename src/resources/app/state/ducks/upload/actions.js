@@ -9,7 +9,9 @@ export const uploadFiles = (
   modeResize,
   heightTemplate,
   widthTemplate,
-  percentTemplate
+  percentTemplate,
+  widthPercentWatermark,
+  heightPercentWatermark
 ) => ({
   type: types.UPLOAD_FILES,
   payload: {
@@ -21,7 +23,9 @@ export const uploadFiles = (
     modeResize,
     heightTemplate,
     widthTemplate,
-    percentTemplate
+    percentTemplate,
+    widthPercentWatermark,
+    heightPercentWatermark
   }
 })
 

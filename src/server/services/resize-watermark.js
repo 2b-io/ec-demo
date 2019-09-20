@@ -17,6 +17,8 @@ const resizeWatermark = async (
   heightWatermark,
   widthWatermark,
   percent,
+  heightPercentWatermark,
+  widthPercentWatermark,
   requestId
 ) => {
   console.log('RESIZE_WATERMARK_START...', watermarkPath)
@@ -34,7 +36,10 @@ const resizeWatermark = async (
     let heightWatermarkNew = heightOriginImage * (percent / 100 )
 
     if (modeResize === 'noKeepRatioPercent') {
-      await gm(watermarkPath).resize(widthWatermark, heightWatermark,"!").writeAsync(watermarkPathResize)
+      const heightWatermarkByRatio = heightOriginImage * (heightPercentWatermark / 100)
+      const widthWatermarkByRatio = widthOriginImage * (widthPercentWatermark / 100)
+
+      await gm(watermarkPath).resize(widthWatermarkByRatio, heightWatermarkByRatio,"!").writeAsync(watermarkPathResize)
     }
 
     if (modeResize === 'percent' || modeResize === 'keepRatioPercent') {

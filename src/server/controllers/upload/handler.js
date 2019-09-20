@@ -32,7 +32,9 @@ export default {
           modeResize,
           heightTemplate,
           widthTemplate,
-          percentTemplate
+          percentTemplate,
+          heightPercentWatermark,
+          widthPercentWatermark
         } } = await configImage.get(requestId)
 
       const s3KeyOriginImage = cacheRequest.get(requestId).images
@@ -63,7 +65,9 @@ export default {
           modeResize,
           heightTemplate,
           widthTemplate,
-          percentTemplate
+          percentTemplate,
+          heightPercentWatermark,
+          widthPercentWatermark
         )
       }))
 
