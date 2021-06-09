@@ -65,7 +65,7 @@
     "morgan": "1.9.1",
     "ms": "2.1.1",
     "node-fetch": "2.3.0",
-    "normalize-url": "4.2.0",
+    "normalize-url": "4.5.1",
     "ntc": "0.0.1",
     "object.pick": "1.3.0",
     "palx": "1.0.3",
